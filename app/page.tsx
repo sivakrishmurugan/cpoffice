@@ -1,95 +1,48 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import InitialForm from '@/components/forms/initial_form'
+import { Flex, Heading } from '@chakra-ui/react'
+import Image from 'next/image';
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    return (
+        <Flex w = '100%' direction={'column'} gap = '20px' py = '20px'>
+            <Flex w ='100%' gap = '20px' direction={['column', 'column', 'column', 'row', 'row']} >
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+                <Flex 
+                    direction={['row-reverse', 'row-reverse', 'row-reverse', 'column', 'column']}
+                    w = {['100%', '100%', '100%', '58.3%', '58.3%']} 
+                    borderRadius={'30px'} 
+                    h = 'fit-content'
+                    p = {['10px', '15px', '20px', '40px', '40px']}
+                    bg = {['white', 'white', 'white', 'transparent', 'transparent']}
+                    backgroundImage={[
+                        'none',
+                        'none',
+                        'none',
+                        'linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 100%)',
+                        'linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 100%)'
+                    ]}
+                >
+                    <Flex w = {['60%', '60%', '60%', '100%', '100%']} mt = {['0px', '0px', '0px', '20px', '20px']} direction={'column'}>
+                        <Flex direction={'column'} m = 'auto'>
+                            <Heading textAlign={['start', 'start', 'start', 'center', 'center']} color = 'brand.secondary' fontSize={['18px', '23px', '28px', '38px', '38px']} as = 'h1'>Insurance Protection</Heading>
+                            <Heading textAlign={['start', 'start', 'start', 'center', 'center']} fontSize={['18px', '23px', '28px', '38px', '38px']} as = 'h1'>for Your Clinic Property</Heading>
+                        </Flex>
+                    </Flex>
+                    <Flex position={'relative'} w = {['40%', '40%', '40%', 'initial', 'initial']} minH = {['130px','150px', '200px', '600px', '600px']}>
+                        <Image src = '/images/clinic-hero-image.png' alt = 'hero_image' fill objectFit='contain' />
+                    </Flex>
+                </Flex>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+                <Flex w = {['100%', '100%', '100%', '41.6%', '41.6%']} direction={'column'} borderRadius={'10px'} minH = '700px' boxShadow={'0 -2px 8px rgba(99, 101, 102, .06)'}>
+                    <Flex w = '100%' minH = '60px' borderTopRadius={'10px'} bg = 'brand.primary' py = '10px'>
+                        <Heading as = {'h1'} color = 'white' fontSize={'23px'} m = 'auto' textAlign={'center'}>Calculate your Premium Instantly</Heading>
+                    </Flex>
+                    <Flex px = {['10px', '40px', '40px', '40px', '40px']} py = '20px' borderBottomRadius={'10px'} bg = 'white'>
+                        <InitialForm />
+                    </Flex>
+                </Flex>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+            </Flex>
+        </Flex>
+    )
 }
