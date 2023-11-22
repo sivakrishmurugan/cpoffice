@@ -1,25 +1,24 @@
-import { Coverage, OptionalCoverage } from "./types"
+import { Coverage } from "./types"
 
-export const coveragesData: {
-    coverages: Coverage[],
-    optionalCoverages: OptionalCoverage[],
-} = {
-    coverages: [
+export const coveragesData: Coverage[] = [
         {
-            id: 'BUILDING',
-            name: 'Building',
-            icon: '/icons/building-icon.svg',
-            floorLevel: 10,
-            includes: [
-                'The building reconstruction/rebuild cost',
-                'Appurtenances, plumbing, electrical, writing and installation',
-                'Metal-smoke stacks, awnings, blinds, signages, gates, fences, outbuildings.',
-                "Architects, Surveyors and Consultant's Fees"
-            ],
-            excludes: [
-                'Building foundation'
-            ],
-            fields: {
+            CoverageID: 'BUILDING',
+            CoverageName: 'Building',
+            ImageName: 'building.svg',
+            Includes: {
+                "Coverage includes": [
+                    'The building reconstruction/rebuild cost',
+                    'Appurtenances, plumbing, electrical, writing and installation',
+                    'Metal-smoke stacks, awnings, blinds, signages, gates, fences, outbuildings.',
+                    "Architects, Surveyors and Consultant's Fees"
+                ]
+            },
+            Excludes: {
+                "Coverage excludes": [
+                    'Building foundation'
+                ]
+            },
+            CoverageFields: {
                 field_1: {
                     label: 'Sum Insured',
                     note: ''
@@ -29,102 +28,137 @@ export const coveragesData: {
                     note: ''
                 }
             },
-            fireInsPremiumPercentage: 30,
-            fireAndPerilsInsPremiumPercentage: 40
+            fireinsurance: 30,
+            FirePerlis: 40,
+            InsPercent: 0,
+            IsABR: 0,
+            PageOrder: "1",
+            isOptional: 0,
         },
         {
-            id: 'STOCK_IN_TRADE',
-            name: 'Stock-in-Trade',
-            icon: '/icons/icon-Stock-in-Trade.svg',
-            floorLevel: 10,
-            includes: ['Stocks of drugs & Medicine'],
-            excludes: [],
-            fields: {
+            CoverageID: 'STOCK_IN_TRADE',
+            CoverageName: 'Stock-in-Trade',
+            ImageName: 'stockintrade.svg',
+            Includes: {
+                "Coverage includes": ['Stocks of drugs & Medicine']
+            },
+            Excludes: {
+                "Coverage excludes": []
+            },
+            CoverageFields: {
                 field_1: {
                     label: 'Sum Insured',
                     note: ''
                 }
             },
-            fireInsPremiumPercentage: 30,
-            fireAndPerilsInsPremiumPercentage: 40
+            fireinsurance: 30,
+            FirePerlis: 40,
+            InsPercent: 0,
+            IsABR: 0,
+            PageOrder: "1",
+            isOptional: 0,
         },
         {
-            id: 'PLANT_AND_MACHINERY',
-            name: 'Plant & Machinery',
-            icon: '/icons/Plant-Machinery-icon.svg',
-            floorLevel: 10,
-            includes: [
-                'Office Equipments',
-                'Medical Equipments',
-                'Clinical Equipments',
-                "Laboratoty Equipments",
-                'Tools of Trade'
-            ],
-            excludes: [],
-            fields: {
+            CoverageID: 'PLANT_AND_MACHINERY',
+            CoverageName: 'Plant & Machinery',
+            ImageName: 'plantmachinery.svg',
+            Includes: {
+                "Coverage includes": [
+                    'Office Equipments',
+                    'Medical Equipments',
+                    'Clinical Equipments',
+                    "Laboratoty Equipments",
+                    'Tools of Trade'
+                ]
+            },
+            Excludes: {
+                "Coverage excludes": []
+            },
+            CoverageFields: {
                 field_1: {
                     label: 'Sum Insured',
                     note: ''
                 }
             },
-            fireInsPremiumPercentage: 30,
-            fireAndPerilsInsPremiumPercentage: 40
+            fireinsurance: 30,
+            FirePerlis: 40,
+            InsPercent: 0,
+            IsABR: 0,
+            PageOrder: "1",
+            isOptional: 0,
         },
         {
-            id: 'FURNITURES_FIXTURES_FITTINGS_RENOVATION_AND_CONTENTS',
-            name: 'Furniture, Fixtures, Fittings, Renovation & contents',
-            icon: '/icons/intier-icon.svg',
-            floorLevel: 10,
-            includes: [
-                'Furniture',
-                'Fixtures',
-                'Fittings',
-                'Renovation',
-                'Air-Conditioning',
-                'All Other Contents of Every Description (Sundries/Stationery/Miscellaneous)',
-            ],
-            excludes: [],
-            fields: {
+            CoverageID: 'FURNITURES_FIXTURES_FITTINGS_RENOVATION_AND_CONTENTS',
+            CoverageName: 'Furniture, Fixtures, Fittings, Renovation & contents',
+            ImageName: 'furniture.svg',
+            Includes: {
+                "Coverage includes": [
+                    'Furniture',
+                    'Fixtures',
+                    'Fittings',
+                    'Renovation',
+                    'Air-Conditioning',
+                    'All Other Contents of Every Description (Sundries/Stationery/Miscellaneous)',
+                ]
+            },
+            Excludes: {
+                "Coverage excludes": []
+            },
+            CoverageFields: {
                 field_1: {
                     label: 'Sum Insured',
                     note: ''
                 }
             },
-            fireInsPremiumPercentage: 30,
-            fireAndPerilsInsPremiumPercentage: 40
+            fireinsurance: 30,
+            FirePerlis: 40,
+            InsPercent: 0,
+            IsABR: 0,
+            PageOrder: "1",
+            isOptional: 0,
         },
         {
-            id: 'REMOVAL_OF_DEBRIS',
-            name: 'Removal of Debris',
-            icon: '/icons/debris-icon.svg',
-            floorLevel: 10,
-            includes: [
-                'Building',
-                'Stock-in-Trade',
-                'Plant & Machinery',
-                'Furniture, Fixtures, Fittings, Renovation & contents',
-            ],
-            excludes: [],
-            fields: {
+            CoverageID: 'REMOVAL_OF_DEBRIS',
+            CoverageName: 'Removal of Debris',
+            ImageName: 'removal.svg',
+            Includes: {
+                "Coverage includes": [
+                    'Building',
+                    'Stock-in-Trade',
+                    'Plant & Machinery',
+                    'Furniture, Fixtures, Fittings, Renovation & contents',
+                ]
+            },
+            Excludes: {
+                "Coverage excludes": []
+            },
+            CoverageFields: {
                 field_1: {
                     label: 'Sum Insured',
                     note: 'Recommended Limit: 10% of the total sum insured/ RM 2,000,000 in aggregate in any one loss whichever is lower'
                 }
             },
-            fireInsPremiumPercentage: 30,
-            fireAndPerilsInsPremiumPercentage: 40
+            fireinsurance: 30,
+            FirePerlis: 40,
+            InsPercent: 0,
+            IsABR: 0,
+            PageOrder: "2",
+            isOptional: 0,
         },
-    ],
-    optionalCoverages: [
         {
-            id: 'PROTECT_AGAINST_LOSS_OF_REVENUE',
-            name: 'Protect against Loss of Revenue',
-            icon: '/icons/icon-revenue.svg',
-            includes: [
-                'Loss of Revenue due to Fire &/ selected Perils',
-                '12 months Indemnity Period'
-            ],
-            fields: {
+            CoverageID: 'PROTECT_AGAINST_LOSS_OF_REVENUE',
+            CoverageName: 'Protect against Loss of Revenue',
+            ImageName: 'lossrevenue.svg',
+            Includes: {
+                "Coverage includes": [
+                    'Loss of Revenue due to Fire &/ selected Perils',
+                    '12 months Indemnity Period'
+                ]
+            },
+            Excludes: {
+                "Coverage excludes": []
+            },
+            CoverageFields: {
                 field_1: {
                     label: 'Gross revenue',
                     note: ''
@@ -134,25 +168,37 @@ export const coveragesData: {
                     note: ''
                 }
             },
-            isABR: false,
-            premiumPercentage: 55
+            fireinsurance: 30,
+            FirePerlis: 40,
+            InsPercent: 0,
+            IsABR: 0,
+            PageOrder: "2",
+            isOptional: 1,
         },
         {
-            id: 'PROTECT_YOUR_MOBILE_DEVICES',
-            name: 'Protect your Mobile devices',
-            icon: '/icons/icon-mobile-devices.svg',
-            includes: [
-                'Mobile/PDA',
-                'Laptop/Notebooks'
-            ],
-            fields: {
+            CoverageID: 'PROTECT_YOUR_MOBILE_DEVICES',
+            CoverageName: 'Protect your Mobile devices',
+            ImageName: 'mobiledevices.svg',
+            Includes: {
+                "Coverage includes": [
+                    'Mobile/PDA',
+                    'Laptop/Notebooks'
+                ]
+            },
+            Excludes: {
+                "Coverage excludes": []
+            },
+            CoverageFields: {
                 field_1: {
                     label: 'Gross revenue',
                     note: ''
                 }
             },
-            isABR: false,
-            premiumPercentage: 35
+            fireinsurance: 30,
+            FirePerlis: 40,
+            InsPercent: 0,
+            IsABR: 0,
+            PageOrder: "2",
+            isOptional: 1,
         }
-    ]
-}
+    ];

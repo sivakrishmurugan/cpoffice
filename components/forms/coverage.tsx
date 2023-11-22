@@ -1,7 +1,7 @@
 import { Button, Collapse, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, ListItem, OrderedList, Text, UnorderedList } from "@chakra-ui/react";
 import { removeLeadingZeros } from "../utill_methods";
 import { Coverage, SelectedCoverage } from "../types";
-import { TOOLTIP_INFO } from "../app/app_constants";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, TOOLTIP_INFO } from "../app/app_constants";
 import ExpanableList from "../expandable_list";
 import ResponsiveTooltip from "../tooltip";
 import { PriceInput } from "../inputs";
@@ -23,8 +23,9 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
         return removeLeadingZeros(result);
     };
     const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0)
-    const fireInsPremium = percentageResult(coverage.fireInsPremiumPercentage, total);
-    const fireAndPerilsInsPremium = percentageResult(coverage.fireAndPerilsInsPremiumPercentage, total);
+    const fireInsPremium = percentageResult(coverage.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+    const fireAndPerilsInsPremium = percentageResult(coverage.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
+    const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
 
     return (
         <Flex 
@@ -47,9 +48,9 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
 
                 <Flex w = '100%' gap = {['20px', '20px', '35px', '35px', '35px']} alignItems={'center'}>
                     <Flex position={'relative'} flexShrink={0} w = {['40px', '40px', '80px', '80px', '80px']} h = {['40px', '40px', '80px', '80px', '80px']}>
-                        <Image src={coverage.icon} alt={'Coverage Icon'} fill />
+                        <Image src={icon} alt={'Coverage Icon'} fill />
                     </Flex>
-                    <Heading as = {'h1'} fontSize={'23px'}>{coverage.name}</Heading>
+                    <Heading as = {'h1'} fontSize={'23px'}>{coverage.CoverageName}</Heading>
                 </Flex>
 
                 <Flex w = '20%' display={['none', 'none', 'flex', 'flex', 'flex']}>
@@ -72,13 +73,13 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                     
                     <Flex direction={'column'} gap ='20px' display={['flex', 'flex', 'none', 'none', 'none']}>
                         <ExpanableList
-                            list = {coverage.includes}
+                            list = {coverage.Includes["Coverage includes"]}
                             title = "Coverage includes" 
                         />
                         {
-                            coverage.excludes.length > 0 &&
+                            coverage.Excludes && coverage.Excludes["Coverage excludes"].length > 0 &&
                             <ExpanableList
-                                list = {coverage.excludes}
+                                list = {coverage.Excludes["Coverage excludes"]}
                                 title = "Coverage excludes" 
                             />
                         }
@@ -89,19 +90,19 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                             <Text fontSize = '16px' fontWeight={'bold'}>Coverage includes: </Text>
                             <UnorderedList ml = '40px' fontSize={'14px'}>
                                 {
-                                    coverage.includes.map(includedItem => {
+                                    coverage.Includes["Coverage includes"].map(includedItem => {
                                         return <ListItem key = {includedItem}>{includedItem}</ListItem>;
                                     })
                                 }
                             </UnorderedList>
                         </Flex>
                         {
-                            coverage.excludes.length > 0 &&
+                            coverage.Excludes && coverage.Excludes["Coverage excludes"].length > 0 &&
                             <Flex gap = '10px' maxW = '350px' direction={'column'}>
                                 <Text fontSize = '16px' fontWeight={'bold'}>Coverage excludes: </Text>
                                 <UnorderedList ml = '40px' fontSize={'14px'}>
                                     {
-                                        coverage.excludes.map(excludedItem => {
+                                        coverage.Excludes["Coverage excludes"].map(excludedItem => {
                                             return <ListItem key = {excludedItem}>{excludedItem}</ListItem>;
                                         })
                                     }
@@ -113,7 +114,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                     <Flex w = {['100%', '100%', '100%%', '66.6%', '66.6%']} direction={'column'} gap = '30px'>
                         <Flex direction={'column'} maxW={['100%', '100%', '100%', '500px', '500px']} px = '1px' gap = '10px'>
                             {
-                                Object.entries(coverage.fields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
+                                Object.entries(coverage.CoverageFields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
                                     const fieldKey = field == 'field_1' ? 'field_1' : 'field_2';
                                     const value = values?.[fieldKey] ?? 0;
                                     const error = fieldKey == 'field_1' && errors?.field_1;

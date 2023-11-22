@@ -1,3 +1,5 @@
+export const API_BASE_URL = 'https://d8xgrpgzteoa309bkryz.doctor.insure';
+
 export const APP_BG_COLOR = '#f6f5f5';
 export const APP_PRIMARY_COLOR = '#132766';
 export const APP_SECONDARY_COLOR = '#08a5b5';
@@ -12,10 +14,19 @@ export const APP_BORDER_COLOR = '#d1d1d1';
 export const APP_MAX_WIDTH = ['100%', '100%', '1378px', '1378px', '1378px'];
 export const APP_WIDTH = ['initial', '90%', '90%', '100%', '100%'];
 
+export const FLOOR_LEVEL = [
+    { id: 'LG', value: 'LG' },
+    { id: 'G', value: 'G' },
+    ...([...Array(100).keys()]).map(e => ({ id: (e + 1).toString(), value: (e + 1).toString() }))
+]
+
 export const CONSTRUCTION_TYPES = [
     { id: '1A', value: 'Brick Walls with Non-Combustible Roof' },
     { id: '1B', value: 'Partial Brick Walls, Partial Non-Combustible Roof' },
 ]
+
+export const DEFAULT_FIRE_INS_PERCENTAGE = .1;
+export const DEFAULT_FIRE_PERILS_INS_PERCENTAGE = .2;
 
 export const EXCESS = [
     {
@@ -36,18 +47,22 @@ export const EXCESS = [
     }
 ]
 
+export const TAX_PERCENTAGE = 6;
+export const STAMP_DUTY = 10;
+
 export const TYPE_OF_CLAIM = [
-    { id: 'PROPERTY', value: 'Property' },
-    { id: 'LIABILITY', value: 'Liability' },
-    { id: 'CONSEQUENTIAL_LOSS', value: 'Consequential Loss' },
-    { id: 'OTHER', value: 'Other' }
+    { id: 'Property', value: 'Property' },
+    { id: 'Liability', value: 'Liability' },
+    { id: 'Consequential Loss', value: 'Consequential Loss' },
+    { id: 'Other', value: 'Other' }
 ]
 
 export const PROTECTION_AND_LIABILITY_COVERAGE = {
-    id: 'PROTECTION_AND_LIABILITY_COVERAGE',
+    id: 3001,
     icon: '/icons/icon-protection.svg',
     name: 'Protection and Liability Coverage',
     premuimAmount: 405,
+    coverageValue: 1000000,
     premiumLabel: 'Protection from a broad range of risks, theft, vandalism, accidental damage, and more',
     contents: [
         {

@@ -1,3 +1,14 @@
+import * as cookie from 'cookie';
+
+export const getAuthTokenFromCookie = (cookies: string | undefined) => {
+    const authToken = cookie.parse(cookies ?? "")['authToken'];
+    return authToken ?? ""
+}
+
+export const setAuthToken = (token: string) => {
+    document.cookie = cookie.serialize('authToken', token);
+}
+
 export const getNumberFromString = (text: string, isInt: boolean = false) => {
     var regex = /[+-]?\d+(\.\d+)?/g;
     let value: RegExpMatchArray | null | number = text.match(regex);

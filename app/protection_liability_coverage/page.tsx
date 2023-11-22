@@ -7,6 +7,7 @@ import BottomActions from "@/components/bottom_actions";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
+import { SelectedCoverage } from '@/components/types';
 
 
 const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {

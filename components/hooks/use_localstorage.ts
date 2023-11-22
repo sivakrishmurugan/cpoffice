@@ -8,7 +8,7 @@ const useLocalStorage = (keyName: string, defaultValue: null | ClinicData) => {
       const value = window.localStorage.getItem(keyName);
 
       if (value) {
-        return JSON.parse(value);
+        return JSON.parse(value) as ClinicData;
       } else {
         window.localStorage.setItem(keyName, JSON.stringify(defaultValue));
         return defaultValue;

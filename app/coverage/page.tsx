@@ -8,20 +8,24 @@ import BottomActions from "@/components/bottom_actions";
 import { CoverageForm } from "@/components/forms";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
+import useCoverage from "@/components/hooks/use_coverage";
+import axiosClient from "@/components/axios";
 
 
 const Coverages: NextPage<{}> = ({}) => {
-    const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
-    const [data, setData] = useState<SelectedCoverage[]>(localData?.selectedCoverages ?? []);
-    type ErrorType = { noCoverage: boolean, fieldErrors: { id: string, field_1: boolean, field_2?: boolean }[] }
+    const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
+    const [data, setData] = useState<SelectedCoverage[]>(localData?.selectedCoverages.filter(e => e.id != coveragesData?.coverages.find(e => e.CoverageName == 'Removal of Debris')?.CoverageID) ?? []);
+    type ErrorType = { noCoverage: boolean, fieldErrors: { id: string | number, field_1: boolean, field_2?: boolean }[] }
     const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, fieldErrors: [] });
     const isClient = useClient();
     const router = useRouter();
 
     useEffect(() => {
-        if(coverageSessionData == null) router.replace('/');
-    }, [coverageSessionData, router])
+        if(localData?.quoteId == null || localData?.quoteId == '') {
+            router.replace('/');
+        }
+    }, [localData, router])
 
     const onClickAddOrRemove = (coverageId: string) => {
         let tempData: typeof data = JSON.parse(JSON.stringify(data));
@@ -63,6 +67,17 @@ const Coverages: NextPage<{}> = ({}) => {
         validateField(coverage);
     }
 
+    const updateLocalData = (coverages: SelectedCoverage[]) => {
+        if(localData == null) return ;
+        setLocalData({ 
+            ...localData, 
+            selectedCoverages: [
+                ...localData.selectedCoverages.filter(e => coverages.findIndex(c => c.id == e.id) < 0), 
+                ...coverages
+            ] 
+        })
+    }
+
     const validate = () => {
         const tempErrors: ErrorType = JSON.parse(JSON.stringify(errors));
         tempErrors.noCoverage = data.length < 1;
@@ -71,12 +86,11 @@ const Coverages: NextPage<{}> = ({}) => {
         return tempErrors.noCoverage == true || tempErrors.fieldErrors.some(e => e.field_1 == true);
     }
 
-    const onClickNext = () => {
+    const onClickNext = async () => {
         if(validate()) return ;
-        if(localData) {
-            setLocalData({ ...localData, selectedCoverages: data })
-            router.push('/insurance_type');
-        }   
+        
+        updateLocalData(data);
+        router.push('/debris');
     }
 
     const onClickBack = () => {
@@ -86,14 +100,14 @@ const Coverages: NextPage<{}> = ({}) => {
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
             {
-                isClient && coverageSessionData?.coverages.map(coverage => {
+                isClient && coveragesData?.coverages.filter(e => e.CoverageName != 'Removal of Debris').map(coverage => {
                     return <CoverageForm 
-                        key = {coverage.id}
+                        key = {coverage.CoverageID}
                         coverage={coverage} 
-                        onClickAddOrRemove={() => onClickAddOrRemove(coverage.id)} 
-                        onChangeFieldValue={(e) => onFieldValueChange(e, coverage.id)} 
-                        values = {data.find(e => e.id == coverage.id)}
-                        errors = {errors.fieldErrors.find(e => e.id == coverage.id)}
+                        onClickAddOrRemove={() => onClickAddOrRemove(coverage.CoverageID)} 
+                        onChangeFieldValue={(e) => onFieldValueChange(e, coverage.CoverageID)} 
+                        values = {data.find(e => e.id == coverage.CoverageID)}
+                        errors = {errors.fieldErrors.find(e => e.id == coverage.CoverageID)}
                     />
                 })
             }

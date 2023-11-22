@@ -1,13 +1,16 @@
 import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Heading, ListItem, Text, UnorderedList } from "@chakra-ui/react";
-import { OptionalCoverage, SelectedCoverage } from "../types";
+import { Coverage, SelectedCoverage } from "../types";
 import { removeLeadingZeros } from "../utill_methods";
 import ExpanableList from "../expandable_list";
 import { PriceInput } from "../inputs";
 import { ChangeEvent } from "react";
 import Image from 'next/image';
+import { useLocalStorage } from "../hooks";
+import useCoverage from "../hooks/use_coverage";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE } from "../app/app_constants";
 
 interface OptionalCoverageFromProps {
-    coverage: OptionalCoverage,
+    coverage: Coverage,
     isAdded: boolean,
     onClickAddOrRemove: () => void,
     onChangeFieldValue: (event: ChangeEvent<HTMLInputElement>) => void,
@@ -16,12 +19,34 @@ interface OptionalCoverageFromProps {
 }
 
 const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrRemove, onChangeFieldValue }: OptionalCoverageFromProps) => {
+    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
     const percentageResult = (percent: number, total: number) => {
         const result = ((percent/ 100) * total).toFixed(2);
         return removeLeadingZeros(result);
     };
-    const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0)
-    const premium = percentageResult(coverage.premiumPercentage, total);
+    const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0);
+    
+    const selectedInsType = localData?.selectedInsType ?? 'FIRE';
+    
+    const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = localData?.selectedCoverages.reduce((out, selected) => {
+        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
+        if(coverageData == null) return out;
+        const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
+        let calculatedResultForFireInsPremium = percentageResult(coverageData?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+        let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
+        out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
+        out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
+        out.sumInsuredTotal += total;
+        return out;
+    }, { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 }) ?? { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 };
+
+    const abrPercentage = selectedInsType == 'FIRE' ?
+        fireInsPremiumTotal / sumInsuredTotal :
+        fireAndPerilsInsPremiumTotal / sumInsuredTotal;
+    
+    const premium = coverage.IsABR != 1 ? percentageResult(coverage.InsPercent, total) : percentageResult(abrPercentage, total);
+    const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
 
     return (
         <Flex 
@@ -45,9 +70,9 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
 
                 <Flex w = '100%' gap = '35px' alignItems={'center'}>
                     <Flex position={'relative'} flexShrink={0} w = {['40px', '40px', '80px', '80px', '80px']} h = {['40px', '40px', '80px', '80px', '80px']}>
-                        <Image src={coverage.icon} alt={'Coverage Icon'} fill />
+                        <Image src={icon} alt={'Coverage Icon'} fill />
                     </Flex>
-                    <Heading as = {'h1'} fontSize={'23px'}>{coverage.name}</Heading>
+                    <Heading as = {'h1'} fontSize={'23px'}>{coverage.CoverageName}</Heading>
                 </Flex>
                 
                 <Flex my = '20px' w = {'calc(100% + 40px)'} ml = '-20px' display={['flex', 'flex', 'none', 'none', 'none']} h ='1px' bg = 'brand.borderColor'></Flex>
@@ -57,7 +82,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
                     <Flex w = {'100%'} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']}>
                         <Flex display={['flex', 'flex', 'none', 'none', 'none']}>
                             <ExpanableList
-                                list = {coverage.includes}
+                                list = {coverage.Includes["Coverage includes"]}
                                 title = "Coverage includes" 
                             />
                         </Flex>
@@ -65,7 +90,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
                             <Text fontSize = '16px' fontWeight={'bold'}>Coverage includes: </Text>
                             <UnorderedList ml = '40px' fontSize={'14px'}>
                                 {
-                                    coverage.includes.map(includedItem => {
+                                    coverage.Includes["Coverage includes"].map(includedItem => {
                                         return <ListItem key = {includedItem}>{includedItem}</ListItem>;
                                     })
                                 }
@@ -76,7 +101,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
                     <Flex w = {'100%'} direction={'column'} gap = '30px'>
                         <Flex direction={'column'} maxW={['100%', '100%', '100%', '500px', '500px']} gap = '10px'>
                             {
-                                Object.entries(coverage.fields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
+                                Object.entries(coverage.CoverageFields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
                                     const fieldKey = field == 'field_1' ? 'field_1' : 'field_2';
                                     const value = values?.[fieldKey] ?? 0;
                                     const error = fieldKey == 'field_1' && errors?.field_1;

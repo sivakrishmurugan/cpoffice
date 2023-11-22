@@ -9,6 +9,7 @@ import BottomActions from "@/components/bottom_actions";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
+import axiosClient from "@/components/axios";
 
 const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData) => {
     return {
@@ -123,10 +124,26 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
         return tempData.claimInfoList.some(e => Object.values(e).some(value => typeof value == 'string' ? false : value.error))
     }
 
-    const onClickNext = () => {
-        if(validate()) return ;
-        if(localData) setLocalData({ ...localData, claimDeclaration: stateToPayloadData(data) })
-        setShowProcessingPopup(true)
+    const onClickNext = async () => {
+        if(localData == null || validate()) return ;
+
+        try {
+            const res = await axiosClient.post('/api/clinicshield/insertclaims', {
+                QuoteID: localData.quoteId,
+                ClaimDeclaration: data.previouslyClaimed ? data.claimInfoList.map(e => ({
+                    ClaimType: e.type,
+                    ClaimYear: e.year,
+                    ClaimAmount: e.amount.toString(),
+                    Description: e.description
+                })) : null
+            });
+            if(res && res.data && res.data[0]) {
+                if(res.data?.[0]?.Success == 1) {
+                    setLocalData({ ...localData, claimDeclaration: stateToPayloadData(data) })
+                    setShowProcessingPopup(true)
+                }
+            } 
+        } catch(e) {}
     }
 
     const onCloseProccessingPopup = () => {

@@ -1,6 +1,6 @@
 "use client"
 import { Button, Flex, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import { EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, TOOLTIP_INFO } from "@/components/app/app_constants";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/components/app/app_constants";
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
 import { InfoIcon, PromoCodeIcon } from "@/components/icons";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -8,11 +8,14 @@ import ResponsiveTooltip from "@/components/tooltip";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import React from "react";
+import useCoverage from "@/components/hooks/use_coverage";
+import { Coverage, SelectedCoverage } from "@/components/types";
+import { removeLeadingZeros } from "@/components/utill_methods";
 
 
 const Summary: NextPage<{}> = ({}) => {
-    const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
     const [data, setData] = useState({ 
         promoCode: { value: localData?.promoCode ?? '', isApplied: localData?.promoCode && localData.promoCode != '', error: false }, 
         insStartDate: { value: localData?.insStartDate ?? '', error: false } 
@@ -21,9 +24,9 @@ const Summary: NextPage<{}> = ({}) => {
     const router = useRouter();
 
     useEffect(() => {
-        if(coverageSessionData == null) router.replace('/');
+        if(localData == null || localData.quoteId == null || localData.quoteId == '') router.replace('/');
         if(localData?.selectedInsType == null) router.replace('/insurance_type')
-    }, [coverageSessionData, localData, router])
+    }, [localData, router])
 
     const onChangePromoCode = (event: ChangeEvent<HTMLInputElement>) => {
         setData(prev => ({ ...prev, promoCode: { value: event.target.value, isApplied: false, error: false } }))
@@ -67,6 +70,69 @@ const Summary: NextPage<{}> = ({}) => {
     const onClickBack = () => {
         router.push('/protection_liability_coverage');
     }
+
+    const coverageValue = (coverage: SelectedCoverage) => {
+        return (coverage?.field_1 ?? 0) + (coverage?.field_2 ?? 0)
+    }
+
+    const percentageResult = (percent: number, total: number) => {
+        const result = ((percent/ 100) * total).toFixed(2);
+        return removeLeadingZeros(result);
+    };
+    
+    const calculatePremiumForCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage) => {
+        const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
+        return type == 'FIRE' ? percentageResult(coverage?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
+    }
+
+    const calculatePremiumForOptionalCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage: Coverage) => {
+        const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
+        const selectedInsType = localData?.selectedInsType ?? 'FIRE';
+    
+        const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = localData?.selectedCoverages.reduce((out, selected) => {
+            const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
+            if(coverageData == null) return out;
+            const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
+            let calculatedResultForFireInsPremium = percentageResult(coverageData?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+            let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
+            out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
+            out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
+            out.sumInsuredTotal += total;
+            return out;
+        }, { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 }) ?? { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 };
+
+        const abrPercentage = selectedInsType == 'FIRE' ?
+            fireInsPremiumTotal / sumInsuredTotal :
+            fireAndPerilsInsPremiumTotal / sumInsuredTotal;
+            
+        return coverage.IsABR != 1 ? percentageResult(coverage.InsPercent, total) : percentageResult(abrPercentage, total);
+    }
+
+    const coveragesTotalPremium = localData?.selectedCoverages?.reduce((out, coverage) => {
+        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+        const premium = calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData)
+        return out + Number(premium);
+    }, 0) ?? 0
+
+    const optionalCoveragesTotalPremium = localData?.selectedOptionalCoverages?.reduce((out, coverage) => {
+        let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
+        const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
+        if(isProtectionAndLiabilityCoverage) {
+            coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
+            coverageData = {
+                CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
+                isABR: 0,
+                InsPercent: 0.0405,
+            } as any
+        }
+        const premium = calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!)
+        return out + Number(premium);
+    }, 0) ?? 0
+
+    const totalPremium = coveragesTotalPremium + optionalCoveragesTotalPremium;
+    const netPremium = totalPremium;
+    const tax = Number(percentageResult(TAX_PERCENTAGE, totalPremium));
+    const finalPremium = netPremium - tax - STAMP_DUTY;
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
@@ -114,7 +180,7 @@ const Summary: NextPage<{}> = ({}) => {
                                     <Tbody>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
                                             <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Clinic Name</Td>
-                                            <Td py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>DYM International Clinic</Td>
+                                            <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.name}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
                                             <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Coverage Period</Td>
@@ -150,12 +216,12 @@ const Summary: NextPage<{}> = ({}) => {
                                     <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
                                         {
                                             localData?.selectedCoverages.map((coverage, index) => {
-                                                const coverageData = coverageSessionData?.coverages?.find(e => e.id == coverage.id);
+                                                const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                                 return <Tr key = {coverage.id}>
-                                                    <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>{coverageData?.name}</Td>
+                                                    <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>{coverageData?.CoverageName}</Td>
                                                     <Td px = '5px'></Td>
-                                                    <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM 10000</Td>
-                                                    <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM 675</Td>
+                                                    <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {coverageValue(coverage)}</Td>
+                                                    <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData)}</Td>
                                                 </Tr>
                                             })
                                         }
@@ -174,19 +240,19 @@ const Summary: NextPage<{}> = ({}) => {
                                     <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
                                         {
                                             localData?.selectedCoverages.map((coverage, index) => {
-                                                const coverageData = coverageSessionData?.coverages?.find(e => e.id == coverage.id);
+                                                const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                                 const bgColor = index % 2 != 0 ? 'white' : 'tableStripedColor.100';
                                                 return <React.Fragment key={coverage.id}>
                                                     <Tr>
-                                                        <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} textTransform={'none'}>{coverageData?.name}</Th>
+                                                        <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                     </Tr>
                                                     <Tr>
                                                         <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                        <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM 1,000,000</Td>
+                                                        <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {coverageValue(coverage)}</Td>
                                                     </Tr>
                                                     <Tr>
                                                         <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM 675</Td>
+                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData)}</Td>
                                                     </Tr>
                                                 </React.Fragment>
                                             })
@@ -212,18 +278,21 @@ const Summary: NextPage<{}> = ({}) => {
                                             <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
                                                 {
                                                     localData?.selectedOptionalCoverages.map((coverage, index) => {
-                                                        let coverageData = coverageSessionData?.optionalCoverages?.find(e => e.id == coverage.id);
+                                                        let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
                                                         const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
                                                         if(isProtectionAndLiabilityCoverage) {
+                                                            coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
                                                             coverageData = {
-                                                                name: PROTECTION_AND_LIABILITY_COVERAGE.name
+                                                                CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
+                                                                isABR: 0,
+                                                                InsPercent: 0.0405,
                                                             } as any
                                                         }
                                                         return <Tr key = {coverage.id}>
-                                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>{coverageData?.name}</Td>
+                                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>{coverageData?.CoverageName}</Td>
                                                             <Td px = '5px'></Td>
-                                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM 10000</Td>
-                                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM 675</Td>
+                                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {coverageValue(coverage)}</Td>
+                                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!)}</Td>
                                                         </Tr>
                                                     })
                                                 }
@@ -243,24 +312,25 @@ const Summary: NextPage<{}> = ({}) => {
                                                 {
                                                     localData?.selectedOptionalCoverages.map((coverage, index) => {
                                                         const bgColor = index % 2 != 0 ? 'white' : 'tableStripedColor.100';
-                                                        let coverageData = coverageSessionData?.optionalCoverages?.find(e => e.id == coverage.id);
+                                                        let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
                                                         const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
                                                         if(isProtectionAndLiabilityCoverage) {
+                                                            coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
                                                             coverageData = {
                                                                 name: PROTECTION_AND_LIABILITY_COVERAGE.name
                                                             } as any
                                                         }
                                                         return <React.Fragment key = {coverage.id}>
                                                             <Tr>
-                                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} textTransform={'none'}>{coverageData?.name}</Th>
+                                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                             </Tr>
                                                             <Tr>
                                                                 <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                                <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM 1,000,000</Td>
+                                                                <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {coverageValue(coverage)}</Td>
                                                             </Tr>
                                                             <Tr>
                                                                 <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM 675</Td>
+                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!)}</Td>
                                                             </Tr>
                                                         </React.Fragment>
                                                     })
@@ -367,27 +437,27 @@ const Summary: NextPage<{}> = ({}) => {
                                 <Tbody>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Total Premium</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM 6,240.00</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {totalPremium}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Discount</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RAM 0</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM 0</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Nett Premium</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM 6,240.00</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {netPremium}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Tax 6%</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM 195.00</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {tax}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Stamp Duty</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM 10.00</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {STAMP_DUTY}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Final Premium</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM 6,445.00</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {finalPremium}</Td>
                                     </Tr>
                                 </Tbody>
                             </Table>

@@ -1,25 +1,22 @@
 "use client"
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
+import { Alert, AlertIcon, Button, Flex  } from "@chakra-ui/react";
 import { getNumberFromString } from "@/components/utill_methods";
-import { OptionalCoverageForm } from "@/components/forms";
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { SelectedCoverage } from "@/components/types";
 import { ChangeEvent, useEffect, useState } from "react";
 import BottomActions from "@/components/bottom_actions";
-import { SelectedCoverage } from "@/components/types";
+import { CoverageForm } from "@/components/forms";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import useCoverage from "@/components/hooks/use_coverage";
+import axiosClient from "@/components/axios";
 
 
-const OptionalCoverages: NextPage<{}> = ({}) => {
+const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
     const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
-    const [data, setData] = useState<SelectedCoverage[]>(coveragesData?.optionalCoverages.map(e => {
-        const fieldValuesFormLocalData = localData?.selectedOptionalCoverages.find(localCoverageData => localCoverageData.id == e.CoverageID);
-        return { id: e.CoverageID, field_1: fieldValuesFormLocalData?.field_1 ?? 0, field_2: fieldValuesFormLocalData?.field_2 ?? 0 }
-    }) ?? []);
-    const [selectedCoverages, setSelectedCoverages] = useState<(string | number)[]>(localData?.selectedOptionalCoverages.map(e => e.id) ?? []);
-    type ErrorType = { noCoverage: boolean, fieldErrors: { id: number | string, field_1: boolean, field_2?: boolean }[] }
+    const [data, setData] = useState<SelectedCoverage[]>(localData?.selectedCoverages.filter(e => e.id == coveragesData?.coverages.find(e => e.CoverageName == 'Removal of Debris')?.CoverageID) ?? []);
+    type ErrorType = { noCoverage: boolean, fieldErrors: { id: string | number, field_1: boolean, field_2?: boolean }[] }
     const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, fieldErrors: [] });
     const isClient = useClient();
     const router = useRouter();
@@ -31,15 +28,15 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
     }, [localData, router])
 
     const onClickAddOrRemove = (coverageId: string) => {
-        let tempData: typeof selectedCoverages = JSON.parse(JSON.stringify(selectedCoverages));
-        if (tempData.includes(coverageId)) {
-            tempData = tempData.filter(e => e != coverageId)
+        let tempData: typeof data = JSON.parse(JSON.stringify(data));
+        if (tempData.findIndex(e => e.id == coverageId) > -1) {
+            tempData = tempData.filter(e => e.id != coverageId)
         } else {
-            tempData.push(coverageId)
+            tempData.push({ id: coverageId, field_1: 0, field_2: 0 })
         }
-        setSelectedCoverages(tempData)
+        setData(tempData)
         setErrors(prev => ({ 
-            noCoverage: false, 
+            noCoverage: tempData.length < 1, 
             fieldErrors: prev.fieldErrors.filter(e => e.id != coverageId) 
         }))
     }
@@ -74,8 +71,8 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         if(localData == null) return ;
         setLocalData({ 
             ...localData, 
-            selectedOptionalCoverages: [
-                ...localData.selectedOptionalCoverages.filter(e => coverages.findIndex(c => c.id == e.id) < 0), 
+            selectedCoverages: [
+                ...localData.selectedCoverages.filter(e => coverages.findIndex(c => c.id == e.id) < 0), 
                 ...coverages
             ] 
         })
@@ -83,30 +80,31 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
 
     const validate = () => {
         const tempErrors: ErrorType = JSON.parse(JSON.stringify(errors));
-        tempErrors.noCoverage = false;
-        tempErrors.fieldErrors = data.filter(e => selectedCoverages.includes(e.id)).map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: true } : null).filter(Boolean) as ErrorType['fieldErrors']
+        tempErrors.noCoverage = data.length < 1;
+        tempErrors.fieldErrors = data.map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: true } : null).filter(Boolean) as ErrorType['fieldErrors']
         setErrors(tempErrors)
-        return tempErrors.fieldErrors.some(e => e.field_1 == true);
+        return tempErrors.noCoverage == true || tempErrors.fieldErrors.some(e => e.field_1 == true);
     }
 
-    const onClickNext = () => {
-        if(localData == null || validate()) return ;
-        updateLocalData(data.filter(e => selectedCoverages.includes(e.id)));
-        router.push('/protection_liability_coverage');
+    const onClickNext = async () => {
+        if(validate()) return ;
+        if(localData) {
+            updateLocalData(data);
+            router.push('/insurance_type');
+        }   
     }
 
     const onClickBack = () => {
-        router.push('/insurance_type');
+        router.push('/coverage');
     }
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
-            <Heading as = 'h1' ml = '20px' my = '20px' fontSize={'23px'}>Optional Coverage</Heading>
+            {isLoading ? 'Loading...' : ''}
             {
-                isClient && coveragesData?.optionalCoverages.map(coverage => {
-                    return <OptionalCoverageForm
+                isClient && coveragesData?.coverages.filter(e => e.CoverageName == 'Removal of Debris').map(coverage => {
+                    return <CoverageForm 
                         key = {coverage.CoverageID}
-                        isAdded = {selectedCoverages.includes(coverage.CoverageID)}
                         coverage={coverage} 
                         onClickAddOrRemove={() => onClickAddOrRemove(coverage.CoverageID)} 
                         onChangeFieldValue={(e) => onFieldValueChange(e, coverage.CoverageID)} 
@@ -116,23 +114,18 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
                 })
             }
             {
-                isClient &&
-                <BottomActions>
-                    <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
-                    <Button 
-                        onClick = {onClickNext} 
-                        isDisabled = {errors.fieldErrors.filter(e => selectedCoverages.includes(e.id)).some(e => e.field_1)} 
-                        width = {['100%', '100%', '250px', '250px', '250px']} 
-                        minW = '150px' 
-                        bg = {selectedCoverages.length > 0 ? 'brand.secondary' : 'brand.green'}
-                        color = 'white' _hover = {{}} _focus={{}}
-                    >
-                        {selectedCoverages.length > 0 ? 'NEXT' : 'SKIP'}
-                    </Button>
-                </BottomActions>
+                errors.noCoverage &&
+                <Alert mt = '20px' status='error' borderRadius={'8px'}>
+                    <AlertIcon />
+                    You should add atleast one coverage!
+                </Alert>
             }
+            <BottomActions>
+                <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
+                <Button onClick = {onClickNext} isDisabled = {errors.noCoverage || errors.fieldErrors.some(e => e.field_1)} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>NEXT</Button>
+            </BottomActions>
         </Flex>
     );
 }
 
-export default OptionalCoverages;
+export default Coverages;

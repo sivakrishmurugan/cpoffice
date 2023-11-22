@@ -1,27 +1,31 @@
 "use client"
-import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button } from "@chakra-ui/react";
+import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem } from "@chakra-ui/react";
 import { IcEmail, IcMobile, IcLocationPin, IcClinic } from "../icons";
 import useSessionStorage from "../hooks/use_sessionstorage";
-import { CONSTRUCTION_TYPES } from "../app/app_constants";
+import { CONSTRUCTION_TYPES, FLOOR_LEVEL } from "../app/app_constants";
 import useLocalStorage from "../hooks/use_localstorage";
-import { getNumberFromString } from "../utill_methods";
+import { getNumberFromString, setAuthToken } from "../utill_methods";
 import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { coveragesData } from "../mocks";
 import { DigitInput } from "../inputs";
 import NextLink from 'next/link';
+import axios from "axios";
+import { NecessaryBasicInfo } from "../types";
+import axiosClient from "../axios";
+import useCoverage from "../hooks/use_coverage";
 
 interface BasicInfoFormProps {}
 
 const BasicInfoForm = ({}: BasicInfoFormProps) => {
-    const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
+    const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage();
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
     const [agreedWithTermsAndConditions, setAgreedWithTermsAndConditions] = useState(false);
     const [data, setData] = useState({
         name: localData?.basic?.name ?? '',
         number: localData?.basic?.number ?? '',
         address: localData?.basic?.address ?? '',
-        floorLevel: localData?.basic?.floorLevel ?? 0,
+        floorLevel: localData?.basic?.floorLevel ?? '',
         constructionType: localData?.basic?.constructionType ?? '',
         email: localData?.basic?.email ?? '',
         mobile: localData?.basic?.mobile ?? 0
@@ -36,6 +40,9 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
         termsAndConditions: false,
         email: null as string | null,
     })
+    const [submitErrors, setSubmitErrors] = useState<string[]>([]);
+    const [submitLoading, setSubmitLoading] = useState(false);
+    const [quoteExistPopup, setExistQuotePopup] = useState(false);
     const router = useRouter();
 
     const validateEmail = (email: string) => {
@@ -77,16 +84,13 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
         }
     }
 
-    const onChangeFloor = (event: ChangeEvent<HTMLInputElement>) => {
-        let value: null | number = 0;
-        if(event.target.value != '') { value = getNumberFromString(event.target.value) ?? 0 }
-        
-        setData(prev => ({ ...prev, floorLevel: value as number }));
+    const onChangeFloor = (event: ChangeEvent<HTMLSelectElement>) => {
+        setData(prev => ({ ...prev, floorLevel: event.target.value }));
 
-        if(value < 1 && errors.floorLevel == false) {
+        if(event.target.value == '' && errors.floorLevel == false) {
             setErrors(prev => ({ ...prev, floorLevel: true }))
         }
-        if(value > 0 && errors.floorLevel == true) {
+        if(event.target.value != '' && errors.floorLevel == true) {
             setErrors(prev => ({ ...prev, floorLevel: false }))
         }
     }
@@ -141,24 +145,10 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
         }
     }
 
-    const validate = () => {
-        const tempErrors: typeof errors = JSON.parse(JSON.stringify(errors));
-        tempErrors.name = data.name.trim() == '';
-        tempErrors.number = data.number.trim() == '';
-        tempErrors.address = data.address.trim() == '';
-        tempErrors.floorLevel = data.floorLevel < 1;
-        tempErrors.constructionType = data.constructionType.trim() == '';
-        tempErrors.email = data.email.trim() == '' ? 'Email is required!' : validateEmail(data.email) == false ? 'Invalid email format!' : null;
-        tempErrors.mobile = data.mobile < 0;
-        setErrors(tempErrors);
-        return Object.values(tempErrors).some(e => e == true || typeof e == 'string');
-    }
-
-    const onClickGetStarted = () => {
-        if(validate()) return ;
-        setCoverageSessionData(coveragesData);
+    const updateLocalData = (info: NecessaryBasicInfo, quoteId: string) => {
         setLocalData({
-            basic: data,
+            quoteId,
+            basic: info,
             selectedCoverages: [],
             selectedOptionalCoverages: [],
             selectedInsType: null,
@@ -169,7 +159,64 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
                 addtionalInfo: []
             }
         })
-        router.push('/coverage');
+    }
+
+    const validate = () => {
+        const tempErrors: typeof errors = JSON.parse(JSON.stringify(errors));
+        const tempSubmitErrors: string[] = [];
+        tempErrors.name = data.name.trim() == '';
+        tempErrors.number = data.number.trim() == '';
+        tempErrors.address = data.address.trim() == '';
+        tempErrors.floorLevel = data.floorLevel.trim() == '';
+        tempErrors.constructionType = data.constructionType.trim() == '';
+        tempErrors.email = data.email.trim() == '' ? 'Email is required!' : validateEmail(data.email) == false ? 'Invalid email format!' : null;
+        tempErrors.mobile = data.mobile < 0;
+        tempErrors.termsAndConditions = agreedWithTermsAndConditions != true;
+
+        if(tempErrors.termsAndConditions) {
+            tempSubmitErrors.push('You should agree with the terms and conditions and privacy policy');
+        }
+
+        setErrors(tempErrors);
+        setSubmitErrors(tempSubmitErrors);
+        return Object.values(tempErrors).some(e => e == true || typeof e == 'string') || tempSubmitErrors.length > 0;
+    }
+
+    const onClickGetStarted = async () => {
+        if(validate()) return ;
+        setSubmitLoading(true);
+        try {
+            const res = await axiosClient.post('/api/clinicshield/clinicinfo', {
+                ClinicNumber: data.number,
+                ClinicName: data.name,
+                Email: data.email,
+                Phone: data.mobile,
+                Floor: data.floorLevel.toString(),
+                CType: data.constructionType,
+                ClinicAddress: data.address,
+                QuoteID: null,
+            });
+            if(res && res.data && res.data[0]) {
+                if(res.data?.[0]?.Success == 1) {
+                    setAuthToken(res.data?.[0]?.authToken);
+                    updateLocalData(data, res.data?.[0]?.QuoteID);
+                    await updateDataWithNewQuoteId(res.data?.[0]?.QuoteID)
+                    router.push('/coverage');
+                } else if(res.data?.[0].Success == 0 && res.data?.[0]?.EQuoteID != null && res.data?.[0]?.EQuoteID != '') {
+                    updateLocalData(data, res.data?.[0]?.EQuoteID)
+                    await updateDataWithNewQuoteId(res.data?.[0]?.EQuoteID)
+                    router.push('/coverage');
+                } else if(res.data?.[0]?.Success == 0) {
+                    setSubmitErrors([
+                        res.data?.[0]?.Result
+                    ]);
+                }
+            }
+        } catch(e) {}
+        setSubmitLoading(false);
+
+        // setCoverageSessionData(coveragesData);
+        // router.push('/coverage');
     }
 
     const isSubmitDisabled = Object.values(errors).some(e => e == true || typeof e == 'string');
@@ -225,13 +272,17 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
                 <Flex gap = '10px' alignItems={'flex-end'}>
                     <FormControl maxW = '200px' w = '40%' isInvalid = {errors.floorLevel}>
                         <FormLabel>Floor Level</FormLabel>
-                        <DigitInput 
-                            currentValue = {data.floorLevel}
+                        <Select 
+                            value = {data.floorLevel}
                             onChange = {onChangeFloor}
-                            forceUpdateOnValueChange
-                            emptyOnZero
-                            inputProps = {{ placeholder: 'ex. 10' }}
-                        />
+                            placeholder="Select one..."
+                        >
+                            {
+                                FLOOR_LEVEL.map(e => {
+                                    return <option key = {e.id} value = {e.id}>{e.value}</option>
+                                })
+                            }
+                        </Select>
                     </FormControl>
                     <FormControl isInvalid = {errors.constructionType}>
                         <FormLabel>Construction Type</FormLabel>
@@ -284,7 +335,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
             </FormControl>
 
             <Flex gap = '10px' alignItems={'flex-start'}>
-                <Checkbox isChecked = {agreedWithTermsAndConditions} onChange = {onToggleTermsAndConditionCheckbox} mt = '3px' boxShadow={'none'} borderColor = 'brand.borderColor' id = 'checkbox' colorScheme='blue' size = 'lg' />
+                <Checkbox isInvalid = {errors.termsAndConditions} isChecked = {agreedWithTermsAndConditions} onChange = {onToggleTermsAndConditionCheckbox} mt = '3px' boxShadow={'none'} borderColor = 'brand.borderColor' id = 'checkbox' colorScheme='blue' size = 'lg' />
                 <Text as = {'label'} htmlFor = 'checkbox' cursor={'pointer'}>
                     <span>I understand and agree to the </span>
                     <span>
@@ -298,7 +349,26 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
                 </Text>
             </Flex>
 
-            <Button onClick={onClickGetStarted} isDisabled = {isSubmitDisabled} mt = '10px' bg = {'brand.secondary'} color = 'white' _hover = {{}} _focus={{}}>GET STARTED</Button>
+            {
+                submitErrors && submitErrors.length > 0 &&
+                <Alert mt = '20px' status='error' borderRadius={'8px'}>
+                    <Flex direction={'column'} gap = '10px'>
+                        <Flex fontWeight={'bold'}>
+                            <AlertIcon />
+                            Error
+                        </Flex>
+                        <UnorderedList ml = '50px'>
+                            {
+                                submitErrors.map(e => {
+                                    return <ListItem key = {e}>{e}</ListItem>
+                                })
+                            }
+                        </UnorderedList>
+                    </Flex>
+                </Alert>
+            }
+
+            <Button onClick={onClickGetStarted} isLoading = {submitLoading} isDisabled = {isSubmitDisabled} mt = '10px' bg = {'brand.secondary'} color = 'white' _hover = {{}} _focus={{}}>GET STARTED</Button>
         </Flex>
     );
 }

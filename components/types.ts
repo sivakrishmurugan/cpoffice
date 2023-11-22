@@ -1,13 +1,16 @@
 
 /* Coverage api data - starts */
 export interface Coverage {
-    id: string,
-    name: string,
-    icon: string,
-    floorLevel: number,
-    includes: string[],
-    excludes: string[],
-    fields: {
+    CoverageID: string,
+    CoverageName: string,
+    ImageName: string,
+    Includes: {
+        "Coverage includes": string[]
+    },
+    Excludes: {
+        "Coverage excludes": string[]
+    },
+    CoverageFields: {
         field_1: {
             label: string,
             note: string,
@@ -17,27 +20,12 @@ export interface Coverage {
             note: string,
         }
     }
-    fireInsPremiumPercentage: number,
-    fireAndPerilsInsPremiumPercentage: number
-}
-
-export interface OptionalCoverage {
-    id: string,
-    name: string,
-    icon: string,
-    includes: string[],
-    fields: {
-        field_1: {
-            label: string,
-            note: string,
-        },
-        field_2?: {
-            label: string | null,
-            note: string,
-        }
-    },
-    isABR: boolean,
-    premiumPercentage: number
+    fireinsurance: number | null,
+    FirePerlis: number | null,
+    InsPercent: number,
+    IsABR: 0 | 1,
+    PageOrder: string,
+    isOptional: 0 | 1
 }
 
 /* Coverage api data - ends */
@@ -46,14 +34,14 @@ export interface NecessaryBasicInfo {
     name: string,
     number: string,
     address: string,
-    floorLevel: number,
+    floorLevel: string,
     constructionType: string,
     email: string,
     mobile: number
 }
 
 export interface SelectedCoverage {
-    id: string,
+    id: number | string,
     field_1?: number,
     field_2?: number,
 }
@@ -69,6 +57,7 @@ export type InsuranceType = null | 'FIRE' | 'FIRE_PERILS';
 
 // Data for final submit
 export interface ClinicData {
+    quoteId: string,
     basic: NecessaryBasicInfo,
     selectedCoverages: SelectedCoverage[],
     selectedInsType: null | 'FIRE' | 'FIRE_PERILS',

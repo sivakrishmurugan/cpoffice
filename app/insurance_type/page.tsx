@@ -3,29 +3,31 @@ import { Alert, AlertIcon, Button, Flex, Heading, Icon, ListItem, OrderedList, T
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
 import { Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
 import { removeLeadingZeros } from "@/components/utill_methods";
-import { TOOLTIP_INFO } from "@/components/app/app_constants";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, TOOLTIP_INFO } from "@/components/app/app_constants";
 import { useEffect, useState } from "react";
 import { CheckIcon, InfoIcon } from "@/components/icons";
 import ResponsiveTooltip from "@/components/tooltip";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
+import useCoverage from "@/components/hooks/use_coverage";
+import axiosClient from "@/components/axios";
 
 
 const Coverages: NextPage<{}> = ({}) => {
-    const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
     const [insType, setInsType] = useState<InsuranceType>(localData?.selectedInsType ?? null);
     const [error, setError] = useState(false);
     const isClient = useClient();
     const router = useRouter();
 
     useEffect(() => {
-        if(coverageSessionData == null) { 
+        if(localData?.quoteId == null || localData?.quoteId == '') { 
             router.replace('/'); 
-        } else if(coverageSessionData != null && (localData?.selectedCoverages.length ?? 0) < 1) {
+        } else if((localData?.selectedCoverages.length ?? 0) < 1) {
             router.replace('/coverage');
         }
-    }, [coverageSessionData, localData, router])
+    }, [localData, router])
 
     const percentageResult = (percent: number, total: number) => {
         const result = ((percent/ 100) * total).toFixed(2);
@@ -34,7 +36,7 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const calculatePremium = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage, ) => {
         const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
-        return type == 'FIRE' ? percentageResult(coverage?.fireInsPremiumPercentage ?? 0, total) : percentageResult(coverage?.fireAndPerilsInsPremiumPercentage ?? 0, total);
+        return type == 'FIRE' ? percentageResult(coverage?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
     }
 
     const onSelectInsType = (type: InsuranceType) => {
@@ -47,12 +49,22 @@ const Coverages: NextPage<{}> = ({}) => {
         return insType == null;
     }
 
-    const onClickNext = () => {
-        if(validate()) return ;
-        if(localData) {
-            setLocalData({ ...localData, selectedInsType: insType });
-            router.push('/optional_coverage');
-        }  
+    const onClickNext = async () => {
+        if(localData == null || validate()) return ;
+
+        try {
+            const res = await axiosClient.post('/api/clinicshield/setcoverage', {
+                QuoteID: localData.quoteId,
+                InsuranceType: insType,
+                Coverage: JSON.stringify(localData!.selectedCoverages)
+            });
+            if(res && res.data && res.data[0]) {
+                if(res.data?.[0]?.Success == 1) {
+                    setLocalData({ ...localData, selectedInsType: insType });
+                    router.push('/optional_coverage');
+                }
+            } 
+        } catch(e) {}
     }
 
     const onClickBack = () => {
@@ -60,11 +72,11 @@ const Coverages: NextPage<{}> = ({}) => {
     }
 
     const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal } = localData?.selectedCoverages.reduce((out, selected) => {
-        const coverageData = coverageSessionData?.coverages?.find(e => e.id == selected.id);
+        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
         if(coverageData == null) return out;
         const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
-        let calculatedResultForFireInsPremium = percentageResult(coverageData?.fireInsPremiumPercentage ?? 0, total);
-        let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.fireAndPerilsInsPremiumPercentage ?? 0, total);
+        let calculatedResultForFireInsPremium = percentageResult(coverageData?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+        let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
         out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
         out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
         return out;
@@ -136,9 +148,9 @@ const Coverages: NextPage<{}> = ({}) => {
                         <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
                             {
                                 isClient && localData?.selectedCoverages?.map((coverage, index) => {
-                                    const coverageData = coverageSessionData?.coverages?.find(e => e.id == coverage.id);
+                                    const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.name}</Td>
+                                        <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
                                         <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE', coverageData)}</Td>
                                         <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE_PERILS', coverageData)}</Td>
                                     </Tr>
@@ -198,9 +210,9 @@ const Coverages: NextPage<{}> = ({}) => {
                         <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
                             {
                                 isClient && localData?.selectedCoverages?.map((coverage, index) => {
-                                    const coverageData = coverageSessionData?.coverages?.find(e => e.id == coverage.id);
+                                    const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.name}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
                                         <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE', coverageData)}</Td>
                                     </Tr>
                                 })
@@ -268,9 +280,9 @@ const Coverages: NextPage<{}> = ({}) => {
                         <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
                             {
                                 isClient && localData?.selectedCoverages?.map((coverage, index) => {
-                                    const coverageData = coverageSessionData?.coverages?.find(e => e.id == coverage.id);
+                                    const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.name}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
                                         <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE_PERILS', coverageData)}</Td>
                                     </Tr>
                                 })

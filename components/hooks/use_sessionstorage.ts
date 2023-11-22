@@ -1,10 +1,10 @@
 "use client"
 import { useState } from 'react';
-import { Coverage, OptionalCoverage } from '../types';
+import { Coverage } from '../types';
 
 export interface CoverageResData {
   coverages: Coverage[],
-  optionalCoverages: OptionalCoverage[]
+  optionalCoverages: Coverage[]
 }
 
 const useSessionStorage = (keyName: string, defaultValue: null | CoverageResData) => {
