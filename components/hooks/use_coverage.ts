@@ -41,9 +41,8 @@ const useCoverage = (quoteId?: string) => {
   const getQuote = async (quoteID: string) => {
     try {
       const res = await axiosClient.post('/api/clinicshield/getquote', { QuoteID: quoteID });
-      if(res && res.data && res.data[0] && res.data[0].success == 1) {
+      if(res && res.data && res.data[0] && res.data[0].Success == 1) {
         setQuoteDataToLocalStorage(res.data[0], quoteID)
-        // set quote data to localstorage
         return res.data[0];
       }
     } catch(e) {}
@@ -79,7 +78,7 @@ const useCoverage = (quoteId?: string) => {
       insStartDate: apiRes?.InsuranceStartDate,
       claimDeclaration: {
           previouslyClaimed: apiRes?.ClaimDeclration != 0 && apiRes?.ClaimDeclration != null,
-          addtionalInfo: apiRes?.ClaimDeclration != 0 && apiRes?.ClaimDeclration != null ? apiRes?.ClaimDeclration : []
+          addtionalInfo: typeof apiRes?.ClaimDeclration != 'number' && apiRes?.ClaimDeclration != null ? apiRes?.ClaimDeclration : []
       }
     })
   }

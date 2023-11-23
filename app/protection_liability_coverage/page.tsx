@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
 import { SelectedCoverage } from '@/components/types';
+import axiosClient from '@/components/axios';
 
 
 const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
@@ -16,6 +17,7 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
     const [isAdded, setAdded] = useState((localData?.selectedOptionalCoverages?.findIndex(e => e.id == coverageContent.id) ?? -1) > -1)
     type ErrorType = { noCoverage: boolean, fieldErrors: { id: string, field_1: boolean, field_2?: boolean }[] }
     const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, fieldErrors: [] });
+    const [submitLoading, setSubmitLoading] = useState(false);
     const isClient = useClient();
     const router = useRouter();
 
@@ -27,8 +29,9 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
         setAdded(prev => !prev)
     }
 
-    const onClickNext = () => {
+    const onClickNext = async () => {
         if(localData) {
+            setSubmitLoading(true)
             let localOptionalCoverages = localData.selectedOptionalCoverages ?? [];
             const isAlreadyAdded = localOptionalCoverages.findIndex(e => e.id == coverageContent.id) > -1;
             if(isAdded && isAlreadyAdded == false) {
@@ -36,8 +39,19 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
             } else if(isAdded != true && isAlreadyAdded) {
                 localOptionalCoverages= localOptionalCoverages.filter(e => e.id != coverageContent.id)
             }
-            setLocalData({ ...localData, selectedOptionalCoverages: localOptionalCoverages })
-            router.push('/summary');
+            try {
+                const res = await axiosClient.post('/api/clinicshield/setoptcoverage', {
+                    QuoteID: localData.quoteId,
+                    OptCoverage: JSON.stringify(localOptionalCoverages)
+                });
+                if(res && res.data && res.data[0]) {
+                    if(res.data?.[0]?.Success == 1) {
+                        setLocalData({ ...localData, selectedOptionalCoverages: localOptionalCoverages })
+                        router.push('/summary');
+                    }
+                } 
+            } catch(e) {}
+            setSubmitLoading(false)
         }   
     }
 
@@ -150,6 +164,7 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
                     <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
                     <Button 
                         onClick = {onClickNext} 
+                        isLoading = {submitLoading}
                         width = {['100%', '100%', '250px', '250px', '250px']} 
                         minW = '150px' 
                         bg = {isAdded ? 'brand.secondary' : 'brand.green'}

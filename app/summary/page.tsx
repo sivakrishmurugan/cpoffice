@@ -86,7 +86,7 @@ const Summary: NextPage<{}> = ({}) => {
     }
 
     const calculatePremiumForOptionalCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage: Coverage) => {
-        const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
+        const total = (selectedCoverage.field_1 ?? 0) + (selectedCoverage?.field_2 ?? 0);
         const selectedInsType = localData?.selectedInsType ?? 'FIRE';
     
         const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = localData?.selectedCoverages.reduce((out, selected) => {
@@ -132,7 +132,7 @@ const Summary: NextPage<{}> = ({}) => {
     const totalPremium = coveragesTotalPremium + optionalCoveragesTotalPremium;
     const netPremium = totalPremium;
     const tax = Number(percentageResult(TAX_PERCENTAGE, totalPremium));
-    const finalPremium = netPremium - tax - STAMP_DUTY;
+    const finalPremium = netPremium + tax + STAMP_DUTY;
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>

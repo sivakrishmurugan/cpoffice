@@ -30,7 +30,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         }
     }, [localData, router])
 
-    const onClickAddOrRemove = (coverageId: string) => {
+    const onClickAddOrRemove = (coverageId: string | number) => {
         let tempData: typeof selectedCoverages = JSON.parse(JSON.stringify(selectedCoverages));
         if (tempData.includes(coverageId)) {
             tempData = tempData.filter(e => e != coverageId)
@@ -57,7 +57,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         }
     }
 
-    const onFieldValueChange = (event: ChangeEvent<HTMLInputElement> , coverageId: string) => {
+    const onFieldValueChange = (event: ChangeEvent<HTMLInputElement> , coverageId: string | number) => {
         const coverage = data.find(e => e.id == coverageId);
         if(coverage == null) return ;
         const field = event.target.name == 'field_2' ? 'field_2' : 'field_1';

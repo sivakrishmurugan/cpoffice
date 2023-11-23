@@ -14,7 +14,7 @@ import axiosClient from "@/components/axios";
 const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData) => {
     return {
         id: Math.random().toString(),
-        type: { value: info?.type ?? 'PROPERTY', error: false },
+        type: { value: info?.type ?? 'Property', error: false },
         year: { value: info?.year ?? getRecentYears(1)[0], error: false },
         amount: { value: info?.amount ?? 0, error: false },
         description: { value: info?.description ?? '', error: false }
@@ -32,6 +32,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
             getModifiedClaimInfoForLocalState()
         ]
     })
+    const [submitLoading, setSubmitLoading] = useState(false);
     const isClient = useClient();
     const router = useRouter();
 
@@ -126,16 +127,16 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
 
     const onClickNext = async () => {
         if(localData == null || validate()) return ;
-
+        setSubmitLoading(true);
         try {
             const res = await axiosClient.post('/api/clinicshield/insertclaims', {
                 QuoteID: localData.quoteId,
-                ClaimDeclaration: data.previouslyClaimed ? data.claimInfoList.map(e => ({
-                    ClaimType: e.type,
-                    ClaimYear: e.year,
-                    ClaimAmount: e.amount.toString(),
-                    Description: e.description
-                })) : null
+                ClaimDeclaration: data.previouslyClaimed ? JSON.stringify(data.claimInfoList.map(e => ({
+                    ClaimType: e.type.value,
+                    ClaimYear: e.year.value,
+                    ClaimAmount: e.amount.value.toString(),
+                    Description: e.description.value
+                }))) : null
             });
             if(res && res.data && res.data[0]) {
                 if(res.data?.[0]?.Success == 1) {
@@ -144,6 +145,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                 }
             } 
         } catch(e) {}
+        setSubmitLoading(false)
     }
 
     const onCloseProccessingPopup = () => {
@@ -250,6 +252,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                     <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
                     <Button 
                         onClick = {onClickNext} 
+                        isLoading = {submitLoading}
                         width = {['100%', '100%', '250px', '250px', '250px']} 
                         minW = '150px' 
                         bg = {'brand.secondary'}

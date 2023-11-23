@@ -17,6 +17,7 @@ const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
     const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
     const [insType, setInsType] = useState<InsuranceType>(localData?.selectedInsType ?? null);
+    const [submitLoading, setSubmitLoading] = useState(false);
     const [error, setError] = useState(false);
     const isClient = useClient();
     const router = useRouter();
@@ -51,7 +52,7 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const onClickNext = async () => {
         if(localData == null || validate()) return ;
-
+        setSubmitLoading(true);
         try {
             const res = await axiosClient.post('/api/clinicshield/setcoverage', {
                 QuoteID: localData.quoteId,
@@ -65,6 +66,7 @@ const Coverages: NextPage<{}> = ({}) => {
                 }
             } 
         } catch(e) {}
+        setSubmitLoading(false);
     }
 
     const onClickBack = () => {
@@ -320,7 +322,7 @@ const Coverages: NextPage<{}> = ({}) => {
 
                 <Flex mt = '20px' w = '100%' gap = '20px' justifyContent={'center'}>
                     <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
-                    <Button onClick = {onClickNext} isDisabled = {error} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>NEXT</Button>
+                    <Button onClick = {onClickNext} isLoading = {submitLoading} isDisabled = {error} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>NEXT</Button>
                 </Flex>
 
             </Flex>

@@ -1,7 +1,7 @@
 
 /* Coverage api data - starts */
 export interface Coverage {
-    CoverageID: string,
+    CoverageID: string | number,
     CoverageName: string,
     ImageName: string,
     Includes: {
