@@ -27,7 +27,7 @@ const Coverages: NextPage<{}> = ({}) => {
         }
     }, [localData, router])
 
-    const onClickAddOrRemove = (coverageId: string) => {
+    const onClickAddOrRemove = (coverageId: string | number) => {
         let tempData: typeof data = JSON.parse(JSON.stringify(data));
         if (tempData.findIndex(e => e.id == coverageId) > -1) {
             tempData = tempData.filter(e => e.id != coverageId)
@@ -54,7 +54,7 @@ const Coverages: NextPage<{}> = ({}) => {
         }
     }
 
-    const onFieldValueChange = (event: ChangeEvent<HTMLInputElement> , coverageId: string) => {
+    const onFieldValueChange = (event: ChangeEvent<HTMLInputElement> , coverageId: string | number) => {
         const coverage = data.find(e => e.id == coverageId);
         if(coverage == null) return ;
         const field = event.target.name == 'field_2' ? 'field_2' : 'field_1';
