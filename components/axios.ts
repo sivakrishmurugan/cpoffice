@@ -8,7 +8,7 @@ const isServer = typeof window === 'undefined';
 const axiosClient = axios.create({
     baseURL,
     headers: {
-        secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY
+        secretkey: "75bLWOqF4tcw0nebE2DMv5gMATPHCbRi"
     }
 })
 
