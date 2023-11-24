@@ -150,11 +150,11 @@ const Summary: NextPage<{}> = ({}) => {
             return out + Number(premium);
         }, 0) ?? 0
     
-        const totalPremium = coveragesTotalPremium + optionalCoveragesTotalPremium;
-        const discount = Number(percentageResult(promoCodeDiscount, totalPremium));
-        const netPremium = totalPremium - discount;
-        const tax = Number(percentageResult(TAX_PERCENTAGE, totalPremium));
-        const finalPremium = netPremium + tax + STAMP_DUTY;
+        const totalPremium = Number((coveragesTotalPremium + optionalCoveragesTotalPremium).toFixed(2));
+        const discount = Number(Number(percentageResult(promoCodeDiscount, totalPremium)).toFixed(2));
+        const netPremium = Number((totalPremium - discount).toFixed(2));
+        const tax = Number(Number(percentageResult(TAX_PERCENTAGE, totalPremium)).toFixed(2));
+        const finalPremium = Number((netPremium + tax + STAMP_DUTY).toFixed(2));
 
         return { totalPremium, discount, netPremium, tax, finalPremium }
     }
