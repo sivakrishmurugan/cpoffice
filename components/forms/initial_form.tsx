@@ -1,5 +1,5 @@
 "use client"
-import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading } from "@chakra-ui/react";
+import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading, InputLeftElement } from "@chakra-ui/react";
 import { IcEmail, IcMobile, IcLocationPin, IcClinic } from "../icons";
 import useSessionStorage from "../hooks/use_sessionstorage";
 import { CONSTRUCTION_TYPES, FLOOR_LEVEL } from "../app/app_constants";
@@ -28,7 +28,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
         floorLevel: localData?.basic?.floorLevel ?? '',
         constructionType: localData?.basic?.constructionType ?? '',
         email: localData?.basic?.email ?? '',
-        mobile: localData?.basic?.mobile ?? 0
+        mobile: Number(((localData?.basic?.mobile ?? '000').toString()).slice(2))
     });
     const [errors, setErrors] = useState({
         name: false,
@@ -195,7 +195,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
                 ClinicNumber: data.number,
                 ClinicName: data.name,
                 Email: data.email,
-                Phone: data.mobile,
+                Phone: "60" + data.mobile.toString(),
                 Floor: data.floorLevel.toString(),
                 CType: data.constructionType,
                 ClinicAddress: data.address,
@@ -342,12 +342,13 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
             <FormControl isInvalid = {errors.mobile}>
                 <FormLabel>Mobile Number</FormLabel>
                 <InputGroup>
+                    <InputLeftElement h = '100%' ml = '5px'>+60</InputLeftElement>
                     <DigitInput 
                         currentValue = {data.mobile}
                         onChange = {onChangeMobile}
                         forceUpdateOnValueChange
                         emptyOnZero
-                        inputProps = {{ placeholder: '+60 1234 56789' }}
+                        inputProps = {{ placeholder: '1234 56789', pl: '42px' }}
                     />
                     <InputRightElement h = '100%'>
                         <Icon as = {IcMobile} h = 'auto' w = 'auto' />
@@ -413,11 +414,11 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
                     <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = '30px' alignItems={'center'}>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
-                           Quote id already exist. Are you sure you want to continue with existing quote?
+                           Quote ID already exist. Are you sure you want to continue with existing quote?
                         </Text>
                         <Flex gap = '20px'>
-                            <Button onClick = {onClose} h = '40px' w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
-                            <Button onClick = {onClickOk} h = '40px' w = '250px' bg = 'brand.primary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
+                            <Button onClick = {onClose} h = '40px' w = {['150px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                            <Button onClick = {onClickOk} h = '40px' w = {['150px', '150px', '250px', '250px', '250px']} bg = 'brand.primary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>
