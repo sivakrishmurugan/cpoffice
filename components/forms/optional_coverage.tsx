@@ -1,6 +1,5 @@
 import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Heading, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import { Coverage, SelectedCoverage } from "../types";
-import { removeLeadingZeros } from "../utill_methods";
 import ExpanableList from "../expandable_list";
 import { PriceInput } from "../inputs";
 import { ChangeEvent } from "react";
@@ -8,6 +7,7 @@ import Image from 'next/image';
 import { useLocalStorage } from "../hooks";
 import useCoverage from "../hooks/use_coverage";
 import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE } from "../app/app_constants";
+import { convertToPriceFormat } from "../utill_methods";
 
 interface OptionalCoverageFromProps {
     coverage: Coverage,
@@ -23,7 +23,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
     const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
     const percentageResult = (percent: number, total: number) => {
         const result = ((percent/ 100) * total).toFixed(2);
-        return removeLeadingZeros(result);
+        return result;
     };
     const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0);
     
@@ -33,7 +33,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
         const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
         if(coverageData == null) return out;
         const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
-        let calculatedResultForFireInsPremium = percentageResult(coverageData?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+        let calculatedResultForFireInsPremium = percentageResult(coverageData?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
         let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
         out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
         out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
@@ -143,7 +143,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
                     <Text color = '#4a4a4a' fontSize = {'16px'} fontWeight={'bold'}>PREMIUM</Text>
                     <Flex w = '100%' gap = '10px' direction={'column'}>
                         <Text fontSize={'14px'} color = 'brand.text'>Protection from revenue loss resulting from covered events or circumstances.</Text>
-                        <Heading textAlign={'end'} as = 'h1' fontSize={'24px'}>RM {premium}</Heading>
+                        <Heading textAlign={'end'} as = 'h1' fontSize={'24px'}>RM {convertToPriceFormat(premium, true)}</Heading>
                     </Flex>
                 </Flex>
                 <Button 

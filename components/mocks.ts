@@ -28,7 +28,7 @@ export const coveragesData: Coverage[] = [
                     note: ''
                 }
             },
-            fireinsurance: 30,
+            Fireinsurance: 30,
             FirePerlis: 40,
             InsPercent: 0,
             IsABR: 0,
@@ -51,7 +51,7 @@ export const coveragesData: Coverage[] = [
                     note: ''
                 }
             },
-            fireinsurance: 30,
+            Fireinsurance: 30,
             FirePerlis: 40,
             InsPercent: 0,
             IsABR: 0,
@@ -80,7 +80,7 @@ export const coveragesData: Coverage[] = [
                     note: ''
                 }
             },
-            fireinsurance: 30,
+            Fireinsurance: 30,
             FirePerlis: 40,
             InsPercent: 0,
             IsABR: 0,
@@ -110,7 +110,7 @@ export const coveragesData: Coverage[] = [
                     note: ''
                 }
             },
-            fireinsurance: 30,
+            Fireinsurance: 30,
             FirePerlis: 40,
             InsPercent: 0,
             IsABR: 0,
@@ -138,7 +138,7 @@ export const coveragesData: Coverage[] = [
                     note: 'Recommended Limit: 10% of the total sum insured/ RM 2,000,000 in aggregate in any one loss whichever is lower'
                 }
             },
-            fireinsurance: 30,
+            Fireinsurance: 30,
             FirePerlis: 40,
             InsPercent: 0,
             IsABR: 0,
@@ -168,7 +168,7 @@ export const coveragesData: Coverage[] = [
                     note: ''
                 }
             },
-            fireinsurance: 30,
+            Fireinsurance: 30,
             FirePerlis: 40,
             InsPercent: 0,
             IsABR: 0,
@@ -194,7 +194,7 @@ export const coveragesData: Coverage[] = [
                     note: ''
                 }
             },
-            fireinsurance: 30,
+            Fireinsurance: 30,
             FirePerlis: 40,
             InsPercent: 0,
             IsABR: 0,

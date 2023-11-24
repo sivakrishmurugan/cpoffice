@@ -20,7 +20,7 @@ export interface Coverage {
             note: string,
         }
     }
-    fireinsurance: number | null,
+    Fireinsurance: number | null,
     FirePerlis: number | null,
     InsPercent: number,
     IsABR: 0 | 1,
@@ -65,7 +65,7 @@ export interface ClinicData {
     promoCode: string,
     insStartDate: string,
     claimDeclaration: {
-        previouslyClaimed: boolean,
+        previouslyClaimed: boolean | null,
         addtionalInfo: ClaimDeclarationAdditionalData[]
     }
 }

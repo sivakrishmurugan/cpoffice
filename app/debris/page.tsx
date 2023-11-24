@@ -36,7 +36,8 @@ const Coverages: NextPage<{}> = ({}) => {
         }
         setData(tempData)
         setErrors(prev => ({ 
-            noCoverage: tempData.length < 1, 
+            ...prev,
+            //noCoverage: tempData.length < 1, 
             fieldErrors: prev.fieldErrors.filter(e => e.id != coverageId) 
         }))
     }
@@ -60,6 +61,7 @@ const Coverages: NextPage<{}> = ({}) => {
         const field = event.target.name == 'field_2' ? 'field_2' : 'field_1';
         let value: null | number = 0;
         if(event.target.value != '') { value = getNumberFromString(event.target.value) ?? 0 }
+        value = Math.trunc(value);
         coverage[field] = value;
         setData(prev => prev.map(e => e.id == coverageId ? coverage : e))
         
@@ -80,7 +82,7 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const validate = () => {
         const tempErrors: ErrorType = JSON.parse(JSON.stringify(errors));
-        tempErrors.noCoverage = data.length < 1;
+        //tempErrors.noCoverage = data.length < 1;
         tempErrors.fieldErrors = data.map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: true } : null).filter(Boolean) as ErrorType['fieldErrors']
         setErrors(tempErrors)
         return tempErrors.noCoverage == true || tempErrors.fieldErrors.some(e => e.field_1 == true);
@@ -100,7 +102,6 @@ const Coverages: NextPage<{}> = ({}) => {
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
-            {isLoading ? 'Loading...' : ''}
             {
                 isClient && coveragesData?.coverages.filter(e => e.CoverageName == 'Removal of Debris').map(coverage => {
                     return <CoverageForm 
@@ -122,7 +123,16 @@ const Coverages: NextPage<{}> = ({}) => {
             }
             <BottomActions>
                 <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
-                <Button onClick = {onClickNext} isDisabled = {errors.noCoverage || errors.fieldErrors.some(e => e.field_1)} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>NEXT</Button>
+                <Button 
+                    onClick = {onClickNext} 
+                    isDisabled = {errors.noCoverage || errors.fieldErrors.some(e => e.field_1)} 
+                    width = {['100%', '100%', '250px', '250px', '250px']} 
+                    minW = '150px'
+                    bg = {data.length > 0 ? 'brand.secondary' : 'brand.green'}
+                    color = 'white' _hover = {{}} _focus={{}}
+                >
+                    {data.length > 0 ? 'NEXT' : 'SKIP'}
+                </Button>
             </BottomActions>
         </Flex>
     );

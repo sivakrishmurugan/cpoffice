@@ -2,7 +2,6 @@
 import { Alert, AlertIcon, Button, Flex, Heading, Icon, ListItem, OrderedList, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
 import { Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
-import { removeLeadingZeros } from "@/components/utill_methods";
 import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, TOOLTIP_INFO } from "@/components/app/app_constants";
 import { useEffect, useState } from "react";
 import { CheckIcon, InfoIcon } from "@/components/icons";
@@ -11,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import useCoverage from "@/components/hooks/use_coverage";
 import axiosClient from "@/components/axios";
+import { convertToPriceFormat } from "@/components/utill_methods";
 
 
 const Coverages: NextPage<{}> = ({}) => {
@@ -32,12 +32,12 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const percentageResult = (percent: number, total: number) => {
         const result = ((percent/ 100) * total).toFixed(2);
-        return removeLeadingZeros(result);
+        return result;
     };
 
     const calculatePremium = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage, ) => {
         const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
-        return type == 'FIRE' ? percentageResult(coverage?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
+        return type == 'FIRE' ? percentageResult(coverage?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
     }
 
     const onSelectInsType = (type: InsuranceType) => {
@@ -83,7 +83,7 @@ const Coverages: NextPage<{}> = ({}) => {
         const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
         if(coverageData == null) return out;
         const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
-        let calculatedResultForFireInsPremium = percentageResult(coverageData?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+        let calculatedResultForFireInsPremium = percentageResult(coverageData?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
         let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
         out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
         out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
@@ -159,8 +159,8 @@ const Coverages: NextPage<{}> = ({}) => {
                                     const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
                                         <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE', coverageData)}</Td>
-                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE_PERILS', coverageData)}</Td>
+                                        <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE', coverageData), true)}</Td>
+                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
                                     </Tr>
                                 })
                             }
@@ -168,8 +168,8 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient &&
                                 <Tr color = '#424551'>
                                     <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>RM {fireInsPremiumTotal}</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>RM {fireAndPerilsInsPremiumTotal}</Td>
+                                    <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>RM {convertToPriceFormat(fireInsPremiumTotal, true)}</Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal, true)}</Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>
@@ -181,7 +181,7 @@ const Coverages: NextPage<{}> = ({}) => {
                                             <Icon as = {CheckIcon} w = '25px' h = '25px' />
                                             <Text>SELECTED</Text>
                                         </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE')} variant={'outline'} fontSize={'18px'}>Select</Button>
+                                        <Button onClick={() => onSelectInsType('FIRE')} minW = '150px' variant={'outline'} fontSize={'18px'} h = '45px'>Select</Button>
                                     }
                                 </Td>
                                 <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
@@ -191,7 +191,7 @@ const Coverages: NextPage<{}> = ({}) => {
                                             <Icon as = {CheckIcon} w = '25px' h = '25px' />
                                             <Text>SELECTED</Text>
                                         </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE_PERILS')} variant={'outline'} fontSize={'18px'}>Select</Button>
+                                        <Button onClick={() => onSelectInsType('FIRE_PERILS')} minW = '150px' variant={'outline'} fontSize={'18px'} h = '45px'>Select</Button>
                                     }
                                 </Td>
                             </Tr>

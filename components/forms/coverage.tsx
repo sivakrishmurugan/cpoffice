@@ -1,5 +1,4 @@
 import { Button, Collapse, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, ListItem, OrderedList, Text, UnorderedList } from "@chakra-ui/react";
-import { removeLeadingZeros } from "../utill_methods";
 import { Coverage, SelectedCoverage } from "../types";
 import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, TOOLTIP_INFO } from "../app/app_constants";
 import ExpanableList from "../expandable_list";
@@ -8,6 +7,7 @@ import { PriceInput } from "../inputs";
 import { ChangeEvent } from "react";
 import { InfoIcon } from "../icons";
 import Image from 'next/image';
+import { convertToPriceFormat } from "../utill_methods";
 
 interface CoverageFromProps {
     coverage: Coverage,
@@ -20,10 +20,10 @@ interface CoverageFromProps {
 const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFieldValue }: CoverageFromProps) => {
     const percentageResult = (percent: number, total: number) => {
         const result = ((percent/ 100) * total).toFixed(2);
-        return removeLeadingZeros(result);
+        return result;
     };
     const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0)
-    const fireInsPremium = percentageResult(coverage.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+    const fireInsPremium = percentageResult(coverage.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
     const fireAndPerilsInsPremium = percentageResult(coverage.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
     const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
 
@@ -138,7 +138,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                                 <Heading as = 'h1' fontSize={'16px'}>FIRE INSURANCE</Heading>
                                 <Flex gap = '10px' justifyContent={'space-between'} alignItems={'center'}>
                                     <Heading as = 'h1' fontSize={'16px'}>PREMIUM</Heading>
-                                    <Heading as = 'h1' fontSize={'24px'}>RM {fireInsPremium}</Heading>
+                                    <Heading as = 'h1' fontSize={'24px'}>RM {convertToPriceFormat(fireInsPremium, true)}</Heading>
                                 </Flex>
                             </Flex>
                             <Flex direction={'column'} minW = {['100%', '100%', '280px', '280px', '280px']} minH = '137px' padding = '20px 20px 10px' borderRadius={'8px'} border = '1px solid #f2f2f2' justifyContent={'space-between'}>
@@ -169,7 +169,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                                 </Flex>
                                 <Flex gap = '10px' justifyContent={'space-between'} alignItems={'center'}>
                                     <Heading as = 'h1' fontSize={'16px'}>PREMIUM</Heading>
-                                    <Heading as = 'h1' fontSize={'24px'}>RM {fireAndPerilsInsPremium}</Heading>
+                                    <Heading as = 'h1' fontSize={'24px'}>RM {convertToPriceFormat(fireAndPerilsInsPremium, true)}</Heading>
                                 </Flex>
                             </Flex>
                         </Flex>

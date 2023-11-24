@@ -48,7 +48,7 @@ export const EXCESS = [
 ]
 
 export const TAX_PERCENTAGE = 6;
-export const STAMP_DUTY = 10;
+export const STAMP_DUTY = 10.00;
 
 export const TYPE_OF_CLAIM = [
     { id: 'Property', value: 'Property' },

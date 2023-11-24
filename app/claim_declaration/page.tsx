@@ -1,5 +1,5 @@
 "use client"
-import { Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay, Text, UseRadioProps, useRadio, useRadioGroup } from "@chakra-ui/react";
+import { Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay, Text, UseRadioProps, useRadio, useRadioGroup } from "@chakra-ui/react";
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
 import { getNumberFromString, getRecentYears } from "@/components/utill_methods";
 import { ClaimDeclarationAdditionalData } from "@/components/types";
@@ -27,7 +27,10 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const[showProcessingPopup, setShowProcessingPopup] = useState(false);
     const [data, setData] = useState({
-        previouslyClaimed: true,
+        previouslyClaimed: {
+            isClaimed: localData?.claimDeclaration?.previouslyClaimed ?? null as boolean | null,
+            error: false
+        },
         claimInfoList: [
             ...localData?.claimDeclaration?.addtionalInfo?.map(e => getModifiedClaimInfoForLocalState(e)) ?? [], 
             ...((localData?.claimDeclaration?.addtionalInfo ?? []).length < 1 ? [getModifiedClaimInfoForLocalState()] : [])
@@ -41,7 +44,10 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
         name: 'previously_claimed_radio',
         onChange: (value: 'yes' | 'no') => {
             setData(prev => ({ 
-                previouslyClaimed: value == 'yes',
+                previouslyClaimed: {
+                    isClaimed: value == 'yes',
+                    error: false
+                },
                 claimInfoList: prev.claimInfoList.map(e => {
                     e.amount.error = false;
                     e.type.error = false;
@@ -79,6 +85,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
             case 'amount': {
                 let value: null | number = 0;
                 if(event.target.value != '') { value = getNumberFromString(event.target.value) ?? 0 }
+                value = Math.trunc(value);
                 tempData[index].amount.value = value;
                 tempData[index].amount.error = value < 1;
                 break;
@@ -96,11 +103,11 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     }
 
     const stateToPayloadData = (stateData: typeof data): {
-        previouslyClaimed: boolean,
+        previouslyClaimed: boolean | null,
         addtionalInfo: ClaimDeclarationAdditionalData[]
     } => {
         return {
-            previouslyClaimed: stateData.previouslyClaimed,
+            previouslyClaimed: stateData.previouslyClaimed.isClaimed,
             addtionalInfo: stateData.claimInfoList.map(e => {
                 return {
                     type: e.type.value,
@@ -114,6 +121,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     
     const validate = () => {
         const tempData: typeof data = JSON.parse(JSON.stringify(data));
+        tempData.previouslyClaimed.error = tempData.previouslyClaimed.isClaimed == null;
         if(tempData.previouslyClaimed) {
             tempData.claimInfoList.forEach(e => {
                 e.amount.error = e.amount.value < 1;
@@ -123,7 +131,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
             })
         }
         setData(tempData);
-        return tempData.claimInfoList.some(e => Object.values(e).some(value => typeof value == 'string' ? false : value.error))
+        return tempData.previouslyClaimed.error || tempData.claimInfoList.some(e => Object.values(e).some(value => typeof value == 'string' ? false : value.error))
     }
 
     const onClickNext = async () => {
@@ -206,18 +214,26 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                         <Flex direction={'column'} gap = '15px'>
                             <Text fontSize={'16px'} color = 'brand.text' fontWeight={'bold'}>Have you suffered any loss or any insurance claim at the insured premises in the past 3 years?</Text>
                             <Flex gap = '15px' {...previouslyClaimedRadioGroup}>
-                                <RadioCard {...getPreviouslyClaimedRadioProps({ value: 'yes' })} isChecked = {data.previouslyClaimed == true} width = {'100px'}>
+                                <RadioCard {...getPreviouslyClaimedRadioProps({ value: 'yes' })} isChecked = {data.previouslyClaimed.isClaimed == true} width = {'100px'}>
                                     Yes
                                 </RadioCard>
-                                <RadioCard {...getPreviouslyClaimedRadioProps({ value: 'No' })} isChecked = {data.previouslyClaimed == false} width = {'100px'}>
+                                <RadioCard {...getPreviouslyClaimedRadioProps({ value: 'No' })} isChecked = {data.previouslyClaimed.isClaimed == false} width = {'100px'}>
                                     No
                                 </RadioCard>
                             </Flex>
                         </Flex>
 
+                        {
+                            data.previouslyClaimed.error &&
+                            <Alert mt = '20px' status='error' borderRadius={'8px'}>
+                                <AlertIcon />
+                                Please select yes or no!
+                            </Alert>
+                        }
+
                         {/* Addtional information section */}
                         {
-                            data.previouslyClaimed &&
+                            data.previouslyClaimed.isClaimed &&
                             <Flex direction={'column'} gap = '20px'>
                                 <Text fontSize={'16px'} color = 'brand.text' fontWeight={'bold'}>Please provide additional information</Text>
 
@@ -260,12 +276,13 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                     <Button 
                         onClick = {onClickNext} 
                         isLoading = {submitLoading}
+                        isDisabled = {data.previouslyClaimed.error || data.previouslyClaimed.isClaimed == null}
                         width = {['100%', '100%', '250px', '250px', '250px']} 
                         minW = '150px' 
                         bg = {'brand.secondary'}
                         color = 'white' _hover = {{}} _focus={{}}
                     >
-                        PAY NOW
+                        {data.previouslyClaimed ? 'SUBMIT' : 'PAY NOW'}
                     </Button>
                 </BottomActions>
             }

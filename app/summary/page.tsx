@@ -10,7 +10,7 @@ import { NextPage } from "next";
 import React from "react";
 import useCoverage from "@/components/hooks/use_coverage";
 import { Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
-import { formatDateToDdMmYyyy, formatDdMmYyyyToYyyyMmDd, getDateAfter365Days, removeLeadingZeros } from "@/components/utill_methods";
+import { convertToPriceFormat, formatDateToDdMmYyyy, formatDdMmYyyyToYyyyMmDd, getDateAfter365Days } from "@/components/utill_methods";
 import axiosClient from "@/components/axios";
 import Image from 'next/image';
 
@@ -50,7 +50,7 @@ const Summary: NextPage<{}> = ({}) => {
     const onApplyOrRemovePromoCode = async () => {
         if(localData == null) return ;
         if(data.promoCode.value == '' && data.promoCode.isApplied == false) {
-            setData(prev => ({ ...prev, promoCode: { ...prev.promoCode, error: 'Please eneter promocode!' } }))
+            setData(prev => ({ ...prev, promoCode: { ...prev.promoCode, error: 'Please enter the promo code!' } }))
             return ;
         }
 
@@ -59,7 +59,7 @@ const Summary: NextPage<{}> = ({}) => {
             return ;
         }
 
-        const toBeUpdatedData = { error: 'Invalid promocode!' as string | null, discount: 0 }
+        const toBeUpdatedData = { error: 'Invalid promo code!' as string | null, discount: 0 }
         setData(prev => ({ ...prev, loading: 'PROMO_CODE' }))
         try {
             const res = await axiosClient.post('/api/clinicshield/promocheck', { PromoCode: data.promoCode.value })
@@ -67,9 +67,9 @@ const Summary: NextPage<{}> = ({}) => {
                 toBeUpdatedData.discount = res.data[0].Percentage == null || res.data[0].Percentage == '' ? 0 : res.data[0].Percentage;
                 toBeUpdatedData.error = null;
             } else if(res.data && res.data[0] && res.data[0].Expired == 1) {
-                toBeUpdatedData.error = 'Expired promocode!'
+                toBeUpdatedData.error = 'Promo code expired!'
             } else if(res.data && res.data[0] && res.data[0].Exceed == 1) {
-                toBeUpdatedData.error = 'Promcode exceeded!'
+                toBeUpdatedData.error = 'Promo code exceeded!'
             }
         } catch(e: any) {
             if(e?.response?.status == 401) {
@@ -96,12 +96,12 @@ const Summary: NextPage<{}> = ({}) => {
 
     const percentageResult = (percent: number, total: number) => {
         const result = ((percent/ 100) * total).toFixed(2);
-        return removeLeadingZeros(result);
+        return result;
     };
     
     const calculatePremiumForCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage) => {
         const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
-        return type == 'FIRE' ? percentageResult(coverage?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
+        return type == 'FIRE' ? percentageResult(coverage?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
     }
 
     const calculatePremiumForOptionalCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage: Coverage) => {
@@ -113,7 +113,7 @@ const Summary: NextPage<{}> = ({}) => {
             const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
             if(coverageData == null) return out;
             const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
-            let calculatedResultForFireInsPremium = percentageResult(coverageData?.fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
+            let calculatedResultForFireInsPremium = percentageResult(coverageData?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
             let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
             out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
             out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
@@ -322,8 +322,8 @@ const Summary: NextPage<{}> = ({}) => {
                                                 return <Tr key = {coverage.id}>
                                                     <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>{coverageData?.CoverageName}</Td>
                                                     <Td px = '5px'></Td>
-                                                    <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {coverageValue(coverage)}</Td>
-                                                    <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData)}</Td>
+                                                    <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
+                                                    <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData))}</Td>
                                                 </Tr>
                                             })
                                         }
@@ -350,11 +350,11 @@ const Summary: NextPage<{}> = ({}) => {
                                                     </Tr>
                                                     <Tr>
                                                         <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                        <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {coverageValue(coverage)}</Td>
+                                                        <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
                                                     </Tr>
                                                     <Tr>
                                                         <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData)}</Td>
+                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData))}</Td>
                                                     </Tr>
                                                 </React.Fragment>
                                             })
@@ -393,8 +393,8 @@ const Summary: NextPage<{}> = ({}) => {
                                                         return <Tr key = {coverage.id}>
                                                             <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>{coverageData?.CoverageName}</Td>
                                                             <Td px = '5px'></Td>
-                                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {coverageValue(coverage)}</Td>
-                                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!)}</Td>
+                                                            <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
+                                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!))}</Td>
                                                         </Tr>
                                                     })
                                                 }
@@ -428,11 +428,11 @@ const Summary: NextPage<{}> = ({}) => {
                                                             </Tr>
                                                             <Tr>
                                                                 <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                                <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {coverageValue(coverage)}</Td>
+                                                                <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
                                                             </Tr>
                                                             <Tr>
                                                                 <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!)}</Td>
+                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!))}</Td>
                                                             </Tr>
                                                         </React.Fragment>
                                                     })
@@ -539,27 +539,27 @@ const Summary: NextPage<{}> = ({}) => {
                                 <Tbody>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Total Premium</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {totalPremium}</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(totalPremium)}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Discount</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {discount}</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(discount, true)}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Nett Premium</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {netPremium}</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(netPremium)}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Tax 6%</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {tax}</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(tax)}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Stamp Duty</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {STAMP_DUTY}</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(STAMP_DUTY)}</Td>
                                     </Tr>
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Final Premium</Td>
-                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {finalPremium}</Td>
+                                        <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(finalPremium)}</Td>
                                     </Tr>
                                 </Tbody>
                             </Table>
@@ -583,7 +583,7 @@ const Summary: NextPage<{}> = ({}) => {
                                 bg = {data.promoCode.isApplied ? 'brand.gray' : 'brand.darkViolet'}
                                 color = 'white' _hover = {{}} _focus={{}}
                             >
-                                {data.promoCode.isApplied ? 'REMOVE' : 'APPLY'}
+                                {data.promoCode.isApplied ? 'EDIT' : 'APPLY'}
                             </Button>
                         </Flex>
 

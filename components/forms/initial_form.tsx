@@ -1,5 +1,5 @@
 "use client"
-import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem } from "@chakra-ui/react";
+import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading } from "@chakra-ui/react";
 import { IcEmail, IcMobile, IcLocationPin, IcClinic } from "../icons";
 import useSessionStorage from "../hooks/use_sessionstorage";
 import { CONSTRUCTION_TYPES, FLOOR_LEVEL } from "../app/app_constants";
@@ -42,7 +42,11 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
     })
     const [submitErrors, setSubmitErrors] = useState<string[]>([]);
     const [submitLoading, setSubmitLoading] = useState(false);
-    const [quoteExistPopup, setExistQuotePopup] = useState(false);
+    const [quoteExistPopup, setExistQuotePopup] = useState({
+        isOpen: false,
+        content: '',
+        quoteId: ''
+    });
     const router = useRouter();
 
     const validateEmail = (email: string) => {
@@ -122,6 +126,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
     const onChangeMobile = (event: ChangeEvent<HTMLInputElement>) => {
         let value: null | number = 0;
         if(event.target.value != '') { value = getNumberFromString(event.target.value) ?? 0 }
+        value = Math.trunc(value);
         
         setData(prev => ({ ...prev, mobile: value as number }));
 
@@ -203,9 +208,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
                     await updateDataWithNewQuoteId(res.data?.[0]?.QuoteID)
                     router.push('/coverage');
                 } else if(res.data?.[0].Success == 0 && res.data?.[0]?.EQuoteID != null && res.data?.[0]?.EQuoteID != '') {
-                    updateLocalData(data, res.data?.[0]?.EQuoteID)
-                    await updateDataWithNewQuoteId(res.data?.[0]?.EQuoteID)
-                    router.push('/coverage');
+                    setExistQuotePopup({ isOpen: true, content: res.data[0]?.Result, quoteId: res?.data[0]?.EQuoteID })
                 } else if(res.data?.[0]?.Success == 0) {
                     setSubmitErrors([
                         res.data?.[0]?.Result
@@ -219,10 +222,29 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
         // router.push('/coverage');
     }
 
+    const onClickCloseQuoteExistPopup = () => {
+        setExistQuotePopup({ isOpen: false, content: '', quoteId: '' })
+    }
+
+    const onClickOkQuoteExistPopup = async () => {
+        updateLocalData(data, quoteExistPopup.quoteId)
+        await updateDataWithNewQuoteId(quoteExistPopup.quoteId)
+        router.push('/coverage');
+        setExistQuotePopup({ isOpen: false, content: '', quoteId: ''})
+    }
+
     const isSubmitDisabled = Object.values(errors).some(e => e == true || typeof e == 'string');
     
     return (
         <Flex w = '100%' direction={'column'} gap = '20px'>
+
+            <QuoteExistPopup 
+                isOpen = {quoteExistPopup.isOpen}
+                onClose = {onClickCloseQuoteExistPopup}
+                onClickOk = {onClickOkQuoteExistPopup}
+                content = {quoteExistPopup.content}
+            />
+
             <FormControl isInvalid = {errors.name}>
                 <FormLabel>Registered Clinic Name</FormLabel>
                 <InputGroup>
@@ -374,3 +396,32 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
 }
 
 export default BasicInfoForm;
+
+interface QuoteExistPopupProps {
+    content: string | JSX.Element,
+    isOpen: boolean,
+    onClose: () => void,
+    onClickOk: () => void
+}
+ 
+const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopupProps) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
+                <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = '30px' alignItems={'center'}>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
+                        <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
+                           Quote id already exist. Are you sure you want to continue with existing quote?
+                        </Text>
+                        <Flex gap = '20px'>
+                            <Button onClick = {onClose} h = '40px' w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                            <Button onClick = {onClickOk} h = '40px' w = '250px' bg = 'brand.primary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
+                        </Flex>
+                    </Flex>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    );
+}

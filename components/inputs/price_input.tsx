@@ -18,13 +18,13 @@ const PriceInput = ({ fieldName = 'price_input', currentPrice, onChange, rightEl
 
     useEffect(() => {
         if(forceUpdateOnPriceChange && ref.current != document.activeElement) {
-            ref.current.value = convertToPriceFormat(currentPrice);
+            ref.current.value = convertToPriceFormat(currentPrice, false, true);
         }
     }, [currentPrice, forceUpdateOnPriceChange])
     
     const onBlurPrice = () => {
         if(ref == null || ref.current == null) return ;
-        ref.current.value = convertToPriceFormat(currentPrice);
+        ref.current.value = convertToPriceFormat(currentPrice, false, true);
     }
 
     return (
@@ -33,7 +33,7 @@ const PriceInput = ({ fieldName = 'price_input', currentPrice, onChange, rightEl
             <Input 
                 ref = {ref}
                 name = {fieldName}
-                defaultValue = {convertToPriceFormat(currentPrice)} 
+                defaultValue = {convertToPriceFormat(currentPrice, false, true)} 
                 onBlur = {onBlurPrice}
                 onChange = {onChange} 
                 placeholder = "0.00" 

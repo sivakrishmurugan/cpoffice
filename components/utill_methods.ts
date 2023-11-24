@@ -39,10 +39,11 @@ export const removeLeadingZeros = (number: number | string) =>  {
 }
   
 
-export const convertToPriceFormat = (value: number | null | undefined, acceptZero: boolean = false) => {
+export const convertToPriceFormat = (value: number | string | null | undefined, acceptZero: boolean = false, removeTrailingZero: boolean = false) => {
+    const numberValue = Number(value);
     const regex = /\d(?=(\d{3})+\.)/g;
-    if(acceptZero && (value == 0 || value == undefined)) return '0.00';
-    return value == 0 || value == undefined ? '' : value.toFixed(2).replace(regex, '$&,');
+    if(acceptZero && (numberValue == 0 || value == undefined)) return '0.00';
+    return numberValue == 0 || value == undefined ? '' : removeTrailingZero ? numberValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : numberValue.toFixed(2).replace(regex, '$&,');
 }
 
 export const getRecentYears = (count: number = 3, ignoreCurrentYear: boolean = false) => {

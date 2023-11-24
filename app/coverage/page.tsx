@@ -60,6 +60,7 @@ const Coverages: NextPage<{}> = ({}) => {
         const field = event.target.name == 'field_2' ? 'field_2' : 'field_1';
         let value: null | number = 0;
         if(event.target.value != '') { value = getNumberFromString(event.target.value) ?? 0 }
+        value = Math.trunc(value);
         coverage[field] = value;
         setData(prev => prev.map(e => e.id == coverageId ? coverage : e))
         
