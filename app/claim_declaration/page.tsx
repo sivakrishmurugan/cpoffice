@@ -30,7 +30,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
         previouslyClaimed: true,
         claimInfoList: [
             ...localData?.claimDeclaration?.addtionalInfo?.map(e => getModifiedClaimInfoForLocalState(e)) ?? [], 
-            getModifiedClaimInfoForLocalState()
+            ...((localData?.claimDeclaration?.addtionalInfo ?? []).length < 1 ? [getModifiedClaimInfoForLocalState()] : [])
         ]
     })
     const [submitLoading, setSubmitLoading] = useState(false);

@@ -78,7 +78,12 @@ const useCoverage = (quoteId?: string) => {
       insStartDate: apiRes?.InsuranceStartDate,
       claimDeclaration: {
           previouslyClaimed: apiRes?.ClaimDeclration != 0 && apiRes?.ClaimDeclration != null,
-          addtionalInfo: apiRes?.Declarations ?? []
+          addtionalInfo: (apiRes?.Declarations ?? []).map((e: any) => ({
+            type: e?.ClaimType ?? 'Property',
+            year: e.ClaimYear ?? 2022,
+            amount: e.ClaimAmount ?? 0,
+            description: e.Description ?? ''
+          }))
       }
     })
   }
