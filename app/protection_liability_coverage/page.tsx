@@ -9,11 +9,12 @@ import { NextPage } from "next";
 import Image from 'next/image';
 import { SelectedCoverage } from '@/components/types';
 import axiosClient from '@/components/axios';
+import useCoverage from '@/components/hooks/use_coverage';
 
 
 const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
-    const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [isAdded, setAdded] = useState((localData?.selectedOptionalCoverages?.findIndex(e => e.id == coverageContent.id) ?? -1) > -1)
     type ErrorType = { noCoverage: boolean, fieldErrors: { id: string, field_1: boolean, field_2?: boolean }[] }
     const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, fieldErrors: [] });
@@ -22,8 +23,8 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
     const router = useRouter();
 
     useEffect(() => {
-        if(coverageSessionData == null) router.replace('/');
-    }, [coverageSessionData, router])
+        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') router.replace('/');
+    }, [localData, router])
 
     const onClickAddOrRemove = () => {
         setAdded(prev => !prev)
@@ -50,7 +51,12 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
                         router.push('/summary');
                     }
                 } 
-            } catch(e) {}
+            } catch(e: any) {
+                if(e?.response?.status == 401) {
+                    await updateDataWithNewQuoteId(localData?.quoteId);
+                    onClickNext()
+                }
+            }
             setSubmitLoading(false)
         }   
     }

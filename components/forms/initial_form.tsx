@@ -194,7 +194,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
                 Floor: data.floorLevel.toString(),
                 CType: data.constructionType,
                 ClinicAddress: data.address,
-                QuoteID: null,
+                QuoteID: localData?.quoteId && localData?.quoteId != '' ? localData?.quoteId : null,
             });
             if(res && res.data && res.data[0]) {
                 if(res.data?.[0]?.Success == 1) {

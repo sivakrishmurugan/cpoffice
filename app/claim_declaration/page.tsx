@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
 import axiosClient from "@/components/axios";
+import useCoverage from "@/components/hooks/use_coverage";
 
 const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData) => {
     return {
@@ -22,8 +23,8 @@ const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData
 }
 
 const ClaimDeclaration: NextPage<{}> = ({}) => {
-    const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const[showProcessingPopup, setShowProcessingPopup] = useState(false);
     const [data, setData] = useState({
         previouslyClaimed: true,
@@ -54,8 +55,8 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     const previouslyClaimedRadioGroup = getPreviouslyClaimedRootProps();
 
     useEffect(() => {
-        if(coverageSessionData == null) router.replace('/');
-    }, [coverageSessionData, router])
+        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') router.replace('/');
+    }, [localData, router])
 
     const onChangeClaimInfoValues = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: 'type' | 'year' | 'amount' | 'desciption', index: number) => {
         const tempData: typeof data['claimInfoList'] = JSON.parse(JSON.stringify(data.claimInfoList));
@@ -136,7 +137,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                     ClaimYear: e.year.value,
                     ClaimAmount: e.amount.value.toString(),
                     Description: e.description.value
-                }))) : null
+                }))) : JSON.stringify([])
             });
             if(res && res.data && res.data[0]) {
                 if(res.data?.[0]?.Success == 1) {
@@ -144,12 +145,18 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                     setShowProcessingPopup(true)
                 }
             } 
-        } catch(e) {}
+        } catch(e: any) {
+            if(e?.response?.status == 401) {
+                await updateDataWithNewQuoteId(localData?.quoteId);
+                onClickNext()
+            }
+        }
         setSubmitLoading(false)
     }
 
     const onCloseProccessingPopup = () => {
         setShowProcessingPopup(false);
+        router.replace('/')
     }
 
     const onClickBack = () => {

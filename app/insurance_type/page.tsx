@@ -15,7 +15,7 @@ import axiosClient from "@/components/axios";
 
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
-    const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
+    const { isLoading, coveragesData , updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [insType, setInsType] = useState<InsuranceType>(localData?.selectedInsType ?? null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -65,7 +65,13 @@ const Coverages: NextPage<{}> = ({}) => {
                     router.push('/optional_coverage');
                 }
             } 
-        } catch(e) {}
+        } catch(e: any) {
+            console.log('setcover failed', e);
+            if(e?.response?.status == 401) {
+                await updateDataWithNewQuoteId(localData?.quoteId);
+                onClickNext()
+            }
+        }
         setSubmitLoading(false);
     }
 

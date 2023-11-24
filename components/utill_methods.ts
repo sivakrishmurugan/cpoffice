@@ -50,3 +50,31 @@ export const getRecentYears = (count: number = 3, ignoreCurrentYear: boolean = f
     const recentYears = [...Array(count).keys()].reverse().map(e => ignoreCurrentYear ? currentYear - e - 1 : currentYear - e).map(String);
     return recentYears;
 }
+
+export const formatDateToDdMmYyyy = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+}
+
+export const formatDdMmYyyyToYyyyMmDd = (dateString: string) => {
+    return dateString.split('-').reverse().join('-')
+}
+
+export const getDateAfter365Days = (fromDate: string) => {
+    // Parse the input date string into a Date object
+    const parts = fromDate.split("-");
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Month is zero-based
+    const year = parseInt(parts[2], 10);
+  
+    const givenDate = new Date(year, month, day);
+  
+    // Add 365 days to the given date
+    givenDate.setDate(givenDate.getDate() + 365);
+  
+    // Return the date after 365 days
+    return formatDateToDdMmYyyy(givenDate);
+}

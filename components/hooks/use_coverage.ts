@@ -78,7 +78,7 @@ const useCoverage = (quoteId?: string) => {
       insStartDate: apiRes?.InsuranceStartDate,
       claimDeclaration: {
           previouslyClaimed: apiRes?.ClaimDeclration != 0 && apiRes?.ClaimDeclration != null,
-          addtionalInfo: typeof apiRes?.ClaimDeclration != 'number' && apiRes?.ClaimDeclration != null ? apiRes?.ClaimDeclration : []
+          addtionalInfo: apiRes?.Declarations ?? []
       }
     })
   }
