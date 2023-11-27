@@ -59,9 +59,10 @@ const useCoverage = (quoteId?: string | null) => {
   const updateDataWithNewQuoteAndCoverages = (quote: any, coverages: any, encryptedQuoteId: string) => {
     const convertedQuoteData = convertClinicQuoteResDataToLocalStateData(quote, encryptedQuoteId);
     const convertedCoveragesData = convertCoveragesResDataToLocalStateData(coverages);
-    setLocalData(convertedQuoteData)
-    setCoverageSessionData(convertedCoveragesData)
-    return { convertedQuoteData, convertedCoveragesData }
+    setAuthToken(quote.authToken);
+    setLocalData(convertedQuoteData);
+    setCoverageSessionData(convertedCoveragesData);
+    return { convertedQuoteData, convertedCoveragesData };
   }
 
   return { isLoading, coveragesData: coverageSessionData, updateDataWithNewQuoteId: getData, updateDataWithNewQuoteAndCoverages }

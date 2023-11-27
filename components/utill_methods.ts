@@ -55,24 +55,20 @@ export const getRecentYears = (count: number = 3, ignoreCurrentYear: boolean = f
     return recentYears;
 }
 
-export const formatDateToDdMmYyyy = (date: Date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+export const formatDateToYyyyMmDd = (date: Date) => {
     const year = date.getFullYear();
-
-    return `${day}-${month}-${year}`;
-}
-
-export const formatDdMmYyyyToYyyyMmDd = (dateString: string) => {
-    return dateString.split('-').reverse().join('-')
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
 }
 
 export const getDateAfter365Days = (fromDate: string) => {
     // Parse the input date string into a Date object
     const parts = fromDate.split("-");
-    const day = parseInt(parts[0], 10);
+    const day = parseInt(parts[2], 10);
     const month = parseInt(parts[1], 10) - 1; // Month is zero-based
-    const year = parseInt(parts[2], 10);
+    const year = parseInt(parts[0], 10);
   
     const givenDate = new Date(year, month, day);
   
@@ -80,7 +76,7 @@ export const getDateAfter365Days = (fromDate: string) => {
     givenDate.setDate(givenDate.getDate() + 365);
   
     // Return the date after 365 days
-    return formatDateToDdMmYyyy(givenDate);
+    return formatDateToYyyyMmDd(givenDate);
 }
 
 export const convertCoveragesResDataToLocalStateData = (apiRes: any): CoverageResData => {
@@ -106,15 +102,15 @@ export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encrypted
         selectedOptionalCoverages: apiRes?.OptionalCoverage ?? [],
         selectedInsType: apiRes?.InsuranceType,
         promoCode: apiRes?.PromoCode,
-        promoCodePercentage: apiRes?.PromoPercentage,
+        promoCodePercentage: apiRes?.PromoPercentage ?? 0,
         insStartDate: apiRes?.InsuranceStartDate,
         claimDeclaration: {
             previouslyClaimed: apiRes?.ClaimDeclration == null ? null : apiRes?.ClaimDeclration != 0,
             addtionalInfo: (apiRes?.Declarations ?? []).map((e: any) => ({
-            type: e?.ClaimType ?? 'Property',
-            year: e.ClaimYear ?? 2022,
-            amount: e.ClaimAmount ?? 0,
-            description: e.Description ?? ''
+                type: e?.ClaimType ?? 'Property',
+                year: e.ClaimYear ?? 2022,
+                amount: e.ClaimAmount ?? 0,
+                description: e.Description ?? ''
             }))
         }
     }

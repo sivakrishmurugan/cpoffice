@@ -10,7 +10,7 @@ import { NextPage } from "next";
 import React from "react";
 import useCoverage from "@/components/hooks/use_coverage";
 import { Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
-import { convertToPriceFormat, formatDateToDdMmYyyy, formatDdMmYyyyToYyyyMmDd, getDateAfter365Days } from "@/components/utill_methods";
+import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from "@/components/utill_methods";
 import axiosClient from "@/components/axios";
 import Image from 'next/image';
 
@@ -24,7 +24,7 @@ const Summary: NextPage<{}> = ({}) => {
         promoCode: { 
             value: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? '' : localData?.promoCode, 
             isApplied: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? false : true, 
-            appliedDiscount: 0, 
+            appliedDiscount: localData?.promoCodePercentage ?? 0,
             error: null as string | null 
         }, 
         insStartDate: { value: localData?.insStartDate ?? '', error: false } 
@@ -43,7 +43,7 @@ const Summary: NextPage<{}> = ({}) => {
     }
 
     const onChangeInsStartDate = (event: ChangeEvent<HTMLInputElement>) => {
-        const date = formatDateToDdMmYyyy(new Date(event.target.value));
+        const date = event.target.value;
         setData(prev => ({ ...prev, insStartDate: { value: date, error: date == '' } }))
     }
 
@@ -593,7 +593,7 @@ const Summary: NextPage<{}> = ({}) => {
                             <Heading as = 'h1' color = 'brand.text' fontSize={'23px'}>Insurance Start Date</Heading>
                             <FormControl isInvalid = {data.insStartDate.error}>
                                 <InputGroup>
-                                    <Input value = {formatDdMmYyyyToYyyyMmDd(data.insStartDate.value)} onChange = {onChangeInsStartDate} min = {formatDdMmYyyyToYyyyMmDd(formatDateToDdMmYyyy(new Date()))} type = 'date' placeholder = "Choose" />
+                                    <Input value = {data.insStartDate.value} onChange = {onChangeInsStartDate} min = {formatDateToYyyyMmDd(new Date())} type = 'date' placeholder = "Choose" />
                                     {/* <InputRightElement h = '100%'>
                                         <Icon as = {CalendarIcon} h = 'auto' w = 'auto' />
                                     </InputRightElement> */}
