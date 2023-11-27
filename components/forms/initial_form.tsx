@@ -1,11 +1,11 @@
 "use client"
-import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading, InputLeftElement } from "@chakra-ui/react";
+import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading, InputLeftElement, Spinner } from "@chakra-ui/react";
 import { IcEmail, IcMobile, IcLocationPin, IcClinic } from "../icons";
 import useSessionStorage from "../hooks/use_sessionstorage";
 import { CONSTRUCTION_TYPES, FLOOR_LEVEL } from "../app/app_constants";
 import useLocalStorage from "../hooks/use_localstorage";
-import { getNumberFromString, setAuthToken } from "../utill_methods";
-import { ChangeEvent, useState } from "react";
+import { convertClinicQuoteResDataToLocalStateData, getNumberFromString, getRedirectRouteBasedOnQuote, setAuthToken } from "../utill_methods";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { coveragesData } from "../mocks";
 import { DigitInput } from "../inputs";
@@ -15,10 +15,16 @@ import { NecessaryBasicInfo } from "../types";
 import axiosClient from "../axios";
 import useCoverage from "../hooks/use_coverage";
 
-interface BasicInfoFormProps {}
+interface BasicInfoFormProps {
+    quoteFromQuery: null | {
+        quote: any,
+        coverages: any,
+        encryptedQuoteId: string
+    }
+}
 
-const BasicInfoForm = ({}: BasicInfoFormProps) => {
-    const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage();
+const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
+    const { isLoading, coveragesData, updateDataWithNewQuoteId, updateDataWithNewQuoteAndCoverages } = useCoverage();
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
     const [agreedWithTermsAndConditions, setAgreedWithTermsAndConditions] = useState(false);
     const [data, setData] = useState({
@@ -42,12 +48,27 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
     })
     const [submitErrors, setSubmitErrors] = useState<string[]>([]);
     const [submitLoading, setSubmitLoading] = useState(false);
+    const [redirectLoading, setRedirectLoading] = useState(quoteFromQuery?.encryptedQuoteId != null && quoteFromQuery?.encryptedQuoteId != '');
     const [quoteExistPopup, setExistQuotePopup] = useState({
         isOpen: false,
         content: '',
         quoteId: ''
     });
     const router = useRouter();
+    
+    useEffect(() => {
+        if(quoteFromQuery != null && quoteFromQuery.quote != null && quoteFromQuery.encryptedQuoteId != null) {
+            checkQuoteDataAndRedirect(quoteFromQuery.quote, quoteFromQuery.coverages, quoteFromQuery.encryptedQuoteId)
+        } else {
+            setRedirectLoading(false)
+        }
+    }, [quoteFromQuery])
+
+    const checkQuoteDataAndRedirect = (quote: any, coverages: any, encryptedQuoteId: string) => {
+        const { convertedQuoteData } = updateDataWithNewQuoteAndCoverages(quote, coverages, encryptedQuoteId)
+        const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
+        router.push(redirctTo);
+    }
 
     const validateEmail = (email: string) => {
         return email.match(
@@ -158,6 +179,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
             selectedOptionalCoverages: [],
             selectedInsType: null,
             promoCode: '',
+            promoCodePercentage: null,
             insStartDate: '',
             claimDeclaration: {
                 previouslyClaimed: false,
@@ -200,7 +222,7 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
                 CType: data.constructionType,
                 ClinicAddress: data.address,
                 QuoteID: localData?.quoteId && localData?.quoteId != '' ? localData?.quoteId : null,
-            });
+            }, { headers: { secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY } });
             if(res && res.data && res.data[0]) {
                 if(res.data?.[0]?.Success == 1) {
                     setAuthToken(res.data?.[0]?.authToken);
@@ -217,9 +239,6 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
             }
         } catch(e) {}
         setSubmitLoading(false);
-
-        // setCoverageSessionData(coveragesData);
-        // router.push('/coverage');
     }
 
     const onClickCloseQuoteExistPopup = () => {
@@ -237,6 +256,9 @@ const BasicInfoForm = ({}: BasicInfoFormProps) => {
     
     return (
         <Flex w = '100%' direction={'column'} gap = '20px'>
+            <Flex display={redirectLoading ? 'flex' : 'none'} position={'fixed'} left = {0} top = {0} w = '100vw' h = '100vh' bg = 'rgba(255, 255, 255, 0.7)' zIndex={9999} justifyContent={'center'} alignItems={'center'}>
+                <Spinner thickness="3px" size={'xl'} color = 'brand.secondary' />
+            </Flex>
 
             <QuoteExistPopup 
                 isOpen = {quoteExistPopup.isOpen}

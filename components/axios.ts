@@ -5,12 +5,7 @@ import { getAuthTokenFromCookie } from './utill_methods';
 const baseURL = API_BASE_URL;
 const isServer = typeof window === 'undefined';
 
-const axiosClient = axios.create({
-    baseURL,
-    headers: {
-        secretkey: "75bLWOqF4tcw0nebE2DMv5gMATPHCbRi"
-    }
-})
+const axiosClient = axios.create({ baseURL })
 
 axiosClient.interceptors.request.use(async config => {
     

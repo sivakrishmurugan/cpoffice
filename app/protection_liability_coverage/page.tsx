@@ -23,7 +23,11 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
     const router = useRouter();
 
     useEffect(() => {
-        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') router.replace('/');
+        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') {
+            router.replace('/');
+        } else if(localData?.selectedInsType == null) {
+            router.replace('/insurance_type');
+        }
     }, [localData, router])
 
     const onClickAddOrRemove = () => {

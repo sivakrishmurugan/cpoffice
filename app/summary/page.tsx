@@ -191,8 +191,8 @@ const Summary: NextPage<{}> = ({}) => {
                 InsuranceStartDate: data.insStartDate.value,
                 InsuranceEndDate: getDateAfter365Days(data.insStartDate.value),
                 TotalPremium: totalPremium,
-                DiscountAmount: discount == 0 ? '0.00' : discount,
-                PromoCode: data.promoCode?.isApplied ? data.promoCode.value : '0.00',
+                DiscountAmount: discount,
+                PromoCode: data.promoCode.value,
                 NetPremium: netPremium,
                 Tax: tax,
                 StampDuty: STAMP_DUTY,
@@ -346,7 +346,7 @@ const Summary: NextPage<{}> = ({}) => {
                                                 const bgColor = index % 2 != 0 ? 'white' : 'tableStripedColor.100';
                                                 return <React.Fragment key={coverage.id}>
                                                     <Tr>
-                                                        <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} textTransform={'none'}>{coverageData?.CoverageName}</Th>
+                                                        <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.3} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                     </Tr>
                                                     <Tr>
                                                         <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
@@ -419,12 +419,14 @@ const Summary: NextPage<{}> = ({}) => {
                                                         if(isProtectionAndLiabilityCoverage) {
                                                             coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
                                                             coverageData = {
-                                                                name: PROTECTION_AND_LIABILITY_COVERAGE.name
+                                                                CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
+                                                                isABR: 0,
+                                                                InsPercent: 0.0405,
                                                             } as any
                                                         }
                                                         return <React.Fragment key = {coverage.id}>
                                                             <Tr>
-                                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} textTransform={'none'}>{coverageData?.CoverageName}</Th>
+                                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.3} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                             </Tr>
                                                             <Tr>
                                                                 <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
@@ -504,7 +506,7 @@ const Summary: NextPage<{}> = ({}) => {
                                                         const bgColor = index % 2 != 0 ? 'white' : 'tableStripedColor.100';
                                                         return <React.Fragment key = {excess.title}>
                                                             <Tr>
-                                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} textTransform={'none'}>{excess?.title}</Th>
+                                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.3} textTransform={'none'}>{excess?.title}</Th>
                                                             </Tr>
                                                             <Tr>
                                                                 <Td px = '10px' bg = {bgColor} fontSize={'15px'} whiteSpace={'pre-wrap'}>{excess.value}</Td>

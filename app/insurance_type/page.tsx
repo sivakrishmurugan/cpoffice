@@ -15,7 +15,7 @@ import { convertToPriceFormat } from "@/components/utill_methods";
 
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
-    const { isLoading, coveragesData , updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
+    const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [insType, setInsType] = useState<InsuranceType>(localData?.selectedInsType ?? null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -221,7 +221,7 @@ const Coverages: NextPage<{}> = ({}) => {
                                     const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
                                         <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE', coverageData)}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE', coverageData), true)}</Td>
                                     </Tr>
                                 })
                             }
@@ -229,7 +229,7 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient &&
                                 <Tr color = '#424551'>
                                     <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>RM {fireInsPremiumTotal}</Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(fireInsPremiumTotal, true)}</Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>
@@ -291,7 +291,7 @@ const Coverages: NextPage<{}> = ({}) => {
                                     const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
                                         <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {calculatePremium(coverage, 'FIRE_PERILS', coverageData)}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
                                     </Tr>
                                 })
                             }
@@ -299,7 +299,7 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient &&
                                 <Tr color = '#424551'>
                                     <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>RM {fireAndPerilsInsPremiumTotal}</Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal, true)}</Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>

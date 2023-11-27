@@ -2,12 +2,12 @@
 import { useEffect, useState } from 'react';
 import useSessionStorage from './use_sessionstorage';
 import axiosClient from '../axios';
-import { setAuthToken } from '../utill_methods';
+import { convertClinicQuoteResDataToLocalStateData, convertCoveragesResDataToLocalStateData, setAuthToken } from '../utill_methods';
 import { coveragesData } from '../mocks';
 import { Coverage } from '../types';
 import useLocalStorage from './use_localstorage';
 
-const useCoverage = (quoteId?: string) => {
+const useCoverage = (quoteId?: string | null) => {
   const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
   const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
   const [isLoading, setLoading] = useState(false);
@@ -25,14 +25,7 @@ const useCoverage = (quoteId?: string) => {
       setAuthToken(quote.authToken);
       const coverage = await getCoverage(quoteID);
       if(coverage && coverage.success == 1) {
-        setCoverageSessionData({
-          coverages: coverage.data.filter((e: Coverage) => e.isOptional != 1),
-          optionalCoverages: coverage.data.filter((e: Coverage) => e.isOptional == 1),
-        })
-        // setCoverageSessionData({
-        //   coverages: coveragesData.filter(e => e.isOptional != 1),
-        //   optionalCoverages: coveragesData.filter(e => e.isOptional == 1),
-        // })
+        setCoverageSessionData(convertCoveragesResDataToLocalStateData(coverage.data))
       }
     }
     setLoading(false);
@@ -40,7 +33,7 @@ const useCoverage = (quoteId?: string) => {
 
   const getQuote = async (quoteID: string) => {
     try {
-      const res = await axiosClient.post('/api/clinicshield/getquote', { QuoteID: quoteID });
+      const res = await axiosClient.post('/api/clinicshield/getquote', { QuoteID: quoteID }, { headers: { secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY } });
       if(res && res.data && res.data[0] && res.data[0].Success == 1) {
         setQuoteDataToLocalStorage(res.data[0], quoteID)
         return res.data[0];
@@ -60,35 +53,18 @@ const useCoverage = (quoteId?: string) => {
   }
 
   const setQuoteDataToLocalStorage = (apiRes: any, encryptedQuoteId: string) => {
-    setLocalData({
-      quoteId: encryptedQuoteId,
-      basic: {
-        name: apiRes.ClinicName,
-        number: apiRes.ClinicNumber,
-        floorLevel: apiRes.FloorLevel,
-        constructionType: apiRes.CType,
-        address: apiRes.ClinicAddress,
-        mobile: apiRes.Phone,
-        email: apiRes.Email,
-      },
-      selectedCoverages: apiRes?.Coverage ?? [],
-      selectedOptionalCoverages: apiRes?.OptionalCoverage ?? [],
-      selectedInsType: apiRes?.InsuranceType,
-      promoCode: apiRes?.PromoCode,
-      insStartDate: apiRes?.InsuranceStartDate,
-      claimDeclaration: {
-          previouslyClaimed: apiRes?.ClaimDeclration == null ? null : apiRes?.ClaimDeclration != 0,
-          addtionalInfo: (apiRes?.Declarations ?? []).map((e: any) => ({
-            type: e?.ClaimType ?? 'Property',
-            year: e.ClaimYear ?? 2022,
-            amount: e.ClaimAmount ?? 0,
-            description: e.Description ?? ''
-          }))
-      }
-    })
+    setLocalData(convertClinicQuoteResDataToLocalStateData(apiRes, encryptedQuoteId))
   }
 
-  return { isLoading, coveragesData: coverageSessionData, updateDataWithNewQuoteId: getData }
+  const updateDataWithNewQuoteAndCoverages = (quote: any, coverages: any, encryptedQuoteId: string) => {
+    const convertedQuoteData = convertClinicQuoteResDataToLocalStateData(quote, encryptedQuoteId);
+    const convertedCoveragesData = convertCoveragesResDataToLocalStateData(coverages);
+    setLocalData(convertedQuoteData)
+    setCoverageSessionData(convertedCoveragesData)
+    return { convertedQuoteData, convertedCoveragesData }
+  }
+
+  return { isLoading, coveragesData: coverageSessionData, updateDataWithNewQuoteId: getData, updateDataWithNewQuoteAndCoverages }
 };
 
 export default useCoverage;

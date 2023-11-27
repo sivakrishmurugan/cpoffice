@@ -36,7 +36,8 @@ const PriceInput = ({ fieldName = 'price_input', currentPrice, onChange, rightEl
                 defaultValue = {convertToPriceFormat(currentPrice, false, true)} 
                 onBlur = {onBlurPrice}
                 onChange = {onChange} 
-                placeholder = "0.00" 
+                placeholder = "0"
+                inputMode = 'numeric'
                 data-testid = {testid}
             />
             {rightElement != null && <InputRightElement w = '50px' h = '100%'>{rightElement}</InputRightElement>}

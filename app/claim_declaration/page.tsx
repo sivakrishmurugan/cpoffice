@@ -61,7 +61,8 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     const previouslyClaimedRadioGroup = getPreviouslyClaimedRootProps();
 
     useEffect(() => {
-        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') router.replace('/');
+        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') router.replace('/'); 
+        if(localData?.insStartDate == null || localData?.insStartDate == '') router.replace('/summary')
     }, [localData, router])
 
     const onChangeClaimInfoValues = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: 'type' | 'year' | 'amount' | 'desciption', index: number) => {
@@ -282,7 +283,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                         bg = {'brand.secondary'}
                         color = 'white' _hover = {{}} _focus={{}}
                     >
-                        {data.previouslyClaimed ? 'SUBMIT' : 'PAY NOW'}
+                        {data.previouslyClaimed.isClaimed ? 'SUBMIT' : 'PAY NOW'}
                     </Button>
                 </BottomActions>
             }

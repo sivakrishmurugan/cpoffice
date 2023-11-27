@@ -1,8 +1,42 @@
+import axiosClient from '@/components/axios';
 import InitialForm from '@/components/forms/initial_form'
 import { Flex, Heading } from '@chakra-ui/react'
 import Image from 'next/image';
 
-export default function Home() {
+interface PageProps {
+    searchParams: {
+        quoteid: string
+    }
+}
+
+const getQuote = async (quoteID: string) => {
+    try {
+      const res = await axiosClient.post('/api/clinicshield/getquote', { QuoteID: quoteID }, { headers: { secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY } });
+      if(res && res.data && res.data[0] && res.data[0].Success == 1) {
+        return res.data[0];
+      }
+    } catch(e) {}
+    return null;
+}
+
+const getCoverage = async (quoteID: string, authToken: string) => {
+    try {
+      const res = await axiosClient.post('/api/clinicshield/getcoverage', { QuoteID: quoteID }, { headers: { 'auth-token': authToken } });
+      if(res && res.data && res.data && res.data.success == 1) {
+        return res.data.data;
+      }
+    } catch(e) {}
+    return null;
+}
+
+export default async function Home({ searchParams }: PageProps) {
+    let quoteFromQuery = null as null | { quote: any, coverages: any, encryptedQuoteId: string };
+    if(searchParams.quoteid != null) {
+        const quote = await getQuote(searchParams.quoteid);
+        const coverages = await getCoverage(searchParams.quoteid, quote.authToken);
+        quoteFromQuery = { quote, coverages, encryptedQuoteId: searchParams.quoteid }
+    }
+
     return (
         <Flex w = '100%' direction={'column'} gap = '20px' py = '20px'>
             <Flex w ='100%' gap = '20px' direction={['column', 'column', 'column', 'row', 'row']} >
@@ -38,7 +72,7 @@ export default function Home() {
                         <Heading as = {'h1'} color = 'white' fontSize={'23px'} m = 'auto' textAlign={'center'}>Calculate your Premium Instantly</Heading>
                     </Flex>
                     <Flex px = {['10px', '40px', '40px', '40px', '40px']} py = '20px' borderBottomRadius={'10px'} bg = 'white'>
-                        <InitialForm />
+                        <InitialForm quoteFromQuery={quoteFromQuery} />
                     </Flex>
                 </Flex>
 

@@ -63,6 +63,7 @@ export interface ClinicData {
     selectedInsType: null | 'FIRE' | 'FIRE_PERILS',
     selectedOptionalCoverages: SelectedCoverage[],
     promoCode: string,
+    promoCodePercentage: null | number,
     insStartDate: string,
     claimDeclaration: {
         previouslyClaimed: boolean | null,

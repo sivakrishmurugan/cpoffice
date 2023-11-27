@@ -1,4 +1,7 @@
 import * as cookie from 'cookie';
+import { ClinicData, Coverage } from './types';
+import { PROTECTION_AND_LIABILITY_COVERAGE } from './app/app_constants';
+import { CoverageResData } from './hooks/use_sessionstorage';
 
 export const getAuthTokenFromCookie = (cookies: string | undefined) => {
     const authToken = cookie.parse(cookies ?? "")['authToken'];
@@ -78,4 +81,71 @@ export const getDateAfter365Days = (fromDate: string) => {
   
     // Return the date after 365 days
     return formatDateToDdMmYyyy(givenDate);
+}
+
+export const convertCoveragesResDataToLocalStateData = (apiRes: any): CoverageResData => {
+    return {
+        coverages: apiRes.filter((e: Coverage) => e.isOptional != 1),
+        optionalCoverages: apiRes.filter((e: Coverage) => e.isOptional == 1),
+    }
+}
+
+export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encryptedQuoteId: string): ClinicData => {
+    return {
+        quoteId: encryptedQuoteId,
+        basic: {
+            name: apiRes.ClinicName,
+            number: apiRes.ClinicNumber,
+            floorLevel: apiRes.FloorLevel,
+            constructionType: apiRes.CType,
+            address: apiRes.ClinicAddress,
+            mobile: apiRes.Phone,
+            email: apiRes.Email,
+        },
+        selectedCoverages: apiRes?.Coverage ?? [],
+        selectedOptionalCoverages: apiRes?.OptionalCoverage ?? [],
+        selectedInsType: apiRes?.InsuranceType,
+        promoCode: apiRes?.PromoCode,
+        promoCodePercentage: apiRes?.PromoPercentage,
+        insStartDate: apiRes?.InsuranceStartDate,
+        claimDeclaration: {
+            previouslyClaimed: apiRes?.ClaimDeclration == null ? null : apiRes?.ClaimDeclration != 0,
+            addtionalInfo: (apiRes?.Declarations ?? []).map((e: any) => ({
+            type: e?.ClaimType ?? 'Property',
+            year: e.ClaimYear ?? 2022,
+            amount: e.ClaimAmount ?? 0,
+            description: e.Description ?? ''
+            }))
+        }
+    }
+}
+
+export const getRedirectRouteBasedOnQuote = (quote: ClinicData) => {
+    if(quote == null) return '/';
+
+    if(quote.selectedCoverages.length < 1 || quote.selectedCoverages.some(e => e.field_1 == 0 || e.field_1 == undefined)) {
+        return '/coverage'
+    }
+
+    if(quote.selectedCoverages.length > 0 && quote.selectedCoverages.find(e => e.id == 1005) == null && quote.selectedInsType == null) {
+        return '/debris'
+    }
+
+    if(quote.selectedInsType == null) {
+        return '/insurance_type'
+    }
+
+    if(quote.selectedOptionalCoverages.length < 1 && quote.insStartDate == null) {
+        return '/optional_coverage'
+    }
+
+    if(quote.selectedOptionalCoverages.length > 0 && quote.selectedOptionalCoverages.find(e => e.id == PROTECTION_AND_LIABILITY_COVERAGE.id) == null && quote.insStartDate == null) {
+        return '/protection_liability_coverage'
+    }
+    
+    if(quote.insStartDate == null) {
+        return '/summary'
+    }
+
+    return '/claim_declaration';
 }

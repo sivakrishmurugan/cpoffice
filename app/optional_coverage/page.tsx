@@ -27,6 +27,8 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
     useEffect(() => {
         if(localData?.quoteId == null || localData?.quoteId == '') {
             router.replace('/');
+        } else if(localData?.selectedInsType == null) {
+            router.replace('/insurance_type');
         }
     }, [localData, router])
 
