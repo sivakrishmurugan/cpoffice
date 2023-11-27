@@ -103,7 +103,7 @@ export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encrypted
         selectedInsType: apiRes?.InsuranceType,
         promoCode: apiRes?.PromoCode,
         promoCodePercentage: apiRes?.PromoPercentage ?? 0,
-        insStartDate: apiRes?.InsuranceStartDate,
+        insStartDate: apiRes?.InsuranceStartDate != null ? apiRes?.InsuranceStartDate.slice(0, 10) : null,
         claimDeclaration: {
             previouslyClaimed: apiRes?.ClaimDeclration == null ? null : apiRes?.ClaimDeclration != 0,
             addtionalInfo: (apiRes?.Declarations ?? []).map((e: any) => ({
