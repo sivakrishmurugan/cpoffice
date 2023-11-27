@@ -5,12 +5,12 @@ import { useState } from 'react';
 const useLocalStorage = (keyName: string, defaultValue: null | ClinicData) => {
   const [storedValue, setStoredValue] = useState<null | ClinicData>(() => {
     try {
-      const value = window.localStorage.getItem(keyName);
+      const value = window.sessionStorage.getItem(keyName);
 
       if (value) {
         return JSON.parse(value) as ClinicData;
       } else {
-        window.localStorage.setItem(keyName, JSON.stringify(defaultValue));
+        window.sessionStorage.setItem(keyName, JSON.stringify(defaultValue));
         return defaultValue;
       }
     } catch (err) {
@@ -20,7 +20,7 @@ const useLocalStorage = (keyName: string, defaultValue: null | ClinicData) => {
 
   const setValue = (newValue: null | ClinicData) => {
     try {
-      window.localStorage.setItem(keyName, JSON.stringify(newValue));
+      window.sessionStorage.setItem(keyName, JSON.stringify(newValue));
     } catch (err) {}
     setStoredValue(newValue);
   };

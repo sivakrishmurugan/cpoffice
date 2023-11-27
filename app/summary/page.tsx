@@ -374,7 +374,7 @@ const Summary: NextPage<{}> = ({}) => {
                                                 <Tr >
                                                     <Th w = '40%' fontSize={'20px'} color = 'brand.primary' px = '0px'>OPTIONAL COVER</Th>
                                                     <Th px = '5px'></Th>
-                                                    <Th w = '40%' fontSize={'15px'} color = 'brand.primary'></Th>
+                                                    <Th w = '37%' fontSize={'15px'} color = 'brand.primary'></Th>
                                                     <Th fontSize={'15px'} color = 'brand.primary'></Th>
                                                 </Tr>
                                             </Thead>
