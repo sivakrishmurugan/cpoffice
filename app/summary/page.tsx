@@ -24,7 +24,7 @@ const Summary: NextPage<{}> = ({}) => {
         promoCode: { 
             value: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? '' : localData?.promoCode, 
             isApplied: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? false : true, 
-            appliedDiscount: localData?.promoCodePercentage ?? 0,
+            appliedPercentage: localData?.promoCodePercentage ?? 0,
             error: null as string | null 
         }, 
         insStartDate: { value: localData?.insStartDate ?? '', error: false } 
@@ -39,7 +39,7 @@ const Summary: NextPage<{}> = ({}) => {
 
     const onChangePromoCode = (event: ChangeEvent<HTMLInputElement>) => {
         if(data.promoCode.isApplied) return ;
-        setData(prev => ({ ...prev, promoCode: { value: event.target.value, isApplied: false, appliedDiscount: 0, error: null } }))
+        setData(prev => ({ ...prev, promoCode: { value: event.target.value, isApplied: false, appliedPercentage: 0, error: null } }))
     }
 
     const onChangeInsStartDate = (event: ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +55,7 @@ const Summary: NextPage<{}> = ({}) => {
         }
 
         if(data.promoCode.isApplied == true) {
-            setData(prev => ({ ...prev, promoCode: { value: '', isApplied: false, appliedDiscount: 0, error: null } }))
+            setData(prev => ({ ...prev, promoCode: { value: '', isApplied: false, appliedPercentage: 0, error: null } }))
             return ;
         }
 
@@ -82,7 +82,7 @@ const Summary: NextPage<{}> = ({}) => {
             ...prev, 
             loading: null,
             promoCode: {
-                appliedDiscount: Number(toBeUpdatedData.discount),
+                appliedPercentage: Number(toBeUpdatedData.discount),
                 isApplied: toBeUpdatedData.error == null, 
                 error: toBeUpdatedData.error,
                 value: prev.promoCode.value 
@@ -163,7 +163,7 @@ const Summary: NextPage<{}> = ({}) => {
         localData?.selectedCoverages ?? [], 
         localData?.selectedOptionalCoverages ?? [], 
         localData?.selectedInsType ?? 'FIRE', 
-        data.promoCode.appliedDiscount ?? 0, 
+        data.promoCode.appliedPercentage ?? 0, 
         coveragesData ?? { coverages: [], optionalCoverages: [] }
     );
 
@@ -181,7 +181,7 @@ const Summary: NextPage<{}> = ({}) => {
             localData?.selectedCoverages ?? [], 
             localData?.selectedOptionalCoverages ?? [], 
             localData?.selectedInsType ?? 'FIRE', 
-            data.promoCode.appliedDiscount ?? 0, 
+            data.promoCode.appliedPercentage ?? 0, 
             coveragesData ?? { coverages: [], optionalCoverages: [] }
         );
         setData(prev => ({ ...prev, loading: submitFor }));
@@ -193,6 +193,7 @@ const Summary: NextPage<{}> = ({}) => {
                 TotalPremium: totalPremium,
                 DiscountAmount: discount,
                 PromoCode: data.promoCode.value,
+                PromoPercentage: data.promoCode.appliedPercentage,
                 NetPremium: netPremium,
                 Tax: tax,
                 StampDuty: STAMP_DUTY,
