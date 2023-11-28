@@ -5,14 +5,14 @@ import { OptionalCoverageForm } from "@/components/forms";
 import { Button, Flex, Heading } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import BottomActions from "@/components/bottom_actions";
-import { SelectedCoverage } from "@/components/types";
+import { ClinicData, SelectedCoverage } from "@/components/types";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import useCoverage from "@/components/hooks/use_coverage";
-
+import { PROTECTION_AND_LIABILITY_COVERAGE } from "@/components/app/app_constants";
 
 const OptionalCoverages: NextPage<{}> = ({}) => {
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
     const [data, setData] = useState<SelectedCoverage[]>(coveragesData?.optionalCoverages.map(e => {
         const fieldValuesFormLocalData = localData?.selectedOptionalCoverages.find(localCoverageData => localCoverageData.id == e.CoverageID);
@@ -75,12 +75,15 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
 
     const updateLocalData = (coverages: SelectedCoverage[]) => {
         if(localData == null) return ;
+        const coveragesInCurrentPage = coveragesData?.optionalCoverages?.map(e => e.CoverageID) ?? [];
+        const coveragesNotInCurrentPage: (string | number)[] = [PROTECTION_AND_LIABILITY_COVERAGE.id];
+        const coveragesToBeUpdated = [
+            ...coverages.filter(e => coveragesInCurrentPage.includes(e.id)),
+            ...localData.selectedOptionalCoverages.filter(e => coveragesNotInCurrentPage.includes(e.id))
+        ];
         setLocalData({ 
             ...localData, 
-            selectedOptionalCoverages: [
-                ...localData.selectedOptionalCoverages.filter(e => coverages.findIndex(c => c.id == e.id) < 0), 
-                ...coverages
-            ] 
+            selectedOptionalCoverages: coveragesToBeUpdated
         })
     }
 

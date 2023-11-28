@@ -25,6 +25,8 @@ export const CONSTRUCTION_TYPES = [
     { id: '1B', value: 'Partial Brick Walls, Partial Non-Combustible Roof' },
 ]
 
+export const MIN_COVERAGE_PREMIUM = 75.00;
+export const MAX_COVERAGE_VALUE = 10000000;
 export const DEFAULT_FIRE_INS_PERCENTAGE = .1;
 export const DEFAULT_FIRE_PERILS_INS_PERCENTAGE = .2;
 

@@ -2,7 +2,7 @@
 import { Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay, Text, UseRadioProps, useRadio, useRadioGroup } from "@chakra-ui/react";
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
 import { getNumberFromString, getRecentYears } from "@/components/utill_methods";
-import { ClaimDeclarationAdditionalData } from "@/components/types";
+import { ClaimDeclarationAdditionalData, ClinicData } from "@/components/types";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import ClaimInfoForm from "@/components/forms/claim_info";
 import BottomActions from "@/components/bottom_actions";
@@ -11,6 +11,7 @@ import { NextPage } from "next";
 import Image from 'next/image';
 import axiosClient from "@/components/axios";
 import useCoverage from "@/components/hooks/use_coverage";
+import { calculateSummary } from "@/components/calculation";
 
 const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData) => {
     return {
@@ -23,7 +24,7 @@ const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData
 }
 
 const ClaimDeclaration: NextPage<{}> = ({}) => {
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const[showProcessingPopup, setShowProcessingPopup] = useState(false);
     const [data, setData] = useState({
@@ -123,7 +124,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     const validate = () => {
         const tempData: typeof data = JSON.parse(JSON.stringify(data));
         tempData.previouslyClaimed.error = tempData.previouslyClaimed.isClaimed == null;
-        if(tempData.previouslyClaimed) {
+        if(tempData.previouslyClaimed.isClaimed) {
             tempData.claimInfoList.forEach(e => {
                 e.amount.error = e.amount.value < 1;
                 e.type.error = e.type.value == '';
@@ -151,7 +152,18 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
             if(res && res.data && res.data[0]) {
                 if(res.data?.[0]?.Success == 1) {
                     setLocalData({ ...localData, claimDeclaration: stateToPayloadData(data) })
-                    setShowProcessingPopup(true)
+                    if(data.previouslyClaimed.isClaimed) {
+                        setShowProcessingPopup(true)
+                    } else {
+                        const { finalPremium } = calculateSummary(
+                            localData?.selectedCoverages ?? [],
+                            localData?.selectedOptionalCoverages ?? [], 
+                            localData?.selectedInsType ?? 'FIRE', 
+                            localData?.promoCodePercentage ?? 0, 
+                            coveragesData ?? { coverages: [], optionalCoverages: [] }
+                        )
+                        await redirectToPayment(localData.quoteId, finalPremium)
+                    }
                 }
             } 
         } catch(e: any) {
@@ -161,6 +173,20 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
             }
         }
         setSubmitLoading(false)
+    }
+
+    const redirectToPayment = async (encryptedQuoteId: string, amount: number) => {
+        try {
+            const res = await axiosClient.post('/api/clinicshield/dopayment', {
+                QuoteID: encryptedQuoteId,
+                Payment: amount.toString()
+            })
+            if(res.data && res.data.Success == 1 && res.data.Data.respCode && res.data.Data.respCode == '0000') {
+                router.push(res.data.Data.webPaymentUrl);
+            }
+        } catch(e) {
+            console.log('do payment api failed: ', e)
+        }
     }
 
     const onCloseProccessingPopup = () => {

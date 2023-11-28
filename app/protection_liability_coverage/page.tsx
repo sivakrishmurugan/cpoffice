@@ -7,13 +7,12 @@ import BottomActions from "@/components/bottom_actions";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
-import { SelectedCoverage } from '@/components/types';
+import { ClinicData, SelectedCoverage } from '@/components/types';
 import axiosClient from '@/components/axios';
 import useCoverage from '@/components/hooks/use_coverage';
 
-
 const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [isAdded, setAdded] = useState((localData?.selectedOptionalCoverages?.findIndex(e => e.id == coverageContent.id) ?? -1) > -1)
     type ErrorType = { noCoverage: boolean, fieldErrors: { id: string, field_1: boolean, field_2?: boolean }[] }

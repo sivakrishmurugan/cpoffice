@@ -2,15 +2,15 @@
 import { ClinicData } from '../types';
 import { useState } from 'react';
 
-const useLocalStorage = (keyName: string, defaultValue: null | ClinicData) => {
-  const [storedValue, setStoredValue] = useState<null | ClinicData>(() => {
+const useLocalStorage = <T>(keyName: string, defaultValue: T): [T, (newValue: T) => void] => {
+  const [storedValue, setStoredValue] = useState<any>(() => {
     try {
-      const value = window.sessionStorage.getItem(keyName);
+      const value = window.localStorage.getItem(keyName);
 
       if (value) {
-        return JSON.parse(value) as ClinicData;
+        return JSON.parse(value);
       } else {
-        window.sessionStorage.setItem(keyName, JSON.stringify(defaultValue));
+        window.localStorage.setItem(keyName, JSON.stringify(defaultValue));
         return defaultValue;
       }
     } catch (err) {
@@ -18,14 +18,14 @@ const useLocalStorage = (keyName: string, defaultValue: null | ClinicData) => {
     }
   });
 
-  const setValue = (newValue: null | ClinicData) => {
+  const setValue = (newValue: any) => {
     try {
-      window.sessionStorage.setItem(keyName, JSON.stringify(newValue));
+      window.localStorage.setItem(keyName, JSON.stringify(newValue));
     } catch (err) {}
     setStoredValue(newValue);
   };
 
-  return [storedValue, setValue] as [ ClinicData | null,  (newValue: null | ClinicData) => void];
+  return [storedValue, setValue];
 };
 
 export default useLocalStorage;

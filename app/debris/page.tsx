@@ -2,7 +2,7 @@
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
 import { Alert, AlertIcon, Button, Flex  } from "@chakra-ui/react";
 import { getNumberFromString } from "@/components/utill_methods";
-import { SelectedCoverage } from "@/components/types";
+import { ClinicData, SelectedCoverage } from "@/components/types";
 import { ChangeEvent, useEffect, useState } from "react";
 import BottomActions from "@/components/bottom_actions";
 import { CoverageForm } from "@/components/forms";
@@ -11,12 +11,18 @@ import { NextPage } from "next";
 import useCoverage from "@/components/hooks/use_coverage";
 import axiosClient from "@/components/axios";
 
-
 const Coverages: NextPage<{}> = ({}) => {
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
     const [data, setData] = useState<SelectedCoverage[]>(localData?.selectedCoverages.filter(e => e.id == coveragesData?.coverages.find(e => e.CoverageName == 'Removal of Debris')?.CoverageID) ?? []);
-    type ErrorType = { noCoverage: boolean, fieldErrors: { id: string | number, field_1: boolean, field_2?: boolean }[] }
+    type ErrorType = { 
+        noCoverage: boolean, 
+        fieldErrors: { 
+            id: string | number, 
+            field_1: { isInvalid: boolean, message: string }, 
+            field_2?: { isInvalid: boolean, message: string } 
+        }[] 
+    }
     const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, fieldErrors: [] });
     const isClient = useClient();
     const router = useRouter();
@@ -45,13 +51,13 @@ const Coverages: NextPage<{}> = ({}) => {
     const validateField = (coverage: SelectedCoverage) => {
         if(coverage.field_1 == null) return ;
         const fieldError = errors.fieldErrors.find(e => e.id == coverage.id);
-        if(coverage.field_1 == 0 && (fieldError == null || fieldError?.field_1 == false)) {
+        if(coverage.field_1 == 0 && (fieldError == null || fieldError?.field_1.isInvalid == false)) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
-            setErrors(prev => ({...prev, fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: true }]}))
+            setErrors(prev => ({...prev, fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: { isInvalid: true, message: 'Required!' } }]}))
         }
-        if(coverage.field_1 > 0 && fieldError != null && fieldError?.field_1 == true) {
+        if(coverage.field_1 > 0 && fieldError != null && fieldError?.field_1.isInvalid == true) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
-            setErrors(prev => ({...prev, fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: false }]}))
+            setErrors(prev => ({...prev, fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: { isInvalid: false, message: '' } }]}))
         }
     }
 
@@ -71,21 +77,24 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const updateLocalData = (coverages: SelectedCoverage[]) => {
         if(localData == null) return ;
+        const coveragesInCurrentPage = coveragesData?.coverages.filter(e => e.CoverageName == 'Removal of Debris')?.map(e => e.CoverageID) ?? [];
+        const coveragesNotInCurrentPage = coveragesData?.coverages.filter(e => e.CoverageName != 'Removal of Debris')?.map(e => e.CoverageID) ?? [];
+        const coveragesToBeUpdated = [
+            ...localData.selectedCoverages.filter(e => coveragesNotInCurrentPage.includes(e.id)),
+            ...coverages.filter(e => coveragesInCurrentPage.includes(e.id)),
+        ];
         setLocalData({ 
             ...localData, 
-            selectedCoverages: [
-                ...localData.selectedCoverages.filter(e => coverages.findIndex(c => c.id == e.id) < 0), 
-                ...coverages
-            ] 
+            selectedCoverages: coveragesToBeUpdated
         })
     }
 
     const validate = () => {
         const tempErrors: ErrorType = JSON.parse(JSON.stringify(errors));
         //tempErrors.noCoverage = data.length < 1;
-        tempErrors.fieldErrors = data.map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: true } : null).filter(Boolean) as ErrorType['fieldErrors']
+        tempErrors.fieldErrors = data.map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: { isInvalid: true, message: 'Required!' } } : null).filter(Boolean) as ErrorType['fieldErrors']
         setErrors(tempErrors)
-        return tempErrors.noCoverage == true || tempErrors.fieldErrors.some(e => e.field_1 == true);
+        return tempErrors.noCoverage == true || tempErrors.fieldErrors.some(e => e.field_1.isInvalid == true || e.field_2?.isInvalid == true);
     }
 
     const onClickNext = async () => {

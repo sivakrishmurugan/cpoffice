@@ -11,7 +11,7 @@ import { coveragesData } from "../mocks";
 import { DigitInput } from "../inputs";
 import NextLink from 'next/link';
 import axios from "axios";
-import { NecessaryBasicInfo } from "../types";
+import { ClinicData, NecessaryBasicInfo } from "../types";
 import axiosClient from "../axios";
 import useCoverage from "../hooks/use_coverage";
 
@@ -25,7 +25,7 @@ interface BasicInfoFormProps {
 
 const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     const { isLoading, coveragesData, updateDataWithNewQuoteId, updateDataWithNewQuoteAndCoverages } = useCoverage();
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const [agreedWithTermsAndConditions, setAgreedWithTermsAndConditions] = useState(false);
     const [data, setData] = useState({
         name: localData?.basic?.name ?? '',

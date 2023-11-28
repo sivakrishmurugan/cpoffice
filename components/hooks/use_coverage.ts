@@ -1,15 +1,15 @@
 "use client"
 import { useEffect, useState } from 'react';
-import useSessionStorage from './use_sessionstorage';
+import useSessionStorage, { CoverageResData } from './use_sessionstorage';
 import axiosClient from '../axios';
 import { convertClinicQuoteResDataToLocalStateData, convertCoveragesResDataToLocalStateData, setAuthToken } from '../utill_methods';
 import { coveragesData } from '../mocks';
-import { Coverage } from '../types';
+import { ClinicData, Coverage } from '../types';
 import useLocalStorage from './use_localstorage';
 
 const useCoverage = (quoteId?: string | null) => {
-  const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
-  const [coverageSessionData, setCoverageSessionData] = useSessionStorage('coverages', null);
+  const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
+  const [coverageSessionData, setCoverageSessionData] = useSessionStorage<CoverageResData | null>('coverages', null);
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {

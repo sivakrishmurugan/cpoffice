@@ -1,6 +1,7 @@
 import axiosClient from '@/components/axios';
 import InitialForm from '@/components/forms/initial_form'
 import { Flex, Heading } from '@chakra-ui/react'
+import { Metadata } from 'next';
 import Image from 'next/image';
 
 interface PageProps {
@@ -28,6 +29,10 @@ const getCoverage = async (quoteID: string, authToken: string) => {
     } catch(e) {}
     return null;
 }
+
+export const metadata: Metadata = {
+    title: 'DS-Clinic Property',
+}  
 
 export default async function Home({ searchParams }: PageProps) {
     let quoteFromQuery = null as null | { quote: any, coverages: any, encryptedQuoteId: string };

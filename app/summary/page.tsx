@@ -9,14 +9,14 @@ import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import React from "react";
 import useCoverage from "@/components/hooks/use_coverage";
-import { Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
+import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
 import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from "@/components/utill_methods";
 import axiosClient from "@/components/axios";
 import Image from 'next/image';
-
+import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary } from "@/components/calculation";
 
 const Summary: NextPage<{}> = ({}) => {
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [data, setData] = useState({ 
         loading: null as null | 'PROMO_CODE' | 'EMAIL_QUOTE' | 'PROCEED',
@@ -92,71 +92,6 @@ const Summary: NextPage<{}> = ({}) => {
 
     const coverageValue = (coverage: SelectedCoverage) => {
         return (coverage?.field_1 ?? 0) + (coverage?.field_2 ?? 0)
-    }
-
-    const percentageResult = (percent: number, total: number) => {
-        const result = ((percent/ 100) * total).toFixed(2);
-        return result;
-    };
-    
-    const calculatePremiumForCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage) => {
-        const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
-        return type == 'FIRE' ? percentageResult(coverage?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
-    }
-
-    const calculatePremiumForOptionalCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage: Coverage) => {
-        if(coverage == null) return '0';
-        const total = (selectedCoverage.field_1 ?? 0) + (selectedCoverage?.field_2 ?? 0);
-        const selectedInsType = type ?? 'FIRE';
-    
-        const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = localData?.selectedCoverages.reduce((out, selected) => {
-            const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
-            if(coverageData == null) return out;
-            const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
-            let calculatedResultForFireInsPremium = percentageResult(coverageData?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
-            let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
-            out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
-            out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
-            out.sumInsuredTotal += total;
-            return out;
-        }, { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 }) ?? { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 };
-
-        const abrPercentage = selectedInsType == 'FIRE' ?
-            fireInsPremiumTotal / sumInsuredTotal :
-            fireAndPerilsInsPremiumTotal / sumInsuredTotal;
-            
-        return coverage.IsABR != 1 ? percentageResult(coverage.InsPercent, total) : percentageResult(abrPercentage, total);
-    }
-
-    const calculateSummary = (selectedCoverages: SelectedCoverage[], selectedOptionalCoverages: SelectedCoverage[], selectedInsType: InsuranceType, promoCodeDiscount: number, coverages: typeof coveragesData) => {
-        const coveragesTotalPremium = selectedCoverages?.reduce((out, coverage) => {
-            const coverageData = coverages?.coverages?.find(e => e.CoverageID == coverage.id);
-            const premium = calculatePremiumForCoverage(coverage, selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData)
-            return out + Number(premium);
-        }, 0) ?? 0
-    
-        const optionalCoveragesTotalPremium = selectedOptionalCoverages?.reduce((out, coverage) => {
-            let coverageData = coverages?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
-            const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
-            if(isProtectionAndLiabilityCoverage) {
-                coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
-                coverageData = {
-                    CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
-                    isABR: 0,
-                    InsPercent: 0.0405,
-                } as any
-            }
-            const premium = calculatePremiumForOptionalCoverage(coverage, selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!)
-            return out + Number(premium);
-        }, 0) ?? 0
-    
-        const totalPremium = Number((coveragesTotalPremium + optionalCoveragesTotalPremium).toFixed(2));
-        const discount = Number(Number(percentageResult(promoCodeDiscount, totalPremium)).toFixed(2));
-        const netPremium = Number((totalPremium - discount).toFixed(2));
-        const tax = Number(Number(percentageResult(TAX_PERCENTAGE, totalPremium)).toFixed(2));
-        const finalPremium = Number((netPremium + tax + STAMP_DUTY).toFixed(2));
-
-        return { totalPremium, discount, netPremium, tax, finalPremium }
     }
 
     const { totalPremium, discount, netPremium, tax, finalPremium } = calculateSummary(
@@ -395,7 +330,7 @@ const Summary: NextPage<{}> = ({}) => {
                                                             <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>{coverageData?.CoverageName}</Td>
                                                             <Td px = '5px'></Td>
                                                             <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
-                                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!))}</Td>
+                                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []))}</Td>
                                                         </Tr>
                                                     })
                                                 }
@@ -435,7 +370,7 @@ const Summary: NextPage<{}> = ({}) => {
                                                             </Tr>
                                                             <Tr>
                                                                 <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData!))}</Td>
+                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []))}</Td>
                                                             </Tr>
                                                         </React.Fragment>
                                                     })

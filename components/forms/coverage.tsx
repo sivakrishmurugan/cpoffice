@@ -8,20 +8,17 @@ import { ChangeEvent } from "react";
 import { InfoIcon } from "../icons";
 import Image from 'next/image';
 import { convertToPriceFormat } from "../utill_methods";
+import { percentageResult } from "../calculation";
 
 interface CoverageFromProps {
     coverage: Coverage,
     onClickAddOrRemove: () => void,
     onChangeFieldValue: (event: ChangeEvent<HTMLInputElement>) => void,
     values?: SelectedCoverage,
-    errors?: { field_1: boolean, field_2?: boolean }
+    errors?: { field_1: { isInvalid: boolean, message: string }, field_2?: { isInvalid: boolean, message: string } }
 }
 
 const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFieldValue }: CoverageFromProps) => {
-    const percentageResult = (percent: number, total: number) => {
-        const result = ((percent/ 100) * total).toFixed(2);
-        return result;
-    };
     const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0)
     const fireInsPremium = percentageResult(coverage.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
     const fireAndPerilsInsPremium = percentageResult(coverage.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
@@ -117,8 +114,8 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                                 Object.entries(coverage.CoverageFields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
                                     const fieldKey = field == 'field_1' ? 'field_1' : 'field_2';
                                     const value = values?.[fieldKey] ?? 0;
-                                    const error = fieldKey == 'field_1' && errors?.field_1;
-                                    return <FormControl key = {field + fieldValues.label} isInvalid = {error}>
+                                    const error = errors?.[fieldKey];
+                                    return <FormControl key = {field + fieldValues.label} isInvalid = {error?.isInvalid}>
                                         <FormLabel>{fieldValues.label}</FormLabel>
                                         <PriceInput 
                                             fieldName = {field}
@@ -127,7 +124,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                                             groupProps = {{ w: ['100%', '100%', '100%', '300px', '300px'] }}
                                             forceUpdateOnPriceChange
                                         />
-                                        <FormErrorMessage ml = '10px'>Required!</FormErrorMessage>
+                                        <FormErrorMessage ml = '10px'>{error?.message}</FormErrorMessage>
                                         {fieldValues.note != null && fieldValues.note != '' && <Text mt = '10px' fontSize={'14px'}>Note: {fieldValues.note}</Text>}
                                     </FormControl>
                                 })

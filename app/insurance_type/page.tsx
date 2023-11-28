@@ -1,8 +1,8 @@
 "use client"
 import { Alert, AlertIcon, Button, Flex, Heading, Icon, ListItem, OrderedList, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
-import { Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, TOOLTIP_INFO } from "@/components/app/app_constants";
+import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MIN_COVERAGE_PREMIUM, TOOLTIP_INFO } from "@/components/app/app_constants";
 import { useEffect, useState } from "react";
 import { CheckIcon, InfoIcon } from "@/components/icons";
 import ResponsiveTooltip from "@/components/tooltip";
@@ -11,10 +11,10 @@ import { NextPage } from "next";
 import useCoverage from "@/components/hooks/use_coverage";
 import axiosClient from "@/components/axios";
 import { convertToPriceFormat } from "@/components/utill_methods";
-
+import { calculatePremium, getTotalPremiumsForFireAndPerilsInsurance } from "@/components/calculation";
 
 const Coverages: NextPage<{}> = ({}) => {
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [insType, setInsType] = useState<InsuranceType>(localData?.selectedInsType ?? null);
     const [submitLoading, setSubmitLoading] = useState(false);
@@ -29,16 +29,6 @@ const Coverages: NextPage<{}> = ({}) => {
             router.replace('/coverage');
         }
     }, [localData, router])
-
-    const percentageResult = (percent: number, total: number) => {
-        const result = ((percent/ 100) * total).toFixed(2);
-        return result;
-    };
-
-    const calculatePremium = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage, ) => {
-        const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
-        return type == 'FIRE' ? percentageResult(coverage?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
-    }
 
     const onSelectInsType = (type: InsuranceType) => {
         setError(type == null);
@@ -76,19 +66,10 @@ const Coverages: NextPage<{}> = ({}) => {
     }
 
     const onClickBack = () => {
-        router.push('/coverage');
+        router.push('/debris');
     }
 
-    const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal } = localData?.selectedCoverages.reduce((out, selected) => {
-        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
-        if(coverageData == null) return out;
-        const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
-        let calculatedResultForFireInsPremium = percentageResult(coverageData?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
-        let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
-        out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
-        out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
-        return out;
-    }, { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0 }) ?? { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0 };
+    const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal } = getTotalPremiumsForFireAndPerilsInsurance(localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [])
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
@@ -168,8 +149,18 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient &&
                                 <Tr color = '#424551'>
                                     <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>RM {convertToPriceFormat(fireInsPremiumTotal, true)}</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal, true)}</Td>
+                                    <Td w = '35%' p = '20px' borderBottom={'none'}>
+                                        <Flex gap = '10px' flexWrap={'wrap'}>
+                                            {fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.actual, true)}</Text>}
+                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
+                                        </Flex>
+                                    </Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
+                                        <Flex gap = '10px' flexWrap={'wrap'}>
+                                            {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
+                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
+                                        </Flex>
+                                    </Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>
@@ -229,7 +220,12 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient &&
                                 <Tr color = '#424551'>
                                     <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(fireInsPremiumTotal, true)}</Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>
+                                        <Flex gap = '10px' flexWrap={'wrap'}>
+                                            {fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.actual, true)}</Text>}
+                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
+                                        </Flex>
+                                    </Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>
@@ -299,7 +295,12 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient &&
                                 <Tr color = '#424551'>
                                     <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal, true)}</Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>
+                                        <Flex gap = '10px' flexWrap={'wrap'}>
+                                            {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
+                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
+                                        </Flex>
+                                    </Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>
@@ -324,6 +325,14 @@ const Coverages: NextPage<{}> = ({}) => {
                         <AlertIcon />
                         Please select insurance type!
                     </Alert>
+                }
+
+                {
+                    fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded  || fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded ?
+                    <Alert mt = '20px' status='info' borderRadius={'8px'}>
+                        <AlertIcon />
+                        Minimun coverage premium is RM 75.00
+                    </Alert> : <></>
                 }
 
                 <Flex mt = '20px' w = '100%' gap = '20px' justifyContent={'center'}>

@@ -7,8 +7,8 @@ export interface CoverageResData {
   optionalCoverages: Coverage[]
 }
 
-const useSessionStorage = (keyName: string, defaultValue: null | CoverageResData) => {
-  const [storedValue, setStoredValue] = useState<null | CoverageResData>(() => {
+const useSessionStorage = <T>(keyName: string, defaultValue: T): [T, (newValue: T) => void] => {
+  const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const value = window.sessionStorage.getItem(keyName);
 
@@ -23,14 +23,14 @@ const useSessionStorage = (keyName: string, defaultValue: null | CoverageResData
     }
   });
 
-  const setValue = (newValue: null | CoverageResData) => {
+  const setValue = (newValue: T) => {
     try {
       window.sessionStorage.setItem(keyName, JSON.stringify(newValue));
     } catch (err) {}
     setStoredValue(newValue);
   };
 
-  return [storedValue, setValue] as [ CoverageResData | null,  (newValue: null | CoverageResData) => void];
+  return [storedValue, setValue];
 };
 
 export default useSessionStorage;

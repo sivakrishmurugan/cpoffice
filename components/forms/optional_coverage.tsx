@@ -1,13 +1,14 @@
 import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Heading, ListItem, Text, UnorderedList } from "@chakra-ui/react";
-import { Coverage, SelectedCoverage } from "../types";
+import { ClinicData, Coverage, SelectedCoverage } from "../types";
 import ExpanableList from "../expandable_list";
 import { PriceInput } from "../inputs";
 import { ChangeEvent } from "react";
 import Image from 'next/image';
-import { useLocalStorage } from "../hooks";
+import { useSessionStorage } from "../hooks";
 import useCoverage from "../hooks/use_coverage";
 import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE } from "../app/app_constants";
 import { convertToPriceFormat } from "../utill_methods";
+import { calculatePremiumForOptionalCoverage, getTotalPremiumsForFireAndPerilsInsurance, percentageResult } from "../calculation";
 
 interface OptionalCoverageFromProps {
     coverage: Coverage,
@@ -19,33 +20,11 @@ interface OptionalCoverageFromProps {
 }
 
 const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrRemove, onChangeFieldValue }: OptionalCoverageFromProps) => {
-    const [localData, setLocalData] = useLocalStorage('clinic_form_data', null);
+    const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
-    const percentageResult = (percent: number, total: number) => {
-        const result = ((percent/ 100) * total).toFixed(2);
-        return result;
-    };
-    const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0);
-    
     const selectedInsType = localData?.selectedInsType ?? 'FIRE';
     
-    const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = localData?.selectedCoverages.reduce((out, selected) => {
-        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == selected.id);
-        if(coverageData == null) return out;
-        const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
-        let calculatedResultForFireInsPremium = percentageResult(coverageData?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
-        let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
-        out.fireInsPremiumTotal += parseFloat(calculatedResultForFireInsPremium.toString());
-        out.fireAndPerilsInsPremiumTotal += parseFloat(calculatedResultForFireAndPerilsInsPremium.toString());
-        out.sumInsuredTotal += total;
-        return out;
-    }, { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 }) ?? { fireInsPremiumTotal: 0, fireAndPerilsInsPremiumTotal: 0, sumInsuredTotal: 0 };
-
-    const abrPercentage = selectedInsType == 'FIRE' ?
-        fireInsPremiumTotal / sumInsuredTotal :
-        fireAndPerilsInsPremiumTotal / sumInsuredTotal;
-    
-    const premium = coverage.IsABR != 1 ? percentageResult(coverage.InsPercent, total) : percentageResult(abrPercentage, total);
+    const premium = calculatePremiumForOptionalCoverage(values, coverage, selectedInsType, localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [])
     const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
 
     return (
