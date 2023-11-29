@@ -11,7 +11,8 @@ import { NextPage } from "next";
 import useCoverage from "@/components/hooks/use_coverage";
 import axiosClient from "@/components/axios";
 import { convertToPriceFormat } from "@/components/utill_methods";
-import { calculatePremium, getTotalPremiumsForFireAndPerilsInsurance } from "@/components/calculation";
+import { calculatePremiumForCoverage, getTotalPremiumsForFireAndPerilsInsurance } from "@/components/calculation";
+import FirePerilsInsTooltip from "@/components/fire_perils_ins_tooltip";
 
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -77,16 +78,8 @@ const Coverages: NextPage<{}> = ({}) => {
             <Flex 
                 w = '100%' gap = '30px' direction={'column'} minH = '150px'
                 borderRadius={'10px'} bg = 'white'
-                padding={['20px', '20px', '20px', '40px 30px 40px 40px', '40px 30px 40px 40px']}
-                border = {['1px', '0px', '0px', '0px', '0px']}
-                borderColor={'brand.borderColor'}
-                boxShadow={[
-                    'none',
-                    '0 2px 8px rgba(0, 0, 0, .2)',
-                    '0 2px 8px rgba(0, 0, 0, .2)',
-                    '0 2px 8px rgba(0, 0, 0, .2)',
-                    '0 2px 8px rgba(0, 0, 0, .2)',
-                ]}
+                padding={['15px', '20px', '20px', '40px 30px 40px 40px', '40px 30px 40px 40px']}
+                boxShadow={'0 2px 8px rgba(0, 0, 0, .2)'}
             >
 
                 {/* Desktop view table */}
@@ -107,23 +100,9 @@ const Coverages: NextPage<{}> = ({}) => {
                                         <Flex>
                                             <Heading as = 'h1' fontSize={'24px'} >
                                                 FIRE & PERILS INSURANCE
-                                                <ResponsiveTooltip 
-                                                    wrapperDivProps = {{ verticalAlign: 'middle', ml: '10px' }}
-                                                    label = {
-                                                        <Flex maxW = '380px' direction={'column'}>
-                                                            <Heading as = 'h3' fontSize={'18px'}>{TOOLTIP_INFO.fireAndPerilsIns.title}</Heading>
-                                                            <OrderedList ml = '30px'>
-                                                                {
-                                                                    TOOLTIP_INFO.fireAndPerilsIns.contents.map(e => {
-                                                                        return <ListItem key = {e}>{e}</ListItem>
-                                                                    })
-                                                                }
-                                                            </OrderedList>
-                                                        </Flex>
-                                                    }
-                                                >
+                                                <FirePerilsInsTooltip>
                                                     <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
-                                                </ResponsiveTooltip>
+                                                </FirePerilsInsTooltip>
                                             </Heading>
                                         </Flex>
                                         <Flex gap ='10px' alignItems={'center'}>
@@ -140,8 +119,8 @@ const Coverages: NextPage<{}> = ({}) => {
                                     const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
                                         <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE', coverageData), true)}</Td>
-                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                        <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
+                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
                                     </Tr>
                                 })
                             }
@@ -191,7 +170,7 @@ const Coverages: NextPage<{}> = ({}) => {
                 </TableContainer>
 
                 {/* Mobile view heading */}
-                <Heading as = "h1" textAlign={'center'} mb = '20px' fontSize={'23px'} fontWeight={'bold'} color = '#040431' display={['block', 'block', 'block', 'none', 'none']}>Select your coverage</Heading>
+                <Heading as = "h1" mt = '20px' textAlign={'center'} fontSize={'23px'} fontWeight={'bold'} color = '#040431' display={['block', 'block', 'block', 'none', 'none']}>Select your coverage</Heading>
 
                 {/* Mobile view fire insurance table */}
                 <TableContainer w = '100%' display={['block', 'block', 'block', 'none', 'none']} border = '1px' borderColor={'brand.borderColor'} borderRadius={'8px'}>
@@ -200,8 +179,8 @@ const Coverages: NextPage<{}> = ({}) => {
                             <Tr>
                                 <Th colSpan={2} borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
                                     <Flex direction={'column'} gap = '10px'>
-                                        <Heading as = 'h1' fontSize={'24px'} whiteSpace={'pre-wrap'}>FIRE INSURANCE</Heading>
-                                        <Heading as = 'h3' fontSize={'18px'}>PREMIUM</Heading>
+                                        <Heading as = 'h1' fontSize={['22px', '22px', '24px', '24px', '24px']} whiteSpace={'pre-wrap'}>FIRE INSURANCE</Heading>
+                                        <Heading as = 'h3' fontSize={['16px','18px', '18px', '18px', '18px']}>PREMIUM</Heading>
                                     </Flex>
                                 </Th>
                             </Tr>
@@ -211,32 +190,32 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient && localData?.selectedCoverages?.map((coverage, index) => {
                                     const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE', coverageData), true)}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
                                     </Tr>
                                 })
                             }
                             {
                                 isClient &&
                                 <Tr color = '#424551'>
-                                    <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>
+                                    <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>Total</Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'} whiteSpace={'pre-wrap'}>
                                         <Flex gap = '10px' flexWrap={'wrap'}>
                                             {fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.actual, true)}</Text>}
-                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
+                                            <Text fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
                                         </Flex>
                                     </Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>
-                                <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
+                                <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>
                                     {
                                         isClient && insType == 'FIRE' ?
                                         <Flex w = '100%' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
                                             <Icon as = {CheckIcon} w = '25px' h = '25px' />
                                             <Text>SELECTED</Text>
                                         </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE')} w = '100%' variant={'outline'} fontSize={'18px'}>Select</Button>
+                                        <Button onClick={() => onSelectInsType('FIRE')} h = '45px' w = '100%' variant={'outline'} fontSize={['16px','18px', '18px', '18px', '18px']}>Select</Button>
                                     }
                                 </Td>
                             </Tr>
@@ -252,29 +231,15 @@ const Coverages: NextPage<{}> = ({}) => {
                                 <Th colSpan={2} borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
                                     <Flex direction={'column'} gap = '10px'>
                                         <Flex>
-                                            <Heading as = 'h1' fontSize={'24px'} whiteSpace={'pre-wrap'}>
+                                            <Heading as = 'h1' fontSize={['22px', '22px', '24px', '24px', '24px']} whiteSpace={'pre-wrap'}>
                                                 FIRE & PERILS INSURANCE
-                                                <ResponsiveTooltip 
-                                                    wrapperDivProps = {{ verticalAlign: 'middle', ml: '10px' }}
-                                                    label = {
-                                                        <Flex maxW = '380px' direction={'column'}>
-                                                            <Heading as = 'h3' fontSize={'18px'}>{TOOLTIP_INFO.fireAndPerilsIns.title}</Heading>
-                                                            <OrderedList ml = '30px'>
-                                                                {
-                                                                    TOOLTIP_INFO.fireAndPerilsIns.contents.map(e => {
-                                                                        return <ListItem key = {e}>{e}</ListItem>
-                                                                    })
-                                                                }
-                                                            </OrderedList>
-                                                        </Flex>
-                                                    }
-                                                >
+                                                <FirePerilsInsTooltip>
                                                     <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
-                                                </ResponsiveTooltip>
+                                                </FirePerilsInsTooltip>
                                             </Heading>
                                         </Flex>
                                         <Flex gap ='10px' alignItems={'center'} flexWrap={'wrap'}>
-                                            <Heading as = 'h3' fontSize={'18px'}>PREMIUM</Heading>
+                                            <Heading as = 'h3' fontSize={['16px','18px', '18px', '18px', '18px']}>PREMIUM</Heading>
                                             <Text w = 'fit-content' fontSize={'12px'} color={'white'} bg = 'brand.yellow' p = '5px 20px' borderRadius={'49px'}>Recommended</Text>
                                         </Flex>
                                     </Flex>
@@ -286,32 +251,32 @@ const Coverages: NextPage<{}> = ({}) => {
                                 isClient && localData?.selectedCoverages?.map((coverage, index) => {
                                     const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                     return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremium(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
+                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
                                     </Tr>
                                 })
                             }
                             {
                                 isClient &&
                                 <Tr color = '#424551'>
-                                    <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'} whiteSpace={'pre-wrap'}>
+                                    <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>Total</Td>
+                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'} whiteSpace={'pre-wrap'}>
                                         <Flex gap = '10px' flexWrap={'wrap'}>
-                                            {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
-                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
+                                            {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
+                                            <Text fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
                                         </Flex>
                                     </Td>
                                 </Tr>
                             }
                             <Tr color = '#424551'>
-                                <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
+                                <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>
                                     {
                                         isClient && insType == 'FIRE_PERILS' ?
                                         <Flex w = '100%' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
                                             <Icon as = {CheckIcon} w = '25px' h = '25px' />
                                             <Text>SELECTED</Text>
                                         </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE_PERILS')} w = '100%' variant={'outline'} fontSize={'18px'}>Select</Button>
+                                        <Button onClick={() => onSelectInsType('FIRE_PERILS')} h = '45px' w = '100%' variant={'outline'} fontSize={'18px'}>Select</Button>
                                     }
                                 </Td>
                             </Tr>

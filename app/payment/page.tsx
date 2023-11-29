@@ -6,30 +6,40 @@ import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import ClaimInfoForm from "@/components/forms/claim_info";
 import BottomActions from "@/components/bottom_actions";
 import { useRouter } from "next/navigation";
-import { NextPage } from "next";
+import { Metadata, NextPage } from "next";
 import Image from 'next/image';
 import axiosClient from "@/components/axios";
 import useCoverage from "@/components/hooks/use_coverage";
-import PaymentStatus from "@/components/payment_status";
+import PaymentStatus from "@/components/forms/payment_status";
+import { JWTService } from "@/components/jwt";
 
 interface PageProps {
     searchParams: {
-        id: string
+        paymentResponse: string
     }
 }
 
-const getPaymentStatus = async (InvoiceNo: string) => {
+export const metadata: Metadata = {
+    title: 'Payment status'
+};
+
+const getPaymentStatus = async (paymentResToken: string) => {
+    if(paymentResToken == null || paymentResToken == '') return null;
     try {
-      const res = await axiosClient.post('/api/clinicshield/paymentstatus', { InvoiceNo: InvoiceNo });
-      if(res && res.data && res.data) {
-        return res.data.data;
-      }
-    } catch(e) {}
+        const paymentResponse: { invoiceNo: string } = new JWTService().decodeToken(paymentResToken);
+        console.log(paymentResponse);
+        const res = await axiosClient.post('/api/clinicshield/paymentstatus', { InvoiceNo: paymentResponse?.invoiceNo });
+        if(res && res.data && res.data) {
+            return res.data.data;
+        }
+    } catch(e) {
+        console.log('payment status api or jwt decode failed: ', e)
+    }
     return null;
 }
 
 const PaymentStatusPage: NextPage<PageProps> = async ({ searchParams }) => {
-    const paymentStatusRes = await getPaymentStatus(searchParams.id);
+    const paymentStatusRes = await getPaymentStatus(searchParams?.paymentResponse);
     
     return (
         <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '10px'  py = '20px' maxH = '700px'>

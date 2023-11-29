@@ -16,6 +16,7 @@ const useCoverage = (quoteId?: string | null) => {
     if(quoteId && coverageSessionData == null) {
       getData(quoteId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coverageSessionData, quoteId])
 
   const getData = async (quoteID: string) => {

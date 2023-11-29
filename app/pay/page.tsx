@@ -18,17 +18,8 @@ import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calcu
 const Summary: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
-    const [data, setData] = useState({ 
-        loading: null as null | 'PROMO_CODE' | 'EMAIL_QUOTE' | 'PROCEED',
-        emailQuoteSuccessPopupOpen: false,
-        promoCode: { 
-            value: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? '' : localData?.promoCode, 
-            isApplied: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? false : true, 
-            appliedPercentage: localData?.promoCodePercentage ?? 0,
-            error: null as string | null 
-        }, 
-        insStartDate: { value: localData?.insStartDate ?? '', error: false } 
-    });
+    const [payLoading, setPayLoading] = useState(false);
+    const appliedPromoDiscountPercentage = localData?.promoCodePercentage ?? 0;
     const isClient = useClient();
     const router = useRouter();
 
@@ -36,59 +27,6 @@ const Summary: NextPage<{}> = ({}) => {
         if(localData == null || localData.quoteId == null || localData.quoteId == '') router.replace('/');
         if(localData?.selectedInsType == null) router.replace('/insurance_type')
     }, [localData, router])
-
-    const onChangePromoCode = (event: ChangeEvent<HTMLInputElement>) => {
-        if(data.promoCode.isApplied) return ;
-        setData(prev => ({ ...prev, promoCode: { value: event.target.value, isApplied: false, appliedPercentage: 0, error: null } }))
-    }
-
-    const onChangeInsStartDate = (event: ChangeEvent<HTMLInputElement>) => {
-        const date = event.target.value;
-        setData(prev => ({ ...prev, insStartDate: { value: date, error: date == '' } }))
-    }
-
-    const onApplyOrRemovePromoCode = async () => {
-        if(localData == null) return ;
-        if(data.promoCode.value == '' && data.promoCode.isApplied == false) {
-            setData(prev => ({ ...prev, promoCode: { ...prev.promoCode, error: 'Please enter the promo code!' } }))
-            return ;
-        }
-
-        if(data.promoCode.isApplied == true) {
-            setData(prev => ({ ...prev, promoCode: { value: '', isApplied: false, appliedPercentage: 0, error: null } }))
-            return ;
-        }
-
-        const toBeUpdatedData = { error: 'Invalid promo code!' as string | null, discount: 0 }
-        setData(prev => ({ ...prev, loading: 'PROMO_CODE' }))
-        try {
-            const res = await axiosClient.post('/api/clinicshield/promocheck', { PromoCode: data.promoCode.value })
-            if(res.data && res.data[0] && res.data[0].Success == 1) {
-                toBeUpdatedData.discount = res.data[0].Percentage == null || res.data[0].Percentage == '' ? 0 : res.data[0].Percentage;
-                toBeUpdatedData.error = null;
-            } else if(res.data && res.data[0] && res.data[0].Expired == 1) {
-                toBeUpdatedData.error = 'Promo code expired!'
-            } else if(res.data && res.data[0] && res.data[0].Exceed == 1) {
-                toBeUpdatedData.error = 'Promo code exceeded!'
-            }
-        } catch(e: any) {
-            if(e?.response?.status == 401) {
-                await updateDataWithNewQuoteId(localData?.quoteId);
-                onApplyOrRemovePromoCode()
-            }
-        }
-        
-        setData(prev => ({ 
-            ...prev, 
-            loading: null,
-            promoCode: {
-                appliedPercentage: Number(toBeUpdatedData.discount),
-                isApplied: toBeUpdatedData.error == null, 
-                error: toBeUpdatedData.error,
-                value: prev.promoCode.value 
-            } 
-        }))
-    }
 
     const coverageValue = (coverage: SelectedCoverage) => {
         return (coverage?.field_1 ?? 0) + (coverage?.field_2 ?? 0)
@@ -98,83 +36,12 @@ const Summary: NextPage<{}> = ({}) => {
         localData?.selectedCoverages ?? [], 
         localData?.selectedOptionalCoverages ?? [], 
         localData?.selectedInsType ?? 'FIRE', 
-        data.promoCode.appliedPercentage ?? 0, 
+        appliedPromoDiscountPercentage, 
         coveragesData ?? { coverages: [], optionalCoverages: [] }
     );
 
-    const validate = () => {
-        const tempData: typeof data = JSON.parse(JSON.stringify(data));
-        tempData.insStartDate.error = tempData.insStartDate.value == '';
-        setData(tempData);
-        return tempData.insStartDate.error == true;
-    }
-
-    const onClickSubmit =  async (submitFor: 'EMAIL_QUOTE' | 'PROCEED' = 'PROCEED') => {
-        if(localData == null || validate()) return ;
-
-        const { totalPremium, discount, netPremium, tax, finalPremium } = calculateSummary(
-            localData?.selectedCoverages ?? [], 
-            localData?.selectedOptionalCoverages ?? [], 
-            localData?.selectedInsType ?? 'FIRE', 
-            data.promoCode.appliedPercentage ?? 0, 
-            coveragesData ?? { coverages: [], optionalCoverages: [] }
-        );
-        setData(prev => ({ ...prev, loading: submitFor }));
-        try {
-            const res = await axiosClient.post('/api/clinicshield/setquote', {
-                QuoteID: localData?.quoteId,
-                InsuranceStartDate: data.insStartDate.value,
-                InsuranceEndDate: getDateAfter365Days(data.insStartDate.value),
-                TotalPremium: totalPremium,
-                DiscountAmount: discount,
-                PromoCode: data.promoCode.value,
-                PromoPercentage: data.promoCode.appliedPercentage,
-                NetPremium: netPremium,
-                Tax: tax,
-                StampDuty: STAMP_DUTY,
-                FinalPremium: finalPremium
-            });
-            
-            if(res.data && res.data[0] && res.data[0].Success == 1) {
-                setLocalData({ 
-                    ...localData, 
-                    promoCode: data.promoCode.isApplied ? data.promoCode.value : '',
-                    promoCodePercentage: data.promoCode.isApplied ? data.promoCode.appliedPercentage : 0,
-                    insStartDate: data.insStartDate.value
-                })
-
-                if(submitFor == 'PROCEED') {
-                    router.push('/claim_declaration');
-                    setData(prev => ({ ...prev, loading: null }));
-                } else {
-                    setData(prev => ({ ...prev, loading: null, emailQuoteSuccessPopupOpen: true }));
-                }
-            }
-        } catch(e: any) {
-            console.log('setquote failed', e)
-            if(e?.response?.status == 401) {
-                await updateDataWithNewQuoteId(localData?.quoteId);
-                onClickSubmit(submitFor)
-            }
-        }
-        setData(prev => ({ ...prev, loading: null }));
-    }
-
-    const onClickCloseEmailQuotePopup = () => {
-        setData(prev => ({ ...prev, emailQuoteSuccessPopupOpen: false }));
-        router.replace('/');
-    }
-
-    const onClickBack = () => {
-        router.push('/protection_liability_coverage');
-    }
-
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
-            <EmailQuotePopup 
-                isOpen = {data.emailQuoteSuccessPopupOpen}
-                onClose = {onClickCloseEmailQuotePopup}
-            />
             {
                 isClient && <Flex 
                     w = '100%' 
@@ -503,46 +370,9 @@ const Summary: NextPage<{}> = ({}) => {
                                 </Tbody>
                             </Table>
                         </TableContainer>
-
-                        <Flex w = '100%' gap = '10px' direction={'column'}>
-                            <Heading as = 'h1' color = 'brand.text' fontSize={'23px'}>Promo code</Heading>
-                            <FormControl isInvalid = {data.promoCode.error != null}>
-                                <InputGroup>
-                                    <Input value = {data.promoCode.value} onChange = {onChangePromoCode} isDisabled = {data.promoCode.isApplied} placeholder = "Ex. DS1234" />
-                                    <InputRightElement h = '100%'>
-                                        <Icon as = {PromoCodeIcon} h = 'auto' w = 'auto' />
-                                    </InputRightElement>
-                                </InputGroup>
-                                <FormErrorMessage ml = '10px'>{data.promoCode.error}</FormErrorMessage>
-                            </FormControl>
-                            <Button 
-                                onClick={onApplyOrRemovePromoCode} 
-                                isLoading = {data.loading == 'PROMO_CODE'}
-                                width={'fit-content'} h = '40px'
-                                bg = {data.promoCode.isApplied ? 'brand.gray' : 'brand.darkViolet'}
-                                color = 'white' _hover = {{}} _focus={{}}
-                            >
-                                {data.promoCode.isApplied ? 'EDIT' : 'APPLY'}
-                            </Button>
-                        </Flex>
-
-                        <Flex w = '100%' gap = '10px' direction={'column'}>
-                            <Heading as = 'h1' color = 'brand.text' fontSize={'23px'}>Insurance Start Date</Heading>
-                            <FormControl isInvalid = {data.insStartDate.error}>
-                                <InputGroup>
-                                    <Input value = {data.insStartDate.value} onChange = {onChangeInsStartDate} min = {formatDateToYyyyMmDd(new Date())} type = 'date' placeholder = "Choose" />
-                                    {/* <InputRightElement h = '100%'>
-                                        <Icon as = {CalendarIcon} h = 'auto' w = 'auto' />
-                                    </InputRightElement> */}
-                                </InputGroup>
-                                <FormErrorMessage ml = '10px'>Insurance start date is required!</FormErrorMessage>
-                            </FormControl>
-                        </Flex>
                         
                         <Flex mt = '20px' w = '100%' flexWrap={'wrap'} gap ='15px'>
-                            <Button onClick = {e => onClickSubmit('PROCEED')} isLoading = {data.loading == 'PROCEED'} w = '100%' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>PROCEED TO PURCHASE</Button>
-                            <Button onClick = {onClickBack} flex = {1} bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
-                            <Button onClick = {e => onClickSubmit('EMAIL_QUOTE')} isLoading = {data.loading == 'EMAIL_QUOTE'} flex = {1} bg = 'brand.darkViolet' color = 'white' _hover = {{}} _focus={{}} whiteSpace={'pre-wrap'}>EMAIL ME A QUOTE</Button>
+                            <Button onClick = {e => {}} w = '100%' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>PROCEED TO PAY</Button>
                         </Flex>
 
                     </Flex>
@@ -554,31 +384,4 @@ const Summary: NextPage<{}> = ({}) => {
 }
 
 export default Summary;
-
-interface EmailQuotePopupProps {
-    isOpen: boolean,
-    onClose: () => void
-}
- 
-const EmailQuotePopup = ({ isOpen, onClose }: EmailQuotePopupProps) => {
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-            <ModalOverlay />
-            <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
-                <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
-                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = '30px' alignItems={'center'}>
-                        <Flex m = 'auto' position={'relative'} w = '100px' h = '100px'>
-                            <Image src='/icons/Doc-processing.svg' fill objectFit="contain" alt={"quate_submit_in_process_image"} />
-                        </Flex>
-                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>Your Quote has been sent to your email.</Heading>
-                        <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
-                           
-                        </Text>
-                        <Button onClick = {onClose} h = '40px' w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
-                    </Flex>
-                </ModalBody>
-            </ModalContent>
-        </Modal>
-    );
-}
 

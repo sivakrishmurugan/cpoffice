@@ -27,6 +27,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     const { isLoading, coveragesData, updateDataWithNewQuoteId, updateDataWithNewQuoteAndCoverages } = useCoverage();
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const [agreedWithTermsAndConditions, setAgreedWithTermsAndConditions] = useState(false);
+    const [paymentRetryCount, setPaymentRetryCount] = useSessionStorage('payment_retry', 3);
     const [data, setData] = useState({
         name: localData?.basic?.name ?? '',
         number: localData?.basic?.number ?? '',
@@ -57,11 +58,13 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     const router = useRouter();
     
     useEffect(() => {
+        setPaymentRetryCount(3);
         if(quoteFromQuery != null && quoteFromQuery.quote != null && quoteFromQuery.encryptedQuoteId != null) {
             checkQuoteDataAndRedirect(quoteFromQuery.quote, quoteFromQuery.coverages, quoteFromQuery.encryptedQuoteId)
         } else {
             setRedirectLoading(false)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [quoteFromQuery])
 
     const checkQuoteDataAndRedirect = (quote: any, coverages: any, encryptedQuoteId: string) => {
@@ -286,6 +289,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                 <FormLabel>Registered Clinic Number</FormLabel>
                 <InputGroup>
                     <Input 
+                        name = 'clinic_number'
                         value = {data.number}
                         onChange = {onChangeNumber}
                         placeholder="ex. MY12367" 
@@ -350,6 +354,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                 <FormLabel>Email id</FormLabel>
                 <InputGroup>
                     <Input
+                        name = 'email'
                         value = {data.email}
                         onChange = {onChangeEmail}
                         placeholder="johnsmith@gmail.com" 
@@ -433,14 +438,14 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
             <ModalOverlay />
             <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
                 <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
-                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = '30px' alignItems={'center'}>
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']} alignItems={'center'}>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
                            Quote ID already exist. Are you sure you want to continue with existing quote?
                         </Text>
                         <Flex gap = '20px'>
-                            <Button onClick = {onClose} h = '40px' w = {['150px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
-                            <Button onClick = {onClickOk} h = '40px' w = {['150px', '150px', '250px', '250px', '250px']} bg = 'brand.primary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
+                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                            <Button onClick = {onClickOk} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.primary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>

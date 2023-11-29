@@ -142,7 +142,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
         try {
             const res = await axiosClient.post('/api/clinicshield/insertclaims', {
                 QuoteID: localData.quoteId,
-                ClaimDeclaration: data.previouslyClaimed ? JSON.stringify(data.claimInfoList.map(e => ({
+                ClaimDeclaration: data.previouslyClaimed.isClaimed ? JSON.stringify(data.claimInfoList.map(e => ({
                     ClaimType: e.type.value,
                     ClaimYear: e.year.value,
                     ClaimAmount: e.amount.value.toString(),

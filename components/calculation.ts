@@ -7,16 +7,11 @@ export const percentageResult = (percent: number, total: number) => {
     return result;
 };
 
-export const calculatePremium = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage) => {
-    const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
-    return type == 'FIRE' ? percentageResult(coverage?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
-}
-
 export const getTotalPremiumsForFireAndPerilsInsurance = (selectedCoverages: SelectedCoverage[], coveragesData: Coverage[]) => {
     return selectedCoverages.reduce((out, selected) => {
         const coverageData = coveragesData?.find(e => e.CoverageID == selected.id);
         if(coverageData == null) return out;
-        const total = (selected.field_1 ?? 0) ?? (selected?.field_2 ?? 0);
+        const total = (selected.field_1 ?? 0) + (selected?.field_2 ?? 0);
         let calculatedResultForFireInsPremium = percentageResult(coverageData?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
         let calculatedResultForFireAndPerilsInsPremium = percentageResult(coverageData?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
         out.fireInsPremiumTotal.actual += parseFloat(calculatedResultForFireInsPremium.toString());
@@ -31,7 +26,7 @@ export const getTotalPremiumsForFireAndPerilsInsurance = (selectedCoverages: Sel
 }
 
 export const calculatePremiumForCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage) => {
-    const total = (selectedCoverage.field_1 ?? 0) ?? (selectedCoverage?.field_2 ?? 0);
+    const total = (selectedCoverage.field_1 ?? 0) + (selectedCoverage?.field_2 ?? 0);
     return type == 'FIRE' ? percentageResult(coverage?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
 }
 
@@ -62,11 +57,8 @@ export const calculateSummary = (
     promoCodeDiscount: number, 
     coveragesData: CoverageResData
 ) => {
-    const coveragesTotalPremium = selectedCoverages?.reduce((out, coverage) => {
-        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
-        const premium = calculatePremiumForCoverage(coverage, selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData)
-        return out + Number(premium);
-    }, 0) ?? 0
+    const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal } = getTotalPremiumsForFireAndPerilsInsurance(selectedCoverages ?? [], coveragesData.coverages ?? []);
+    const coveragesTotalPremium = selectedInsType == 'FIRE' ? fireInsPremiumTotal.rounded : fireAndPerilsInsPremiumTotal.rounded;
 
     const optionalCoveragesTotalPremium = selectedOptionalCoverages?.reduce((out, coverage) => {
         let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);

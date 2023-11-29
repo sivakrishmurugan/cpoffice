@@ -1,15 +1,16 @@
 "use client"
 import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
-import { getNumberFromString } from "@/components/utill_methods";
+import { convertToPriceFormat, getNumberFromString } from "@/components/utill_methods";
 import { OptionalCoverageForm } from "@/components/forms";
-import { Button, Flex, Heading } from "@chakra-ui/react";
+import { Alert, AlertIcon, Button, Flex, Heading } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import BottomActions from "@/components/bottom_actions";
 import { ClinicData, SelectedCoverage } from "@/components/types";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import useCoverage from "@/components/hooks/use_coverage";
-import { PROTECTION_AND_LIABILITY_COVERAGE } from "@/components/app/app_constants";
+import { MAX_COVERAGE_VALUE, PROTECTION_AND_LIABILITY_COVERAGE } from "@/components/app/app_constants";
+import MaxLimitExceededPopup from "@/components/max_cover_limit_popup";
 
 const OptionalCoverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -19,8 +20,13 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         return { id: e.CoverageID, field_1: fieldValuesFormLocalData?.field_1 ?? 0, field_2: fieldValuesFormLocalData?.field_2 ?? 0 }
     }) ?? []);
     const [selectedCoverages, setSelectedCoverages] = useState<(string | number)[]>(localData?.selectedOptionalCoverages.map(e => e.id) ?? []);
-    type ErrorType = { noCoverage: boolean, fieldErrors: { id: number | string, field_1: boolean, field_2?: boolean }[] }
-    const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, fieldErrors: [] });
+    type ErrorType = { 
+        noCoverage: boolean, 
+        maxLimit: { isExceeded: boolean, currentTotalValue: number },
+        fieldErrors: { id: number | string, field_1: boolean, field_2?: boolean }[] 
+    }
+    const [maxLimitPopupOpen, setMaxLimitPopupOpen] = useState(false);
+    const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, maxLimit: { isExceeded: false, currentTotalValue: 0 }, fieldErrors: [] });
     const isClient = useClient();
     const router = useRouter();
 
@@ -39,23 +45,55 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         } else {
             tempData.push(coverageId)
         }
+        const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data.filter(e => tempData.includes(e.id))));
         setSelectedCoverages(tempData)
         setErrors(prev => ({ 
             noCoverage: false, 
+            maxLimit: { isExceeded: totalCoverageValue > MAX_COVERAGE_VALUE, currentTotalValue: totalCoverageValue },
             fieldErrors: prev.fieldErrors.filter(e => e.id != coverageId) 
         }))
+    }
+
+    const calculateTotalCoverageValue = (allSelectedCoverages: SelectedCoverage[]) => {
+        return allSelectedCoverages.reduce((out, coverage) => out + (coverage.field_1 ?? 0) + (coverage.field_2 ?? 0), 0);
+    }
+
+    const getCurrentCoveragesList = (coverages: SelectedCoverage[]) => {
+        const coveragesInCurrentPage = coveragesData?.optionalCoverages?.map(e => e.CoverageID) ?? [];
+        const coveragesNotInCurrentPage: (string | number)[] = [PROTECTION_AND_LIABILITY_COVERAGE.id];
+        return [
+            ...coverages.filter(e => coveragesInCurrentPage.includes(e.id)),
+            ...(localData?.selectedOptionalCoverages ?? []).filter(e => coveragesNotInCurrentPage.includes(e.id)),
+            ...(localData?.selectedCoverages ?? [])
+        ];
     }
     
     const validateField = (coverage: SelectedCoverage) => {
         if(coverage.field_1 == null) return ;
         const fieldError = errors.fieldErrors.find(e => e.id == coverage.id);
+        const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data.filter(e => selectedCoverages.includes(e.id)).map(e => e.id == coverage.id ? coverage : e)));
+        const isMaxCoverageValueExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
+        
         if(coverage.field_1 == 0 && (fieldError == null || fieldError?.field_1 == false)) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
-            setErrors(prev => ({...prev, fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: true }]}))
+            setErrors(prev => ({
+                ...prev, 
+                maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
+                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: true }]
+            }))
         }
         if(coverage.field_1 > 0 && fieldError != null && fieldError?.field_1 == true) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
-            setErrors(prev => ({...prev, fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: false }]}))
+            setErrors(prev => ({
+                ...prev, 
+                maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
+                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: false }]
+            }))
+        } else if((errors.maxLimit.isExceeded && isMaxCoverageValueExceeded == false) || (errors.maxLimit.isExceeded == false && isMaxCoverageValueExceeded)) {
+            setErrors(prev => ({ 
+                ...prev, 
+                maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue } 
+            }))
         }
     }
 
@@ -89,10 +127,14 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
 
     const validate = () => {
         const tempErrors: ErrorType = JSON.parse(JSON.stringify(errors));
+        const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data));
+        tempErrors.maxLimit.isExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
+        tempErrors.maxLimit.currentTotalValue = totalCoverageValue;
         tempErrors.noCoverage = false;
         tempErrors.fieldErrors = data.filter(e => selectedCoverages.includes(e.id)).map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: true } : null).filter(Boolean) as ErrorType['fieldErrors']
         setErrors(tempErrors)
-        return tempErrors.fieldErrors.some(e => e.field_1 == true);
+        if(tempErrors.maxLimit.isExceeded) setMaxLimitPopupOpen(true)
+        return tempErrors.maxLimit.isExceeded == true || tempErrors.fieldErrors.some(e => e.field_1 == true);
     }
 
     const onClickNext = () => {
@@ -107,7 +149,13 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
-            <Heading as = 'h1' ml = '20px' my = '20px' fontSize={'23px'}>Optional Coverage</Heading>
+             <MaxLimitExceededPopup 
+                isOpen = {maxLimitPopupOpen}
+                onClose = {() => setMaxLimitPopupOpen(false)}
+                currentValue = {errors.maxLimit.currentTotalValue}
+            />
+
+            <Heading as = 'h1' ml = '20px' my = '20px' fontSize={'23px'}>Optional Coverage</Heading> 
             {
                 isClient && coveragesData?.optionalCoverages.map(coverage => {
                     return <OptionalCoverageForm
@@ -121,6 +169,15 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
                     />
                 })
             }
+            
+            {
+                errors.maxLimit.isExceeded &&
+                <Alert mt = '20px' status='error' borderRadius={'8px'}>
+                    <AlertIcon />
+                    Total coverage value (coverages & optional coverages) cannot be more than RM 10,000,000. Your current total coverage value is RM {convertToPriceFormat(errors.maxLimit.currentTotalValue, true, true)}
+                </Alert>
+            }
+
             {
                 isClient &&
                 <BottomActions>

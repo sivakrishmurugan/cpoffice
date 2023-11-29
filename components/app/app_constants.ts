@@ -12,7 +12,7 @@ export const APP_YELLOW_COLOR = '#f6b900';
 export const APP_BORDER_COLOR = '#d1d1d1';
 
 export const APP_MAX_WIDTH = ['100%', '100%', '1378px', '1378px', '1378px'];
-export const APP_WIDTH = ['initial', '90%', '90%', '100%', '100%'];
+export const APP_WIDTH = ['100%', '90%', '90%', '100%', '100%'];
 
 export const FLOOR_LEVEL = [
     { id: 'LG', value: 'LG' },

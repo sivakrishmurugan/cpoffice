@@ -9,6 +9,7 @@ import { InfoIcon } from "../icons";
 import Image from 'next/image';
 import { convertToPriceFormat } from "../utill_methods";
 import { percentageResult } from "../calculation";
+import FirePerilsInsTooltip from "../fire_perils_ins_tooltip";
 
 interface CoverageFromProps {
     coverage: Coverage,
@@ -143,23 +144,9 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                                     <Flex>
                                         <Heading as = 'h1' fontSize={'16px'}>
                                             FIRE & PERILS INSURANCE
-                                            <ResponsiveTooltip 
-                                                wrapperDivProps = {{ verticalAlign: 'middle', ml: '10px' }}
-                                                label = {
-                                                    <Flex maxW = '380px' direction={'column'}>
-                                                        <Heading as = 'h3' fontSize={'18px'}>{TOOLTIP_INFO.fireAndPerilsIns.title}</Heading>
-                                                        <OrderedList ml = '30px'>
-                                                            {
-                                                                TOOLTIP_INFO.fireAndPerilsIns.contents.map(e => {
-                                                                    return <ListItem key = {e}>{e}</ListItem>
-                                                                })
-                                                            }
-                                                        </OrderedList>
-                                                    </Flex>
-                                                }
-                                            >
+                                            <FirePerilsInsTooltip>
                                                 <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
-                                            </ResponsiveTooltip>
+                                            </FirePerilsInsTooltip>
                                         </Heading>
                                     </Flex>
                                     <Text w = 'fit-content' fontSize={'12px'} color={'white'} bg = 'brand.yellow' p = '5px 20px' borderRadius={'49px'}>Recommended</Text>

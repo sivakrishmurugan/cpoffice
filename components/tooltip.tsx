@@ -29,6 +29,7 @@ const ResponsiveTooltip = ({ children, isDisabled, toolTipWidth = 'auto', wrappe
             isOpen = {isOpen}
             p = '10px' borderRadius = '5px' hasArrow bg = 'white' color = 'brand.text'
             border = '1px'  maxW = '600px'
+            mx = '10px'
             w = {toolTipWidth}
             borderColor={'brand.borderColor'}
             sx={{"--popper-arrow-shadow-color": APP_BORDER_COLOR}}
