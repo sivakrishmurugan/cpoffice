@@ -1,15 +1,15 @@
 "use client"
-import { PROTECTION_AND_LIABILITY_COVERAGE as coverageContent } from '@/components/app/app_constants';
-import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
+import { PROTECTION_AND_LIABILITY_COVERAGE as coverageContent } from '@/lib/app/app_constants';
+import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
 import { Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import BottomActions from "@/components/bottom_actions";
+import BottomActions from "@/lib/components/bottom_actions";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
-import { ClinicData, SelectedCoverage } from '@/components/types';
-import axiosClient from '@/components/axios';
-import useCoverage from '@/components/hooks/use_coverage';
+import { ClinicData, SelectedCoverage } from '@/lib/types';
+import axiosClient from '@/lib/utlils/axios';
+import useCoverage from '@/lib/hooks/use_coverage';
 
 const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);

@@ -1,18 +1,18 @@
 "use client"
 import { Alert, AlertIcon, Button, Flex, Heading, Icon, ListItem, OrderedList, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
-import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
-import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MIN_COVERAGE_PREMIUM, TOOLTIP_INFO } from "@/components/app/app_constants";
+import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
+import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/types";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MIN_COVERAGE_PREMIUM, TOOLTIP_INFO } from "@/lib/app/app_constants";
 import { useEffect, useState } from "react";
-import { CheckIcon, InfoIcon } from "@/components/icons";
-import ResponsiveTooltip from "@/components/tooltip";
+import { CheckIcon, InfoIcon } from "@/lib/icons";
+import ResponsiveTooltip from "@/lib/components/tooltip";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
-import useCoverage from "@/components/hooks/use_coverage";
-import axiosClient from "@/components/axios";
-import { convertToPriceFormat } from "@/components/utill_methods";
-import { calculatePremiumForCoverage, getTotalPremiumsForFireAndPerilsInsurance } from "@/components/calculation";
-import FirePerilsInsTooltip from "@/components/fire_perils_ins_tooltip";
+import useCoverage from "@/lib/hooks/use_coverage";
+import axiosClient from "@/lib/utlils/axios";
+import { convertToPriceFormat } from "@/lib/utlils/utill_methods";
+import { calculatePremiumForCoverage, getTotalPremiumsForFireAndPerilsInsurance } from "@/lib/utlils/calculation";
+import FirePerilsInsTooltip from "@/lib/components/fire_perils_ins_tooltip";
 
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);

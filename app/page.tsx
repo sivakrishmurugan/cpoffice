@@ -1,5 +1,5 @@
-import axiosClient from '@/components/axios';
-import InitialForm from '@/components/forms/initial_form'
+import axiosClient from '@/lib/utlils/axios';
+import InitialForm from '@/lib/components/forms/initial_form'
 import { Flex, Heading } from '@chakra-ui/react'
 import { Metadata } from 'next';
 import Image from 'next/image';

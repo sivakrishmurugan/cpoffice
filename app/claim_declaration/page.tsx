@@ -1,17 +1,17 @@
 "use client"
 import { Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay, Text, UseRadioProps, useRadio, useRadioGroup } from "@chakra-ui/react";
-import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
-import { getNumberFromString, getRecentYears } from "@/components/utill_methods";
-import { ClaimDeclarationAdditionalData, ClinicData } from "@/components/types";
+import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
+import { getNumberFromString, getRecentYears } from "@/lib/utlils/utill_methods";
+import { ClaimDeclarationAdditionalData, ClinicData } from "@/lib/types";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import ClaimInfoForm from "@/components/forms/claim_info";
-import BottomActions from "@/components/bottom_actions";
+import ClaimInfoForm from "@/lib/components/forms/claim_info";
+import BottomActions from "@/lib/components/bottom_actions";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
-import axiosClient from "@/components/axios";
-import useCoverage from "@/components/hooks/use_coverage";
-import { calculateSummary } from "@/components/calculation";
+import axiosClient from "@/lib/utlils/axios";
+import useCoverage from "@/lib/hooks/use_coverage";
+import { calculateSummary } from "@/lib/utlils/calculation";
 
 const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData) => {
     return {
@@ -62,8 +62,11 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     const previouslyClaimedRadioGroup = getPreviouslyClaimedRootProps();
 
     useEffect(() => {
-        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') router.replace('/'); 
-        if(localData?.insStartDate == null || localData?.insStartDate == '') router.replace('/summary')
+        if(localData == null || localData?.quoteId == null || localData?.quoteId == '') {
+            router.replace('/');
+        } else if(localData?.insStartDate == null || localData?.insStartDate == '') { 
+            router.replace('/summary') 
+        }
     }, [localData, router])
 
     const onChangeClaimInfoValues = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: 'type' | 'year' | 'amount' | 'desciption', index: number) => {

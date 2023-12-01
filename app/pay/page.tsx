@@ -1,19 +1,20 @@
 "use client"
 import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/components/app/app_constants";
-import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
-import { InfoIcon, PromoCodeIcon } from "@/components/icons";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/lib/app/app_constants";
+import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
+import { InfoIcon, PromoCodeIcon } from "@/lib/icons";
 import { ChangeEvent, useEffect, useState } from "react";
-import ResponsiveTooltip from "@/components/tooltip";
+import ResponsiveTooltip from "@/lib/components/tooltip";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import React from "react";
-import useCoverage from "@/components/hooks/use_coverage";
-import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/components/types";
-import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from "@/components/utill_methods";
-import axiosClient from "@/components/axios";
+import useCoverage from "@/lib/hooks/use_coverage";
+import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/types";
+import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from "@/lib/utlils/utill_methods";
+import axiosClient from "@/lib/utlils/axios";
 import Image from 'next/image';
-import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary } from "@/components/calculation";
+import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary } from "@/lib/utlils/calculation";
+import AddressInput from "@/lib/components/inputs/address_input";
 
 const Summary: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -370,6 +371,11 @@ const Summary: NextPage<{}> = ({}) => {
                                 </Tbody>
                             </Table>
                         </TableContainer>
+
+                        {/* <AddressInput 
+                            currentValue={''}
+                            onChange={() => {}}
+                        /> */}
                         
                         <Flex mt = '20px' w = '100%' flexWrap={'wrap'} gap ='15px'>
                             <Button onClick = {e => {}} w = '100%' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>PROCEED TO PAY</Button>

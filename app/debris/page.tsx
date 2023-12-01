@@ -1,17 +1,17 @@
 "use client"
-import { useClient, useLocalStorage, useSessionStorage } from "@/components/hooks";
+import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
 import { Alert, AlertIcon, Button, Flex  } from "@chakra-ui/react";
-import { convertToPriceFormat, getNumberFromString } from "@/components/utill_methods";
-import { ClinicData, SelectedCoverage } from "@/components/types";
+import { convertToPriceFormat, getNumberFromString } from "@/lib/utlils/utill_methods";
+import { ClinicData, SelectedCoverage } from "@/lib/types";
 import { ChangeEvent, useEffect, useState } from "react";
-import BottomActions from "@/components/bottom_actions";
-import { CoverageForm } from "@/components/forms";
+import BottomActions from "@/lib/components/bottom_actions";
+import { CoverageForm } from "@/lib/components/forms";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
-import useCoverage from "@/components/hooks/use_coverage";
-import axiosClient from "@/components/axios";
-import { MAX_COVERAGE_VALUE } from "@/components/app/app_constants";
-import MaxLimitExceededPopup from "@/components/max_cover_limit_popup";
+import useCoverage from "@/lib/hooks/use_coverage";
+import axiosClient from "@/lib/utlils/axios";
+import { MAX_COVERAGE_VALUE } from "@/lib/app/app_constants";
+import MaxLimitExceededPopup from "@/lib/components/max_cover_limit_popup";
 
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
