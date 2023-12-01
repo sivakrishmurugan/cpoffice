@@ -87,10 +87,10 @@ const PaymentStatus = ({ message, status, invoice, transationRef }: PaymentStatu
             />
             <Heading as = 'h1' textAlign={'center'}>{statusWithTitle[status]}</Heading>
             <Heading as = 'h3' fontSize={'20px'} textAlign={'center'}>{message}</Heading>
-            <Text as = 'h3' mt = '10px' fontSize={'16px'} textAlign={'center'}>Invoice: {invoice}</Text>
-            <Text as = 'h3' mb = '20px' fontSize={'16px'} textAlign={'center'}>Transaction ref: {transationRef}</Text>
+            {invoice != null || invoice != '' && <Text as = 'h3' mt = '10px' fontSize={'16px'} textAlign={'center'}>Invoice: {invoice}</Text>}
+            {transationRef != null || transationRef != '' && <Text as = 'h3' mb = '20px' fontSize={'16px'} textAlign={'center'}>Transaction ref: {transationRef}</Text>}
             {
-                isClient && ['failure', 'rejected', 'cancelled'].includes(status) && remainingRetryCount > 0 &&
+                isClient && ['failed', 'cancelled'].includes(status) && remainingRetryCount > 0 &&
                 <Button onClick={onClickRetryPayment} isLoading = {retryLoading} mt = '10px' h = '40px' w = '250px' bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Retry payment</Button>
             }
             <Button onClick={onClickHome} h = '40px' w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Home</Button>

@@ -14,20 +14,24 @@ import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from 
 import axiosClient from "@/lib/utlils/axios";
 import Image from 'next/image';
 import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary } from "@/lib/utlils/calculation";
-import AddressInput from "@/lib/components/inputs/address_input";
 
 const Summary: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [payLoading, setPayLoading] = useState(false);
-    const [address, setAddress] = useState('');
     const appliedPromoDiscountPercentage = localData?.promoCodePercentage ?? 0;
     const isClient = useClient();
     const router = useRouter();
 
     useEffect(() => {
-        if(localData == null || localData.quoteId == null || localData.quoteId == '') router.replace('/');
-        if(localData?.selectedInsType == null) router.replace('/insurance_type')
+        if(
+            localData == null || 
+            localData.quoteId == null || localData.quoteId == '' || 
+            localData?.paymentApproved == false ||
+            localData?.isPaid
+        ) {
+            router.replace('/');
+        } 
     }, [localData, router])
 
     const coverageValue = (coverage: SelectedCoverage) => {
@@ -41,6 +45,34 @@ const Summary: NextPage<{}> = ({}) => {
         appliedPromoDiscountPercentage, 
         coveragesData ?? { coverages: [], optionalCoverages: [] }
     );
+
+    const onClickPay = async () => {
+        if(localData == null) return ;
+        setPayLoading(true);
+        try {
+            const { finalPremium } = calculateSummary(
+                localData?.selectedCoverages ?? [],
+                localData?.selectedOptionalCoverages ?? [], 
+                localData?.selectedInsType ?? 'FIRE', 
+                localData?.promoCodePercentage ?? 0, 
+                coveragesData ?? { coverages: [], optionalCoverages: [] }
+            )
+            const res = await axiosClient.post('/api/clinicshield/dopayment', {
+                QuoteID: localData?.quoteId,
+                Payment: finalPremium.toString()
+            })
+            if(res.data && res.data.Success == 1 && res.data.Data.respCode && res.data.Data.respCode == '0000') {
+                router.push(res.data.Data.webPaymentUrl);
+            }
+        } catch(e: any) {
+            console.log('do payment api failed: ', e)
+            if(e?.response?.status == 401) {
+                await updateDataWithNewQuoteId(localData?.quoteId);
+                onClickPay()
+            }
+        }
+        setPayLoading(false)
+    }
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
@@ -67,8 +99,7 @@ const Summary: NextPage<{}> = ({}) => {
         
                         {/* Summary heading and edit details button */}
                         <Flex w = '100%' gap = '35px' alignItems={'center'} justifyContent={'space-between'}>
-                            <Heading as = {'h1'} fontSize={'23px'}>Summary</Heading>
-                            <Button size = 'sm' variant={'outline'} borderColor = 'brand.borderColor' h = '40px'>EDIT DETAILS</Button>
+                            <Heading as = {'h1'} fontSize={'23px'}>Payment approved</Heading>
                         </Flex>
                         
                         {/* Divider */}
@@ -87,15 +118,23 @@ const Summary: NextPage<{}> = ({}) => {
                                 <Table variant={'unstyled'}>
                                     <Tbody>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Clinic Name</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Clinic Name</Td>
                                             <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.name}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Coverage Period</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person In Charge Name</Td>
+                                            <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICName}</Td>
+                                        </Tr>
+                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person In Charge IC</Td>
+                                            <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICID}</Td>
+                                        </Tr>
+                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
+                                            <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>12 Months</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Location</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Location</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.address}</Td>
                                         </Tr>
                                     </Tbody>
@@ -373,13 +412,18 @@ const Summary: NextPage<{}> = ({}) => {
                             </Table>
                         </TableContainer>
 
-                        {/* <AddressInput 
-                            currentValue={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        /> */}
+                        <Flex direction={'column'} gap = '10px'>
+                            <Text fontWeight={'bold'} fontSize={'16px'}>Insurance Start Date</Text>
+                            <Text color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'}>{localData?.insStartDate}</Text>
+                        </Flex>
+
+                        <Flex direction={'column'} gap = '10px'>
+                            <Text fontWeight={'bold'} fontSize={'16px'}>Insurance End Date</Text>
+                            <Text color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'}>{getDateAfter365Days(localData?.insStartDate ?? '')}</Text>
+                        </Flex>
                         
                         <Flex mt = '20px' w = '100%' flexWrap={'wrap'} gap ='15px'>
-                            <Button onClick = {e => {}} w = '100%' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>PROCEED TO PAY</Button>
+                            <Button onClick = {onClickPay} isLoading = {payLoading} w = '100%' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>PROCEED TO PAY</Button>
                         </Flex>
 
                     </Flex>

@@ -14,6 +14,7 @@ import axios from "axios";
 import { ClinicData, NecessaryBasicInfo } from "../../types";
 import axiosClient from "../../utlils/axios";
 import useCoverage from "../../hooks/use_coverage";
+import AddressInput from "../inputs/address_input";
 
 interface BasicInfoFormProps {
     quoteFromQuery: null | {
@@ -55,18 +56,10 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     const [submitErrors, setSubmitErrors] = useState<string[]>([]);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [redirectLoading, setRedirectLoading] = useState(quoteFromQuery?.encryptedQuoteId != null && quoteFromQuery?.encryptedQuoteId != '');
-    const [quoteExistPopup, setExistQuotePopup] = useState({
-        isOpen: false,
+    const [popupDetails, setPopupDetails] = useState({
+        popupFor: null as null |'QUOTE_EXIST' | 'FAILED' | 'ALREADY_PAID',
         content: '',
         quoteId: ''
-    });
-    const [quotePaidPopup, setPaidQuotePopup] = useState({
-        isOpen: false,
-        content: '',
-    });
-    const [quoteFailedPopup, setFailedQuotePopup] = useState({
-        isOpen: false,
-        content: '',
     });
     const router = useRouter();
     
@@ -76,7 +69,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
             checkQuoteDataAndRedirect(quoteFromQuery.quote, quoteFromQuery.coverages, quoteFromQuery.encryptedQuoteId)
         } else {
             if(quoteFromQuery?.failedMessage != null && quoteFromQuery.failedMessage != '') {
-                setFailedQuotePopup({ isOpen: true, content: quoteFromQuery.failedMessage })
+                setPopupDetails({ popupFor: 'FAILED', content: quoteFromQuery.failedMessage, quoteId: quoteFromQuery?.encryptedQuoteId })
             }
             setRedirectLoading(false)
         }
@@ -89,7 +82,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         if(redirctTo == '/') {
             if(convertedQuoteData?.isPaid == true) {
                 updateLocalDataToState(convertedQuoteData)
-                setPaidQuotePopup({ isOpen: true, content: 'Quote has been already paid!' })
+                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Quote has been already paid!', quoteId: '' })
             }
             setRedirectLoading(false)
             return ;
@@ -139,13 +132,13 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         }
     }
 
-    const onChangeAddress = (event: ChangeEvent<HTMLInputElement>) => {
-        setData(prev => ({ ...prev, address: event.target.value }));
+    const onChangeAddress = (value: string) => {
+        setData(prev => ({ ...prev, address: value }));
 
-        if(event.target.value == '' && errors.address == false) {
+        if(value == '' && errors.address == false) {
             setErrors(prev => ({ ...prev, address: true }))
         }
-        if(event.target.value != '' && errors.address == true) {
+        if(value != '' && errors.address == true) {
             setErrors(prev => ({ ...prev, address: false }))
         }
     }
@@ -297,12 +290,12 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     const { convertedQuoteData } = await updateDataWithNewQuoteId(res.data?.[0]?.QuoteID)
                     const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
                     if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
-                        setPaidQuotePopup({ isOpen: true, content: 'Quote has been already paid!' })
+                        setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Quote has been already paid!', quoteId: '' })
                     } else {
                         router.push('/coverage');
                     }
                 } else if(res.data?.[0].Success == 0 && res.data?.[0]?.EQuoteID != null && res.data?.[0]?.EQuoteID != '') {
-                    setExistQuotePopup({ isOpen: true, content: res.data[0]?.Result, quoteId: res?.data[0]?.EQuoteID })
+                    setPopupDetails({ popupFor: 'FAILED', content: res.data[0]?.Result, quoteId: res?.data[0]?.EQuoteID })
                 } else if(res.data?.[0]?.Success == 0) {
                     setSubmitErrors([
                         res.data?.[0]?.Result
@@ -313,20 +306,20 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         setSubmitLoading(false);
     }
 
-    const onClickCloseQuoteExistPopup = () => {
-        setExistQuotePopup({ isOpen: false, content: '', quoteId: '' })
+    const onClickClosePopup = () => {
+        setPopupDetails({ popupFor: null, content: '', quoteId: '' })
     }
 
     const onClickOkQuoteExistPopup = async () => {
-        updateLocalData(data, quoteExistPopup.quoteId)
-        const { convertedQuoteData } = await updateDataWithNewQuoteId(quoteExistPopup.quoteId)
+        updateLocalData(data, popupDetails.quoteId)
+        const { convertedQuoteData } = await updateDataWithNewQuoteId(popupDetails.quoteId)
         const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
         if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
-            setPaidQuotePopup({ isOpen: true, content: 'Quote has been already paid!' })
+            setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Quote has been already paid!', quoteId: '' })
         } else {
             router.push('/coverage');
-        }
-        setExistQuotePopup({ isOpen: false, content: '', quoteId: ''})
+            setPopupDetails({ popupFor: null, content: '', quoteId: '' })
+        }  
     }
 
     const isSubmitDisabled = Object.values(errors).some(e => e == true || typeof e == 'string');
@@ -338,24 +331,22 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
             </Flex>
 
             <QuoteExistPopup 
-                isOpen = {quoteExistPopup.isOpen}
-                onClose = {onClickCloseQuoteExistPopup}
+                isOpen = {popupDetails.popupFor == 'QUOTE_EXIST'}
+                onClose = {onClickClosePopup}
                 onClickOk = {onClickOkQuoteExistPopup}
-                content = {quoteExistPopup.content}
+                content = {popupDetails.content}
             />
 
             <QuotePaidPopup 
-                isOpen = {quotePaidPopup.isOpen}
-                onClose = {() => setPaidQuotePopup({ isOpen: false, content: '' })}
-                onClickOk = {() => setPaidQuotePopup({ isOpen: false, content: '' })}
-                content = {quotePaidPopup.content}
+                isOpen = {popupDetails.popupFor == 'ALREADY_PAID'}
+                onClose = {onClickClosePopup}
+                content = {popupDetails.content}
             />
 
             <QuoteFailedPopup
-                isOpen = {quoteFailedPopup.isOpen}
-                onClose = {() => setFailedQuotePopup({ isOpen: false, content: '' })}
-                onClickOk = {() => setFailedQuotePopup({ isOpen: false, content: '' })}
-                content = {quoteFailedPopup.content} 
+                isOpen = {popupDetails.popupFor == 'FAILED'}
+                onClose = {onClickClosePopup}
+                content = {popupDetails.content} 
             />
 
             <FormControl isInvalid = {errors.name}>
@@ -391,16 +382,10 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
 
             <FormControl isInvalid = {errors.address}>
                 <FormLabel>Clinic Address</FormLabel>
-                <InputGroup>
-                    <Input 
-                        value = {data.address}
-                        onChange = {onChangeAddress}
-                        placeholder="ex. 2 Angkasaraya Jln Ampang, Kuala Lumpur" 
-                    />
-                    <InputRightElement h = '100%'>
-                        <Icon as = {IcLocationPin} h = 'auto' w = 'auto' />
-                    </InputRightElement>
-                </InputGroup>
+                <AddressInput 
+                    currentValue = {data.address}
+                    onChange={onChangeAddress}
+                />
                 <FormErrorMessage ml = '10px'>Address is required!</FormErrorMessage>
             </FormControl>
 
@@ -577,11 +562,10 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
 interface QuotePaidPopupProps {
     content: string | JSX.Element,
     isOpen: boolean,
-    onClose: () => void,
-    onClickOk: () => void
+    onClose: () => void
 }
  
-const QuotePaidPopup = ({ content, isOpen, onClose, onClickOk }: QuotePaidPopupProps) => {
+const QuotePaidPopup = ({ content, isOpen, onClose }: QuotePaidPopupProps) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
@@ -605,11 +589,10 @@ const QuotePaidPopup = ({ content, isOpen, onClose, onClickOk }: QuotePaidPopupP
 interface QuoteFailedPopupProps {
     content: string | JSX.Element,
     isOpen: boolean,
-    onClose: () => void,
-    onClickOk: () => void
+    onClose: () => void
 }
  
-const QuoteFailedPopup = ({ content, isOpen, onClose, onClickOk }: QuoteFailedPopupProps) => {
+const QuoteFailedPopup = ({ content, isOpen, onClose }: QuoteFailedPopupProps) => {
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />

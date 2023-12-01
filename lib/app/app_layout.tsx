@@ -5,7 +5,7 @@ import React from "react";
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <Flex id = 'app_layout' w = '100%' direction={'column'} overflowX={'hidden'} alignItems={'center'} bg = {APP_BG_COLOR}>
+        <Flex id = 'app_layout' w = '100%' direction={'column'} alignItems={'center'} bg = {APP_BG_COLOR}>
             <Header />
             <Flex 
                 maxW = {APP_MAX_WIDTH} 

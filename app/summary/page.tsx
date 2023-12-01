@@ -33,8 +33,11 @@ const Summary: NextPage<{}> = ({}) => {
     const router = useRouter();
 
     useEffect(() => {
-        if(localData == null || localData.quoteId == null || localData.quoteId == '') router.replace('/');
-        if(localData?.selectedInsType == null) router.replace('/insurance_type')
+        if(localData == null || localData.quoteId == null || localData.quoteId == '') {
+            router.replace('/');
+        } else if(localData?.selectedInsType == null) {
+            router.replace('/insurance_type')
+        }
     }, [localData, router])
 
     const onChangePromoCode = (event: ChangeEvent<HTMLInputElement>) => {
@@ -165,6 +168,8 @@ const Summary: NextPage<{}> = ({}) => {
         router.replace('/');
     }
 
+    const onClickEditDetails = () => router.push('/coverage');
+
     const onClickBack = () => {
         router.push('/protection_liability_coverage');
     }
@@ -199,7 +204,7 @@ const Summary: NextPage<{}> = ({}) => {
                         {/* Summary heading and edit details button */}
                         <Flex w = '100%' gap = '35px' alignItems={'center'} justifyContent={'space-between'}>
                             <Heading as = {'h1'} fontSize={'23px'}>Summary</Heading>
-                            <Button size = 'sm' variant={'outline'} borderColor = 'brand.borderColor' h = '40px'>EDIT DETAILS</Button>
+                            <Button onClick={onClickEditDetails} size = 'sm' variant={'outline'} borderColor = 'brand.borderColor' h = '40px'>EDIT DETAILS</Button>
                         </Flex>
                         
                         {/* Divider */}
@@ -218,15 +223,23 @@ const Summary: NextPage<{}> = ({}) => {
                                 <Table variant={'unstyled'}>
                                     <Tbody>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Clinic Name</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Clinic Name</Td>
                                             <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.name}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Coverage Period</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>12 Months</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>Location</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>
+                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>12 Months</Td>
+                                        </Tr>
+                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Location</Td>
+                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.address}</Td>
+                                        </Tr>
+                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Location</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.address}</Td>
                                         </Tr>
                                     </Tbody>

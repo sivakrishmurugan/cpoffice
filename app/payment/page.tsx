@@ -5,7 +5,7 @@ import { ClaimDeclarationAdditionalData } from "@/lib/types";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import ClaimInfoForm from "@/lib/components/forms/claim_info";
 import BottomActions from "@/lib/components/bottom_actions";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Metadata, NextPage } from "next";
 import Image from 'next/image';
 import axiosClient from "@/lib/utlils/axios";
@@ -37,8 +37,9 @@ const getPaymentStatus = async (paymentResToken: string): Promise<null | {
         if(res && res.data && res.data[0]) {
             return res.data[0];
         }
+        console.log(res.data)
     } catch(e) {
-        //console.log('payment status api or jwt decode failed: ', e)
+        console.log('payment status api or jwt decode failed: ', e)
     }
     return null;
 }
@@ -52,8 +53,8 @@ const apiResStatusToStatus: Record<string, PaymentStatusType> = {
 }
 
 const PaymentStatusPage: NextPage<PageProps> = async ({ searchParams }) => {
+    if(searchParams?.token == null) redirect('/');
     const paymentStatusRes = await getPaymentStatus(searchParams?.token);
-    console.log(paymentStatusRes)
     let paymentStatus: PaymentStatusType = 'failed';
     if(paymentStatusRes && paymentStatusRes.TransactionResponse && paymentStatusRes.TransactionResponse != '') {
         paymentStatus = apiResStatusToStatus[paymentStatusRes.TransactionResponse.toLowerCase()];

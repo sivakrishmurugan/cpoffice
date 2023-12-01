@@ -64,6 +64,7 @@ export const formatDateToYyyyMmDd = (date: Date) => {
 }
 
 export const getDateAfter365Days = (fromDate: string) => {
+    if(fromDate == null || fromDate == '') return '';
     // Parse the input date string into a Date object
     const parts = fromDate.split("-");
     const day = parseInt(parts[2], 10);

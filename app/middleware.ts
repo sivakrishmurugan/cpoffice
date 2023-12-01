@@ -1,13 +1,12 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 
-// This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  console.log('in middleware')
-  return NextResponse.redirect(new URL('/payment', request.url))
-}
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
 
-// See "Matching Paths" below to learn more
-export const config = {
-  matcher: '/payment',
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
