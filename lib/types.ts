@@ -36,6 +36,8 @@ export interface NecessaryBasicInfo {
     address: string,
     floorLevel: string,
     constructionType: string,
+    PICName: string,
+    PICID: string,
     email: string,
     mobile: number
 }

@@ -20,6 +20,7 @@ const Summary: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [payLoading, setPayLoading] = useState(false);
+    const [address, setAddress] = useState('');
     const appliedPromoDiscountPercentage = localData?.promoCodePercentage ?? 0;
     const isClient = useClient();
     const router = useRouter();
@@ -373,8 +374,8 @@ const Summary: NextPage<{}> = ({}) => {
                         </TableContainer>
 
                         {/* <AddressInput 
-                            currentValue={''}
-                            onChange={() => {}}
+                            currentValue={address}
+                            onChange={(e) => setAddress(e.target.value)}
                         /> */}
                         
                         <Flex mt = '20px' w = '100%' flexWrap={'wrap'} gap ='15px'>

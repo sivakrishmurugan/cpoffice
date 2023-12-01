@@ -1,6 +1,6 @@
 "use client"
 import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading, InputLeftElement, Spinner } from "@chakra-ui/react";
-import { IcEmail, IcMobile, IcLocationPin, IcClinic } from "../../icons";
+import { IcEmail, IcMobile, IcLocationPin, IcClinic, PICNameIcon, PICIDIcon } from "../../icons";
 import useSessionStorage from "../../hooks/use_sessionstorage";
 import { CONSTRUCTION_TYPES, FLOOR_LEVEL } from "../../app/app_constants";
 import useLocalStorage from "../../hooks/use_localstorage";
@@ -34,6 +34,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         address: localData?.basic?.address ?? '',
         floorLevel: localData?.basic?.floorLevel ?? '',
         constructionType: localData?.basic?.constructionType ?? '',
+        PICName: localData?.basic?.PICName ?? '',
+        PICID: localData?.basic?.PICID ?? '',
         email: localData?.basic?.email ?? '',
         mobile: Number(((localData?.basic?.mobile ?? '000').toString()).slice(2))
     });
@@ -44,6 +46,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         address: false,
         floorLevel: false,
         constructionType: false,
+        PICName: false,
+        PICID: false,
         termsAndConditions: false,
         email: null as string | null,
     })
@@ -92,6 +96,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
             address: localData?.basic?.address ?? '',
             floorLevel: localData?.basic?.floorLevel ?? '',
             constructionType: localData?.basic?.constructionType ?? '',
+            PICName: localData?.basic?.PICName ?? '',
+            PICID: localData?.basic?.PICID ?? '',
             email: localData?.basic?.email ?? '',
             mobile: Number(((localData?.basic?.mobile ?? '000').toString()).slice(2))
         })
@@ -155,6 +161,28 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         }
         if(event.target.value != '' && errors.constructionType == true) {
             setErrors(prev => ({ ...prev, constructionType: false }))
+        }
+    }
+
+    const onChangePICName = (event: ChangeEvent<HTMLInputElement>) => {
+        setData(prev => ({ ...prev, PICName: event.target.value }));
+
+        if(event.target.value == '' && errors.PICName == false) {
+            setErrors(prev => ({ ...prev, PICName: true }))
+        }
+        if(event.target.value != '' && errors.PICName == true) {
+            setErrors(prev => ({ ...prev, PICName: false }))
+        }
+    }
+
+    const onChangePICID = (event: ChangeEvent<HTMLInputElement>) => {
+        setData(prev => ({ ...prev, PICID: event.target.value }));
+
+        if(event.target.value == '' && errors.PICID == false) {
+            setErrors(prev => ({ ...prev, PICID: true }))
+        }
+        if(event.target.value != '' && errors.PICID == true) {
+            setErrors(prev => ({ ...prev, PICID: false }))
         }
     }
 
@@ -249,6 +277,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                 Phone: "60" + data.mobile.toString(),
                 Floor: data.floorLevel.toString(),
                 CType: data.constructionType,
+                PICName: data.PICName,
+                PICID: data.PICID,
                 ClinicAddress: data.address,
                 QuoteID: localData?.quoteId && localData?.quoteId != '' ? localData?.quoteId : null,
             }, { headers: { secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY } });
@@ -391,6 +421,38 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     </FormControl>
                 </Flex>
                 <FormErrorMessage ml = '10px'>Both floor level and construction type is requried!</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid = {errors.PICName}>
+                <FormLabel>Person In charge Name</FormLabel>
+                <InputGroup>
+                    <Input
+                        name = 'person_in_charge_name'
+                        value = {data.PICName}
+                        onChange = {onChangePICName}
+                        placeholder="ex. John Smith" 
+                    />
+                    <InputRightElement h = '100%'>
+                        <Icon as = {PICNameIcon} h = 'auto' w = 'auto' />
+                    </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage ml = '10px'>Person In charge Name is requried!</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid = {errors.PICID}>
+                <FormLabel>Person In charge IC</FormLabel>
+                <InputGroup>
+                    <Input
+                        name = 'person_in_charge_ic'
+                        value = {data.PICID}
+                        onChange = {onChangePICID}
+                        placeholder="ex. MY12367" 
+                    />
+                    <InputRightElement h = '100%'>
+                        <Icon as = {PICIDIcon} h = 'auto' w = 'auto' />
+                    </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage ml = '10px'>Person In charge IC</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid = {errors.email != null}>

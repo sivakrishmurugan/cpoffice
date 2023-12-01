@@ -97,6 +97,8 @@ export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encrypted
             address: apiRes.ClinicAddress,
             mobile: apiRes.Phone,
             email: apiRes.Email,
+            PICName: apiRes.PICName,
+            PICID: apiRes.PICID
         },
         selectedCoverages: apiRes?.Coverage ?? [],
         selectedOptionalCoverages: apiRes?.OptionalCoverage ?? [],
