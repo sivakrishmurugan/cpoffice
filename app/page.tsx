@@ -14,10 +14,14 @@ const getQuote = async (quoteID: string) => {
     try {
       const res = await axiosClient.post('/api/clinicshield/getquote', { QuoteID: quoteID }, { headers: { secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY } });
       if(res && res.data && res.data[0] && res.data[0].Success == 1) {
-        return res.data[0];
+        return { success: true, data: res.data[0] };
+      } else if(res.data && res.data[0] && res.data[0].Success == 0 && res.data[0].Result == 'No QuoteID exists'){
+        return { success: false, message: res.data[0].Result };
       }
-    } catch(e) {}
-    return null;
+    } catch(e: any) {
+        console.log('get quote failed: ', e?.response?.data)
+    }
+    return { success: false, message: 'Something went wrong!' };
 }
 
 const getCoverage = async (quoteID: string, authToken: string) => {
@@ -35,11 +39,15 @@ export const metadata: Metadata = {
 }  
 
 export default async function Home({ searchParams }: PageProps) {
-    let quoteFromQuery = null as null | { quote: any, coverages: any, encryptedQuoteId: string };
+    let quoteFromQuery = null as null | { quote: any, coverages: any, encryptedQuoteId: string, failedMessage: string | null };
     if(searchParams.quoteid != null) {
         const quote = await getQuote(searchParams.quoteid);
-        const coverages = await getCoverage(searchParams.quoteid, quote.authToken);
-        quoteFromQuery = { quote, coverages, encryptedQuoteId: searchParams.quoteid }
+        if(quote.success) {
+            const coverages = await getCoverage(searchParams.quoteid, quote.data.authToken);
+            quoteFromQuery = { quote, coverages, encryptedQuoteId: searchParams.quoteid, failedMessage: null }
+        } else {
+            quoteFromQuery = { quote: null, coverages: null, encryptedQuoteId: searchParams.quoteid, failedMessage: quote.message }
+        }
     }
 
     return (

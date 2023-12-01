@@ -19,7 +19,8 @@ interface BasicInfoFormProps {
     quoteFromQuery: null | {
         quote: any,
         coverages: any,
-        encryptedQuoteId: string
+        encryptedQuoteId: string,
+        failedMessage: string | null
     }
 }
 
@@ -63,13 +64,20 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         isOpen: false,
         content: '',
     });
+    const [quoteFailedPopup, setFailedQuotePopup] = useState({
+        isOpen: false,
+        content: '',
+    });
     const router = useRouter();
     
     useEffect(() => {
         setPaymentRetryCount(3);
-        if(quoteFromQuery != null && quoteFromQuery.quote != null && quoteFromQuery.encryptedQuoteId != null) {
+        if(quoteFromQuery != null && quoteFromQuery.failedMessage == null && quoteFromQuery.quote != null && quoteFromQuery.encryptedQuoteId != null) {
             checkQuoteDataAndRedirect(quoteFromQuery.quote, quoteFromQuery.coverages, quoteFromQuery.encryptedQuoteId)
         } else {
+            if(quoteFromQuery?.failedMessage != null && quoteFromQuery.failedMessage != '') {
+                setFailedQuotePopup({ isOpen: true, content: quoteFromQuery.failedMessage })
+            }
             setRedirectLoading(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -343,6 +351,13 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                 content = {quotePaidPopup.content}
             />
 
+            <QuoteFailedPopup
+                isOpen = {quoteFailedPopup.isOpen}
+                onClose = {() => setFailedQuotePopup({ isOpen: false, content: '' })}
+                onClickOk = {() => setFailedQuotePopup({ isOpen: false, content: '' })}
+                content = {quoteFailedPopup.content} 
+            />
+
             <FormControl isInvalid = {errors.name}>
                 <FormLabel>Registered Clinic Name</FormLabel>
                 <InputGroup>
@@ -577,6 +592,31 @@ const QuotePaidPopup = ({ content, isOpen, onClose, onClickOk }: QuotePaidPopupP
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
                            {content}
                         </Text>
+                        <Flex gap = '20px'>
+                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                        </Flex>
+                    </Flex>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    );
+}
+
+interface QuoteFailedPopupProps {
+    content: string | JSX.Element,
+    isOpen: boolean,
+    onClose: () => void,
+    onClickOk: () => void
+}
+ 
+const QuoteFailedPopup = ({ content, isOpen, onClose, onClickOk }: QuoteFailedPopupProps) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
+                <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']} alignItems={'center'}>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
                         <Flex gap = '20px'>
                             <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
                         </Flex>
