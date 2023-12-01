@@ -13,8 +13,9 @@ axiosClient.interceptors.request.use(async config => {
 
         const { cookies } = (await import('next/headers'))
         const token = cookies().get('authToken')?.value;
+        const alreadyHasToken = config.headers['auth-token'] != null && config.headers['auth-token'] != ''
 
-        if (token) {
+        if (token && alreadyHasToken == false) {
             config.headers['auth-token'] = token
         }
     } else {

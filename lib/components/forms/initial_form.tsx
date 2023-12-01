@@ -20,7 +20,7 @@ interface BasicInfoFormProps {
         quote: any,
         coverages: any,
         encryptedQuoteId: string,
-        failedMessage: string | null
+        failedMessage: string | null | undefined
     }
 }
 
