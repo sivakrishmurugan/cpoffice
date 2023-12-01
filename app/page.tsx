@@ -82,7 +82,7 @@ export default async function Home({ searchParams }: PageProps) {
                         </Flex>
                     </Flex>
                     <Flex position={'relative'} w = {['40%', '40%', '40%', 'initial', 'initial']} minH = {['130px','150px', '200px', '600px', '600px']}>
-                        <Image src = '/images/hero-banner.png' alt = 'hero_image' fill objectFit='contain' sizes='(max-width: 991px) 100vw, 49vw' loading='lazy' />
+                        <Image src = '/images/hero-banner.png' alt = 'hero_image' fill style = {{ objectFit: 'contain' }} sizes='(max-width: 991px) 100vw, 49vw' loading='lazy' />
                     </Flex>
                 </Flex>
 

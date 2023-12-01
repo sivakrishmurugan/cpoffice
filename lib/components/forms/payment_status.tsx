@@ -81,7 +81,7 @@ const PaymentStatus = ({ message, status, invoice, transationRef }: PaymentStatu
             <Image 
                 w = '150px'
                 h = '150px'
-                objectFit={'contain'}
+                style = {{ objectFit: 'contain' }}
                 alt={`payment-${status}-icon`}
                 src = {iconSrc}
             />

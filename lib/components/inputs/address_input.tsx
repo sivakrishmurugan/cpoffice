@@ -71,6 +71,7 @@ const AddressInput = ({ fieldName = 'price_input', currentValue, onChange, group
                                 onClick={() => onSelectAddress(item.description)} 
                                 alignItems={'flex-start'}
                                 icon={<Icon mt = '3px' w = 'auto' h = 'auto' as = {IcLocationPin} />}
+                                key = {'1'}
                             >
                                 {item.description}
                             </MenuItem>

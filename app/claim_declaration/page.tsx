@@ -367,7 +367,7 @@ const PaynowPopup = ({ isOpen, onClose }: PaynowPopupProps) => {
                 <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
                     <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = '30px' alignItems={'center'}>
                         <Flex m = 'auto' position={'relative'} w = '100px' h = '100px'>
-                            <Image src='/icons/Doc-processing.svg' fill objectFit="contain" alt={"quate_submit_in_process_image"} />
+                            <Image src='/icons/Doc-processing.svg' fill style = {{ objectFit: 'contain' }} alt={"quate_submit_in_process_image"} />
                         </Flex>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>We have received your request and we need more information and time to process your Insurance Application.</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>

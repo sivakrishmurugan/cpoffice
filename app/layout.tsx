@@ -11,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <link rel='icon' href = "/icons/favicon.svg" />
             <script 
               async defer 
-              src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdZfT5YqMgVu_92CgR3PxJUdVLbXtv0vI&libraries=places&language=en"
+              src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdZfT5YqMgVu_92CgR3PxJUdVLbXtv0vI&libraries=places&language=en&callback=Function.prototype"
             ></script>
           </head>
           <body className={inter.className}>

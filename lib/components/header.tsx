@@ -14,7 +14,7 @@ const Header = () => {
             <Flex w = {APP_MAX_WIDTH.map((e, i) => i < 4 ? e : (Number(e.replace('px', '')) + 100).toString() + 'px')} alignItems={'center'} justifyContent={'space-between'} px = '20px' gap = '20px'>
                 <Flex h = '100%'>
                     <Flex position={'relative'} w = {hideNavLinks ? '300px' : '150px'} h = '100%'>
-                        <Image src = {hideNavLinks ? '/icons/My-Ds-logo.svg' : '/icons/My-logo.svg'} alt="logo" fill objectFit="contain" />
+                        <Image src = {hideNavLinks ? '/icons/My-Ds-logo.svg' : '/icons/My-logo.svg'} priority = {true} alt="logo" fill style = {{ objectFit: 'contain' }} />
                     </Flex>
                 </Flex>
                 <Flex w = '100%' h = '100%' justifyContent={'flex-end'} alignItems={'center'} gap  ='40px'>
@@ -41,7 +41,7 @@ const Header = () => {
                         </>
                     }
                     <Flex display={['none',  'none', 'none', 'flex', 'flex']} position={'relative'} w = '150px' h = '100%'>
-                        <Image src = '/icons/Chubb-logo.svg' alt="logo" fill objectFit="contain" />
+                        <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
                     </Flex>
                 </Flex>
             </Flex>
