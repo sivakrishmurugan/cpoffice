@@ -47,7 +47,7 @@ const AddressInput = ({ fieldName = 'price_input', currentValue, onChange, group
         <Flex w = '100%' direction = 'column' ref = {outSideRef}>
             <Menu matchWidth autoSelect isOpen = {suggestions.status.toLowerCase() == 'ok'} placement="bottom" eventListeners = {{ scroll: false }}>
                 <Flex w = '100%' position={'relative'} direction={'column'}>
-                    <MenuButton pointerEvents={'none'} position={'absolute'} w = '100%' h = '100%' zIndex={0} />
+                    <MenuButton tabIndex={1} pointerEvents={'none'} position={'absolute'} w = '100%' h = '100%' zIndex={0} />
                     <InputGroup zIndex={999} {...groupProps}>
                         <Input 
                             name = {fieldName}

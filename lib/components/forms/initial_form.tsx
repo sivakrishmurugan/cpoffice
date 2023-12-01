@@ -267,7 +267,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         return Object.values(tempErrors).some(e => e == true || typeof e == 'string') || tempSubmitErrors.length > 0;
     }
 
-    const onClickGetStarted = async () => {
+    const onClickGetStarted = async (event:  React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         if(validate()) return ;
         setSubmitLoading(true);
         try {
@@ -295,7 +296,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                         router.push('/coverage');
                     }
                 } else if(res.data?.[0].Success == 0 && res.data?.[0]?.EQuoteID != null && res.data?.[0]?.EQuoteID != '') {
-                    setPopupDetails({ popupFor: 'FAILED', content: res.data[0]?.Result, quoteId: res?.data[0]?.EQuoteID })
+                    setPopupDetails({ popupFor: 'QUOTE_EXIST', content: res.data[0]?.Result, quoteId: res?.data[0]?.EQuoteID })
                 } else if(res.data?.[0]?.Success == 0) {
                     setSubmitErrors([
                         res.data?.[0]?.Result
@@ -348,182 +349,186 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                 onClose = {onClickClosePopup}
                 content = {popupDetails.content} 
             />
-
-            <FormControl isInvalid = {errors.name}>
-                <FormLabel>Registered Clinic Name</FormLabel>
-                <InputGroup>
-                    <Input 
-                        value = {data.name}
-                        onChange = {onChangeName}
-                        placeholder="ex. International Clinic" 
-                    />
-                    <InputRightElement h = '100%'>
-                        <Icon as = {IcClinic} w = 'auto' h = 'auto' />
-                    </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage ml = '10px'>Clinic name is required!</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid = {errors.number}>
-                <FormLabel>Registered Clinic Number</FormLabel>
-                <InputGroup>
-                    <Input 
-                        name = 'clinic_number'
-                        value = {data.number}
-                        onChange = {onChangeNumber}
-                        placeholder="ex. MY12367" 
-                    />
-                    <InputRightElement h = '100%'>
-                        <Icon as = {IcClinic} h = 'auto' w = 'auto' />
-                    </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage ml = '10px'>Clinic number is requried!</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid = {errors.address}>
-                <FormLabel>Clinic Address</FormLabel>
-                <AddressInput 
-                    currentValue = {data.address}
-                    onChange={onChangeAddress}
-                />
-                <FormErrorMessage ml = '10px'>Address is required!</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid = {errors.floorLevel || errors.constructionType}>
-                <Flex gap = '10px' alignItems={'flex-end'}>
-                    <FormControl maxW = '200px' w = '40%' isInvalid = {errors.floorLevel}>
-                        <FormLabel>Floor Level</FormLabel>
-                        <Select 
-                            value = {data.floorLevel}
-                            onChange = {onChangeFloor}
-                            placeholder="Select one..."
-                        >
-                            {
-                                FLOOR_LEVEL.map(e => {
-                                    return <option key = {e.id} value = {e.id}>{e.value}</option>
-                                })
-                            }
-                        </Select>
+            <form onSubmit={onClickGetStarted}>
+                <Flex w = '100%' direction={'column'} gap = '20px'>
+                
+                    <FormControl isInvalid = {errors.name}>
+                        <FormLabel>Registered Clinic Name</FormLabel>
+                        <InputGroup>
+                            <Input 
+                                value = {data.name}
+                                onChange = {onChangeName}
+                                placeholder="ex. International Clinic" 
+                            />
+                            <InputRightElement h = '100%'>
+                                <Icon as = {IcClinic} w = 'auto' h = 'auto' />
+                            </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage ml = '10px'>Clinic name is required!</FormErrorMessage>
                     </FormControl>
-                    <FormControl isInvalid = {errors.constructionType}>
-                        <FormLabel>Construction Type</FormLabel>
-                        <Select 
-                            value = {data.constructionType}
-                            onChange = {onChangeConstructionType}
-                            placeholder="Select one..."
-                        >
-                            {
-                                CONSTRUCTION_TYPES.map(e => {
-                                    return <option key = {e.id} value = {e.id}>{e.value}</option>
-                                })
-                            }
-                        </Select>
+
+                    <FormControl isInvalid = {errors.number}>
+                        <FormLabel>Registered Clinic Number</FormLabel>
+                        <InputGroup>
+                            <Input 
+                                name = 'clinic_number'
+                                value = {data.number}
+                                onChange = {onChangeNumber}
+                                placeholder="ex. MY12367" 
+                            />
+                            <InputRightElement h = '100%'>
+                                <Icon as = {IcClinic} h = 'auto' w = 'auto' />
+                            </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage ml = '10px'>Clinic number is requried!</FormErrorMessage>
                     </FormControl>
-                </Flex>
-                <FormErrorMessage ml = '10px'>Both floor level and construction type is requried!</FormErrorMessage>
-            </FormControl>
 
-            <FormControl isInvalid = {errors.PICName}>
-                <FormLabel>Person In charge Name</FormLabel>
-                <InputGroup>
-                    <Input
-                        name = 'person_in_charge_name'
-                        value = {data.PICName}
-                        onChange = {onChangePICName}
-                        placeholder="ex. John Smith" 
-                    />
-                    <InputRightElement h = '100%'>
-                        <Icon as = {PICNameIcon} h = 'auto' w = 'auto' />
-                    </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage ml = '10px'>Person In charge Name is requried!</FormErrorMessage>
-            </FormControl>
+                    <FormControl isInvalid = {errors.address}>
+                        <FormLabel>Clinic Address</FormLabel>
+                        <AddressInput 
+                            currentValue = {data.address}
+                            onChange={onChangeAddress}
+                        />
+                        <FormErrorMessage ml = '10px'>Address is required!</FormErrorMessage>
+                    </FormControl>
 
-            <FormControl isInvalid = {errors.PICID}>
-                <FormLabel>Person In charge IC</FormLabel>
-                <InputGroup>
-                    <Input
-                        name = 'person_in_charge_ic'
-                        value = {data.PICID}
-                        onChange = {onChangePICID}
-                        placeholder="ex. MY12367" 
-                    />
-                    <InputRightElement h = '100%'>
-                        <Icon as = {PICIDIcon} h = 'auto' w = 'auto' />
-                    </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage ml = '10px'>Person In charge IC</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid = {errors.email != null}>
-                <FormLabel>Email id</FormLabel>
-                <InputGroup>
-                    <Input
-                        name = 'email'
-                        value = {data.email}
-                        onChange = {onChangeEmail}
-                        placeholder="johnsmith@gmail.com" 
-                    />
-                    <InputRightElement h = '100%'>
-                        <Icon as = {IcEmail} h = 'auto' w = 'auto' />
-                    </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage ml = '10px'>{errors.email}</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid = {errors.mobile}>
-                <FormLabel>Mobile Number</FormLabel>
-                <InputGroup>
-                    <InputLeftElement h = '100%' ml = '5px'>+60</InputLeftElement>
-                    <DigitInput 
-                        currentValue = {data.mobile}
-                        onChange = {onChangeMobile}
-                        forceUpdateOnValueChange
-                        emptyOnZero
-                        inputProps = {{ placeholder: '1234 56789', pl: '42px' }}
-                    />
-                    <InputRightElement h = '100%'>
-                        <Icon as = {IcMobile} h = 'auto' w = 'auto' />
-                    </InputRightElement>
-                </InputGroup>
-                <FormErrorMessage ml = '10px'>Mobile number is required!</FormErrorMessage>
-            </FormControl>
-
-            <Flex gap = '10px' alignItems={'flex-start'}>
-                <Checkbox isInvalid = {errors.termsAndConditions} isChecked = {agreedWithTermsAndConditions} onChange = {onToggleTermsAndConditionCheckbox} mt = '3px' boxShadow={'none'} borderColor = 'brand.borderColor' id = 'checkbox' colorScheme='blue' size = 'lg' />
-                <Text as = {'label'} htmlFor = 'checkbox' cursor={'pointer'}>
-                    <span>I understand and agree to the </span>
-                    <span>
-                        <Link as = {NextLink} href = {'/'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal>Terms and Conditions</Link>
-                    </span>
-                    <span>, </span>
-                    <span>
-                        <Link as = {NextLink} href = {'/'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal> Privacy Policy</Link>
-                    </span>
-                    <span> and I meet all local regulation.</span>
-                </Text>
-            </Flex>
-
-            {
-                submitErrors && submitErrors.length > 0 &&
-                <Alert mt = '20px' status='error' borderRadius={'8px'}>
-                    <Flex direction={'column'} gap = '10px'>
-                        <Flex fontWeight={'bold'}>
-                            <AlertIcon />
-                            Error
+                    <FormControl isInvalid = {errors.floorLevel || errors.constructionType}>
+                        <Flex gap = '10px' alignItems={'flex-end'}>
+                            <FormControl maxW = '200px' w = '40%' isInvalid = {errors.floorLevel}>
+                                <FormLabel>Floor Level</FormLabel>
+                                <Select 
+                                    value = {data.floorLevel}
+                                    onChange = {onChangeFloor}
+                                    placeholder="Select one..."
+                                >
+                                    {
+                                        FLOOR_LEVEL.map(e => {
+                                            return <option key = {e.id} value = {e.id}>{e.value}</option>
+                                        })
+                                    }
+                                </Select>
+                            </FormControl>
+                            <FormControl isInvalid = {errors.constructionType}>
+                                <FormLabel>Construction Type</FormLabel>
+                                <Select 
+                                    value = {data.constructionType}
+                                    onChange = {onChangeConstructionType}
+                                    placeholder="Select one..."
+                                >
+                                    {
+                                        CONSTRUCTION_TYPES.map(e => {
+                                            return <option key = {e.id} value = {e.id}>{e.value}</option>
+                                        })
+                                    }
+                                </Select>
+                            </FormControl>
                         </Flex>
-                        <UnorderedList ml = '50px'>
-                            {
-                                submitErrors.map(e => {
-                                    return <ListItem key = {e}>{e}</ListItem>
-                                })
-                            }
-                        </UnorderedList>
-                    </Flex>
-                </Alert>
-            }
+                        <FormErrorMessage ml = '10px'>Both floor level and construction type is requried!</FormErrorMessage>
+                    </FormControl>
 
-            <Button onClick={onClickGetStarted} isLoading = {submitLoading} isDisabled = {isSubmitDisabled} mt = '10px' bg = {'brand.secondary'} color = 'white' _hover = {{}} _focus={{}}>GET STARTED</Button>
+                    <FormControl isInvalid = {errors.PICName}>
+                        <FormLabel>Person In charge Name</FormLabel>
+                        <InputGroup>
+                            <Input
+                                name = 'person_in_charge_name'
+                                value = {data.PICName}
+                                onChange = {onChangePICName}
+                                placeholder="ex. John Smith" 
+                            />
+                            <InputRightElement h = '100%'>
+                                <Icon as = {PICNameIcon} h = 'auto' w = 'auto' />
+                            </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage ml = '10px'>Person In charge Name is requried!</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid = {errors.PICID}>
+                        <FormLabel>Person In charge IC</FormLabel>
+                        <InputGroup>
+                            <Input
+                                name = 'person_in_charge_ic'
+                                value = {data.PICID}
+                                onChange = {onChangePICID}
+                                placeholder="ex. MY12367" 
+                            />
+                            <InputRightElement h = '100%'>
+                                <Icon as = {PICIDIcon} h = 'auto' w = 'auto' />
+                            </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage ml = '10px'>Person In charge IC</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid = {errors.email != null}>
+                        <FormLabel>Email id</FormLabel>
+                        <InputGroup>
+                            <Input
+                                name = 'email'
+                                value = {data.email}
+                                onChange = {onChangeEmail}
+                                placeholder="johnsmith@gmail.com" 
+                            />
+                            <InputRightElement h = '100%'>
+                                <Icon as = {IcEmail} h = 'auto' w = 'auto' />
+                            </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage ml = '10px'>{errors.email}</FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid = {errors.mobile}>
+                        <FormLabel>Mobile Number</FormLabel>
+                        <InputGroup>
+                            <InputLeftElement h = '100%' ml = '5px'>+60</InputLeftElement>
+                            <DigitInput 
+                                currentValue = {data.mobile}
+                                onChange = {onChangeMobile}
+                                forceUpdateOnValueChange
+                                emptyOnZero
+                                inputProps = {{ placeholder: '1234 56789', pl: '42px' }}
+                            />
+                            <InputRightElement h = '100%'>
+                                <Icon as = {IcMobile} h = 'auto' w = 'auto' />
+                            </InputRightElement>
+                        </InputGroup>
+                        <FormErrorMessage ml = '10px'>Mobile number is required!</FormErrorMessage>
+                    </FormControl>
+
+                    <Flex gap = '10px' alignItems={'flex-start'}>
+                        <Checkbox isInvalid = {errors.termsAndConditions} isChecked = {agreedWithTermsAndConditions} onChange = {onToggleTermsAndConditionCheckbox} mt = '3px' boxShadow={'none'} borderColor = 'brand.borderColor' id = 'checkbox' colorScheme='blue' size = 'lg' />
+                        <Text as = {'label'} htmlFor = 'checkbox' cursor={'pointer'}>
+                            <span>I understand and agree to the </span>
+                            <span>
+                                <Link as = {NextLink} href = {'/'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal>Terms and Conditions</Link>
+                            </span>
+                            <span>, </span>
+                            <span>
+                                <Link as = {NextLink} href = {'/'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal> Privacy Policy</Link>
+                            </span>
+                            <span> and I meet all local regulation.</span>
+                        </Text>
+                    </Flex>
+
+                    {
+                        submitErrors && submitErrors.length > 0 &&
+                        <Alert mt = '20px' status='error' borderRadius={'8px'}>
+                            <Flex direction={'column'} gap = '10px'>
+                                <Flex fontWeight={'bold'}>
+                                    <AlertIcon />
+                                    Error
+                                </Flex>
+                                <UnorderedList ml = '50px'>
+                                    {
+                                        submitErrors.map(e => {
+                                            return <ListItem key = {e}>{e}</ListItem>
+                                        })
+                                    }
+                                </UnorderedList>
+                            </Flex>
+                        </Alert>
+                    }
+
+                    <Button isLoading = {submitLoading} isDisabled = {isSubmitDisabled} type = 'submit' mt = '10px' bg = {'brand.secondary'} color = 'white' _hover = {{}} _focus={{}}>GET STARTED</Button>
+                </Flex>
+            </form>
         </Flex>
     );
 }
@@ -550,7 +555,7 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
                         </Text>
                         <Flex gap = '20px'>
                             <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
-                            <Button onClick = {onClickOk} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.primary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
+                            <Button onClick = {onClickOk} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>
