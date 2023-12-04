@@ -1,8 +1,11 @@
 import axiosClient from '@/lib/utlils/axios';
 import InitialForm from '@/lib/components/forms/initial_form'
-import { Flex, Heading } from '@chakra-ui/react'
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, Heading, Link, ResponsiveValue } from '@chakra-ui/react'
 import { Metadata } from 'next';
 import Image from 'next/image';
+import { Image as ChakraImage, Text } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import FAQ from '@/lib/components/homepage/faq';
 
 interface PageProps {
     searchParams: {
@@ -56,8 +59,11 @@ export default async function Home({ searchParams }: PageProps) {
         }
     }
 
+    const textAlign: ResponsiveValue<any> = ['start', 'start', 'start', 'center', 'center'];
+
     return (
-        <Flex w = '100%' direction={'column'} gap = '20px' py = '20px'>
+        <Flex w = '100%' direction={'column'} py = '20px'>
+
             <Flex w ='100%' gap = '20px' direction={['column', 'column', 'column', 'row', 'row']} >
 
                 <Flex 
@@ -81,7 +87,7 @@ export default async function Home({ searchParams }: PageProps) {
                             <Heading textAlign={['start', 'start', 'start', 'center', 'center']} fontSize={['18px', '23px', '28px', '38px', '38px']} as = 'h1'>for Your Clinic Property</Heading>
                         </Flex>
                     </Flex>
-                    <Flex position={'relative'} w = {['40%', '40%', '40%', 'initial', 'initial']} minH = {['130px','150px', '200px', '600px', '600px']}>
+                    <Flex position={'relative'} w = {['40%', '40%', '40%', 'initial', 'initial']} minH = {['130px','150px', '200px', '600px', '650px']}>
                         <Image src = '/images/hero-banner.png' alt = 'hero_image' fill style = {{ objectFit: 'contain' }} sizes='(max-width: 991px) 100vw, 49vw' loading='lazy' />
                     </Flex>
                 </Flex>
@@ -96,6 +102,309 @@ export default async function Home({ searchParams }: PageProps) {
                 </Flex>
 
             </Flex>
+
+            <Flex mt = '35px' w = '100%' gap = '40px' direction={'column'} bg = 'white' minH = '700px' borderRadius={'30px'} paddingY = '60px' px = {['15px', '20px', '20px', '130px', '130px']}>
+
+                <Heading fontSize={'45px'} textAlign={textAlign}>Your Clinic Deserves the Finest Protection</Heading>
+
+                <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '80px' h = '120px'>
+                            <Image src = '/images/fire_1fire.png' alt = 'fire_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'35px'}>Fire Insurance</Heading>
+                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Comprehensive coverage against loss or damage to your clinic property caused by fire or lightning. With DoctorShield, you can rebuild your clinic with confidence, knowing your assets are protected.</Text>
+                    </Flex>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '150px' h = '120px'>
+                            <Image src = '/images/perils.png' alt = 'perils_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'35px'}>Fire & Perils Insurance</Heading>
+                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Go beyond basic coverage and safeguard your clinic against a broader range of risks. Our Fire & Perils Insurance provides enhanced protection, giving you peace of mind in the face of unforeseen events.</Text>
+                    </Flex>
+
+                </Flex>
+
+                <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+
+                    <Heading mt = '10px' fontSize={'35px'} textAlign={textAlign}>Also Buy Additional Coverages</Heading>
+
+                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:</Text>
+
+                    <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Removal of Debris</Text>
+                        </Flex>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Loss of Revenue Protection</Text>
+                        </Flex>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Mobile Device Protection</Text>
+                        </Flex>
+                    </Flex>
+
+                    <Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}>Protection and Liability Coverage</Text>
+
+                    <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Auditor fees</Text>
+                        </Flex>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Burglary</Text>
+                        </Flex>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Money Inside premises</Text>
+                        </Flex>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Plate glass</Text>
+                        </Flex>
+                    </Flex>
+
+                    <Flex mt = '20px' w = '100%' gap = {['10px', '15px', '15px', '40px', '40px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Fidelity guarantee</Text>
+                        </Flex>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Public liability</Text>
+                        </Flex>
+                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Employer liability</Text>
+                        </Flex>
+                    </Flex>
+
+                </Flex>
+
+                <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
+
+                    <Flex w = '100%' h = '150px' bg = '#dfebf2' justifyContent={textAlign} alignItems={textAlign} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+                        Ad space
+                    </Flex>
+
+                    <Flex w = '100%' h = '150px' bg = '#dfebf2' justifyContent={textAlign}  alignItems={textAlign} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+                        Ad space
+                    </Flex>
+
+                </Flex>
+
+                <Heading fontSize={'45px'} textAlign={textAlign}>What Makes Us Malaysia's Favorite Place to Buy Insurance?</Heading>
+
+                <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '100px' h = '100px'>
+                            <Image src = '/icons/Convenient.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'35px'}>Convenient</Heading>
+                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>No paperwork or documents required</Text>
+                    </Flex>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '100px' h = '100px'>
+                            <Image src = '/icons/Customizable.svg' alt = 'perils_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'35px'}>Customizable</Heading>
+                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>To your unique needs and practice</Text>
+                    </Flex>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '100px' h = '100px'>
+                            <Image src = '/icons/Competitive.svg' alt = 'perils_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'35px'}>Competitive</Heading>
+                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Premiums with flexible pricing options</Text>
+                    </Flex>
+
+                </Flex>
+
+                <Heading fontSize={'45px'} textAlign={textAlign}>Unique Benefits to Protect you</Heading>
+
+                <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '80px' h = '80px'>
+                            <Image src = '/icons/clinic-1.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'25px'}>Comprehensive Clinic-Focused Coverage</Heading>
+                    </Flex>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '80px' h = '80px'>
+                            <Image src = '/icons/Loss.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'25px'}>Consequential Loss Coverage</Heading>
+                    </Flex>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '80px' h = '80px'>
+                            <Image src = '/icons/Reliable.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'25px'}>Fidelity Guarantee</Heading>
+                    </Flex>
+
+                </Flex>
+
+                <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '80px' h = '80px'>
+                            <Image src = '/icons/Equipment.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'25px'}>All Risks Coverage for Equipment and Machinery</Heading>
+                    </Flex>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '80px' h = '80px'>
+                            <Image src = '/icons/Group.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'25px'}>Group Personal Accident Coverage</Heading>
+                    </Flex>
+
+                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
+                        <Flex position={'relative'} w = '80px' h = '80px'>
+                            <Image src = '/icons/Burglary.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                        <Heading textAlign={textAlign} fontSize={'25px'}>Specialized Coverages like Plate Glass and Burglary</Heading>
+                    </Flex>
+
+                </Flex>
+
+                <Flex w = '100%' direction={['column-reverse', 'column-reverse', 'column-reverse', 'row', 'row']} gap = '20px' alignItems={'center'}>
+
+                    <Flex h = 'fit-content' w = {['100%', '100%', '100%', '66.6%', '66.6%']} direction={'column'}>
+                        <Heading fontSize={'45px'}>Have a Question? We're Here to Help!</Heading>
+                        <Text my = '20px' fontSize={'16px'} color = 'brand.text'>Your concerns and queries matter to us. If you have any questions or need assistance, our dedicated support team is ready to provide the information you seek.</Text>
+                        <Heading fontSize={'32px'}>Feel free to reach out</Heading>
+                        <Heading fontSize={'32px'}>+60 11-1077 1700</Heading>
+                    </Flex>
+
+                    <Flex w = {['100%', '100%', '100%', '33.3%', '33.3%']}>
+                        <Flex position={'relative'} w = '100%' h = '100%' minH = '350px'>
+                            <Image src = '/images/help-image.png' alt = 'help_image' fill style={{ objectFit: 'contain' }} />
+                        </Flex>
+                    </Flex>
+
+                </Flex>
+
+                <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+
+                    <Heading mt = '20px' fontSize={'35px'} textAlign={textAlign}>DoctorShield Partner Association</Heading>
+
+                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:</Text>
+
+                    <Flex position={'relative'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']}>
+                        <Image src = '/images/asso-logo.png' alt = 'asso-logo' fill style = {{ objectFit: 'contain' }} />
+                    </Flex>
+
+                </Flex>
+
+                <Heading mt = '30px' fontSize={'32px'} textAlign={textAlign}>Frequently Asked Questions</Heading>
+
+                <Flex w = '100%' direction={'column'} gap = '30px' px = {['0px', '0px', '0px', '100px', '100px']}>
+
+                    <FAQ 
+                        title = "What types of damages does the Fire coverage under the FlexiGuard Plus policy protect against?"
+                        content = "The Fire coverage protects against loss of or damage to insured buildings, renovations, furniture, fixtures, fittings, machinery, equipment, and stocks-in-trade due to fire or lightning."
+                    />
+
+                    <FAQ 
+                        title = "How does the Consequential Loss coverage benefit my clinic in the event of a disaster?"
+                        content = "This coverage compensates for loss of profits due to reduced turnover and increased cost of working caused by fire, lightning, and explosion, helping your clinic to maintain financial stability during recovery."
+                    />
+                    
+                    <FAQ 
+                        title = "What is covered under the All Risks insurance in this policy?"
+                        content = "The All Risks coverage includes protection for equipment, plant, and machinery in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
+                    />
+                    
+                    <FAQ 
+                        title = "What does the Burglary insurance cover in the FlexiGuard Plus policy?"
+                        content = "The Burglary insurance protects your goods and all properties that are properly locked and secured in your insured premises against burglary or robbery with forcible entry."
+                    />
+
+                    <FAQ 
+                        title = "How does the Money coverage safeguard my clinic's finances?"
+                        content = "This coverage insures your cash, bank and currency notes, cheques, and money orders against burglary or robbery while in transit and in your insured premises during and after business hours."
+                    />
+
+                    <FAQ 
+                        title = "What does the Plate Glass insurance cover?"
+                        content = "The Plate Glass insurance covers your signage and glass panels against accidental breakage."
+                    />
+
+                    <FAQ 
+                        title = "Can you explain the Public Liability coverage in this policy?"
+                        content = "Public Liability coverage protects against third-party claims resulting from bodily injury or property damage occurring at your premises."
+                    />
+
+                    <FAQ 
+                        title = "What is Employer’s Liability insurance and why is it important for my clinic?"
+                        content = "Employer’s Liability insurance covers liabilities in the event of bodily injury sustained by employees due to work-related accidents or disease, essential for protecting both your employees and your clinic."
+                    />
+
+                    <FAQ 
+                        title = "What does the Fidelity Guarantee in this policy cover?"
+                        content = "The Fidelity Guarantee insures against loss of money and/or property due to fraud or acts of dishonesty by your employees."
+                    />
+
+                    <FAQ 
+                        title = "What are the benefits of the Group Personal Accident coverage in this policy?"
+                        content = "This coverage insures against accidental bodily injury which results in death or disablement, providing essential protection for you and your employees."
+                    />
+
+                </Flex>
+
+                <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '20px' px = {['10px', '50px', '50px', '100px', '250px']}>
+
+                    <Text textAlign={'center'} fontSize={'16px'} color={'brand.text'}>For any other questions or inquiries, feel free to contact us. We're here to assist you in every way possible.</Text>
+
+                    <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
+                        <Text w = '100%' textAlign={'center'} fontSize={'18px'} color={'white'}>+60 11-1077 1700</Text>
+                    </Flex>
+
+                </Flex>
+
+            </Flex>
+
+            <Flex mt = '30px' w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = {['30px', '30px', '30px', '0px', '0px']} bg = '#d9e7f1' p = {['30px', '30px', '30px', '40px', '40px']} borderRadius={'30px'} minH = '300px'>
+
+                <Flex w = {['100%', '100%', '100%', '50%', '50%']} direction={'column'} gap = '5px' pr = '40px'>
+                    <Flex position={'relative'} w = '160px' h = '60px'>
+                        <Image src = '/icons/My-logo.svg' alt = 'logo' fill style={{ objectFit: 'contain' }} />
+                    </Flex>
+                    <Text fontSize={'16px'} color={'brand.text'}>Doctor Shield is a collaborative effort of CHUBB and JA. With Doctor Shield buying indemnity insurance is as easy as clicking a few buttons. Doctor Shield is easy, fast and instant.</Text>
+                </Flex>
+
+                <Flex w = {['100%', '100%', '100%', '25%', '25%']} direction={'column'}>
+                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8'>Insurance</Heading>
+                    <Flex direction={'column'} gap = '10px'>
+                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Medical Professional Indemnity</Link>
+                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Clinic Property Insurance</Link>
+                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Clinic Indemnity <Text as = 'span' fontSize={'20px'} fontWeight={'semibold'} color = 'brand.secondary'>(Coming Soon)</Text></Link>
+                    </Flex>
+                </Flex>
+
+                <Flex w = {['100%', '100%', '100%', '25%', '25%']} direction={'column'} pl = {['0px', '0px', '0px', '10px', '40px']}>
+                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8'>Quick Links</Heading>
+                    <Flex direction={'column'} gap = '10px'>
+                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Home</Link>
+                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>About us</Link>
+                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Contact us</Link>
+                    </Flex>
+                    <Flex position={'relative'} w = {['230px', '230px', '200px', '200px', '230px']} h = '100px'>
+                        <Image src = '/icons/Chubb-logo.svg' alt = 'chubb_logo' fill style={{ objectFit: 'contain' }} />
+                    </Flex>
+                </Flex>
+
+            </Flex>
+
+            <Flex flexWrap={'wrap'} mt = '20px' w = '100%' gap = '20px' px = '20px'>
+                <Link flexGrow={1} as = {NextLink} href = {'#'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>© DoctorShield™ All Rights Reserved 2023</Link>
+                <Link as = {NextLink} href = {'#'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Privacy Policy</Link>
+                <Link as = {NextLink} href = {'#'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Terms of Use</Link>
+            </Flex>
+
         </Flex>
     )
 }
