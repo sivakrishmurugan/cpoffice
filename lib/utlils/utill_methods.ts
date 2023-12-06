@@ -37,7 +37,7 @@ export const getNumberStringFromString = (text: string) => {
     }
 }
 
-export const removeLeadingZeros = (number: number | string) =>  {
+export const removeTrailingZeros = (number: number | string) =>  {
     return number.toString().replace(/\.00$/,'');;
 }
   

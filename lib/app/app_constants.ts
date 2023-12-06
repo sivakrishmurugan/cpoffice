@@ -25,6 +25,49 @@ export const CONSTRUCTION_TYPES = [
     { id: '1B', value: 'Partial Brick Walls, Partial Non-Combustible Roof' },
 ]
 
+export const FAQ_LIST = [
+    {
+        question: "What types of damages does the Fire coverage under the FlexiGuard Plus policy protect against?",
+        answer: "The Fire coverage protects against loss of or damage to insured buildings, renovations, furniture, fixtures, fittings, machinery, equipment, and stocks-in-trade due to fire or lightning."
+    },
+    {
+        question: "How does the Consequential Loss coverage benefit my clinic in the event of a disaster?",
+        answer: "This coverage compensates for loss of profits due to reduced turnover and increased cost of working caused by fire, lightning, and explosion, helping your clinic to maintain financial stability during recovery."
+    },
+    {
+        question: "What is covered under the All Risks insurance in this policy?",
+        answer: "The All Risks coverage includes protection for equipment, plant, and machinery in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
+    },
+    {
+        question: "What does the Burglary insurance cover in the FlexiGuard Plus policy?",
+        answer: "The Burglary insurance protects your goods and all properties that are properly locked and secured in your insured premises against burglary or robbery with forcible entry."
+    },
+    {
+        question: "How does the Money coverage safeguard my clinic's finances?",
+        answer: "This coverage insures your cash, bank and currency notes, cheques, and money orders against burglary or robbery while in transit and in your insured premises during and after business hours."
+    },
+    {
+        question: "What does the Plate Glass insurance cover?",
+        answer: "The Plate Glass insurance covers your signage and glass panels against accidental breakage."
+    },
+    {
+        question: "Can you explain the Public Liability coverage in this policy?",
+        answer: "Public Liability coverage protects against third-party claims resulting from bodily injury or property damage occurring at your premises."
+    },
+    {
+        question: "What is Employer’s Liability insurance and why is it important for my clinic?",
+        answer: "Employer’s Liability insurance covers liabilities in the event of bodily injury sustained by employees due to work-related accidents or disease, essential for protecting both your employees and your clinic."
+    },
+    {
+        question: "What does the Fidelity Guarantee in this policy cover?",
+        answer: "The Fidelity Guarantee insures against loss of money and/or property due to fraud or acts of dishonesty by your employees."
+    },
+    {
+        question: "What are the benefits of the Group Personal Accident coverage in this policy?",
+        answer: "This coverage insures against accidental bodily injury which results in death or disablement, providing essential protection for you and your employees."
+    }
+]
+
 export const MIN_COVERAGE_PREMIUM = 75.00;
 export const MAX_COVERAGE_VALUE = 10000000;
 export const DEFAULT_FIRE_INS_PERCENTAGE = .1;

@@ -45,10 +45,21 @@ const Coverages: NextPage<{}> = ({}) => {
         if(localData == null || validate()) return ;
         setSubmitLoading(true);
         try {
+            const toBeUpdatedCoverages = localData!.selectedCoverages.map(e => {
+                const coverage = (coveragesData?.coverages ?? []).find(c => c.CoverageID == e.id);
+                const coverageName = coverage?.CoverageName ?? '';
+                const premium = calculatePremiumForCoverage(e, insType!, coverage)
+                return {
+                    ...e,
+                    name: coverageName,
+                    total: (e?.field_1 ?? 0) + (e?.field_2 ?? 0),
+                    premium: isNaN(Number(premium)) ? 0 : Number(premium)
+                }
+            });
             const res = await axiosClient.post('/api/clinicshield/setcoverage', {
                 QuoteID: localData.quoteId,
                 InsuranceType: insType,
-                Coverage: JSON.stringify(localData!.selectedCoverages)
+                Coverage: JSON.stringify(toBeUpdatedCoverages)
             });
             if(res && res.data && res.data[0]) {
                 if(res.data?.[0]?.Success == 1) {

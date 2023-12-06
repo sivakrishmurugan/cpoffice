@@ -22,7 +22,8 @@ const FAQ = ({ content, title }: FAQProps) => {
                             </Flex>
                             <AccordionIcon w = '35px' h = '35px' />
                         </AccordionButton>
-                        <AccordionPanel py = '0px' pr = '20px' pl = {['70px', '70px', '70px', '108px', '108px']} borderRadius={"10px"}>
+                        <AccordionPanel py = '0px' pr = {['20px', '20px', '50px', '50px', '60px']} pl = {['20px', '20px', '70px', '108px', '108px']} borderRadius={"10px"}>
+                            <Flex display={['flex', 'flex', 'none', 'none', 'none']} my = '15px' w = '100%' borderTop = '1px' borderColor = 'brand.borderColor'></Flex>
                             {content}
                         </AccordionPanel>
                     </>

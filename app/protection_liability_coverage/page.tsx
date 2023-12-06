@@ -1,5 +1,5 @@
 "use client"
-import { PROTECTION_AND_LIABILITY_COVERAGE as coverageContent } from '@/lib/app/app_constants';
+import { PROTECTION_AND_LIABILITY_COVERAGE, PROTECTION_AND_LIABILITY_COVERAGE as coverageContent } from '@/lib/app/app_constants';
 import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
 import { Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -10,8 +10,9 @@ import Image from 'next/image';
 import { ClinicData, SelectedCoverage } from '@/lib/types';
 import axiosClient from '@/lib/utlils/axios';
 import useCoverage from '@/lib/hooks/use_coverage';
+import { calculatePremiumForOptionalCoverage } from '@/lib/utlils/calculation';
 
-const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
+const ProtectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
     const [isAdded, setAdded] = useState((localData?.selectedOptionalCoverages?.findIndex(e => e.id == coverageContent.id) ?? -1) > -1)
@@ -44,9 +45,35 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
                 localOptionalCoverages= localOptionalCoverages.filter(e => e.id != coverageContent.id)
             }
             try {
+                const toBeUpdatedOptionalCoverages = localOptionalCoverages.map(e => {
+                    let coverage = (coveragesData?.optionalCoverages ?? []).find(c => c.CoverageID == e.id)!;
+                    const isProtectionAndLiabilityCoverage = e.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
+                    if(isProtectionAndLiabilityCoverage) {
+                        e = { id: e.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
+                        coverage = {
+                            CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
+                            isABR: 0,
+                            InsPercent: 0.0405,
+                        } as any
+                    }
+                    const coverageName = coverage?.CoverageName ?? '';
+                    const premium = calculatePremiumForOptionalCoverage(
+                        e, 
+                        coverage, 
+                        localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS',
+                        localData?.selectedCoverages ?? [],
+                        coveragesData?.coverages ?? []
+                    )
+                    return {
+                        ...e,
+                        name: coverageName,
+                        total: (e?.field_1 ?? 0) + (e?.field_2 ?? 0),
+                        premium: isNaN(Number(premium)) ? 0 : Number(premium)
+                    }
+                });
                 const res = await axiosClient.post('/api/clinicshield/setoptcoverage', {
                     QuoteID: localData.quoteId,
-                    OptCoverage: JSON.stringify(localOptionalCoverages)
+                    OptCoverage: JSON.stringify(toBeUpdatedOptionalCoverages)
                 });
                 if(res && res.data && res.data[0]) {
                     if(res.data?.[0]?.Success == 1) {
@@ -187,4 +214,4 @@ const PRotectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
     );
 }
 
-export default PRotectionAndLiabilityCoverage;
+export default ProtectionAndLiabilityCoverage;

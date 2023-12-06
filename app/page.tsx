@@ -6,6 +6,9 @@ import Image from 'next/image';
 import { Image as ChakraImage, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import FAQ from '@/lib/components/homepage/faq';
+import { FAQ_LIST } from '@/lib/app/app_constants';
+import BenifitCard from '@/lib/components/homepage/benifit_card';
+import BadgeText from '@/lib/components/homepage/badge_text';
 
 interface PageProps {
     searchParams: {
@@ -131,47 +134,27 @@ export default async function Home({ searchParams }: PageProps) {
 
                     <Heading mt = '10px' fontSize={'35px'} textAlign={textAlign}>Also Buy Additional Coverages</Heading>
 
-                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:</Text>
+                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text>
 
                     <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Removal of Debris</Text>
-                        </Flex>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Loss of Revenue Protection</Text>
-                        </Flex>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Mobile Device Protection</Text>
-                        </Flex>
+                        <BadgeText textAlign = {textAlign} text = {'Removal of Debris'} />
+                        <BadgeText textAlign = {textAlign} text = {'Loss of Revenue Protection'} />
+                        <BadgeText textAlign = {textAlign} text = {'Mobile Device Protection'} />
                     </Flex>
 
                     <Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}>Protection and Liability Coverage</Text>
 
                     <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Auditor fees</Text>
-                        </Flex>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Burglary</Text>
-                        </Flex>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Money Inside premises</Text>
-                        </Flex>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Plate glass</Text>
-                        </Flex>
+                        <BadgeText textAlign = {textAlign} text = {'Auditor fees'} />
+                        <BadgeText textAlign = {textAlign} text = {'Burglary'} />
+                        <BadgeText textAlign = {textAlign} text = {'Money Inside premises'} />
+                        <BadgeText textAlign = {textAlign} text = {'Plate glass'} />
                     </Flex>
 
                     <Flex mt = '20px' w = '100%' gap = {['10px', '15px', '15px', '40px', '40px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Fidelity guarantee</Text>
-                        </Flex>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Public liability</Text>
-                        </Flex>
-                        <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                            <Text textAlign={textAlign} fontSize={'18px'} color={'white'}>Employer liability</Text>
-                        </Flex>
+                        <BadgeText textAlign = {textAlign} text = {'Fidelity guarantee'} />
+                        <BadgeText textAlign = {textAlign} text = {'Public liability'} />
+                        <BadgeText textAlign = {textAlign} text = {'Employer liability'} />
                     </Flex>
 
                 </Flex>
@@ -188,7 +171,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 </Flex>
 
-                <Heading fontSize={'45px'} textAlign={textAlign}>What Makes Us Malaysia's Favorite Place to Buy Insurance?</Heading>
+                <Heading fontSize={'45px'} textAlign={textAlign}>{`What Makes Us Malaysia's Favorite Place to Buy Insurance?`}</Heading>
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
@@ -222,58 +205,48 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
-                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
-                        <Flex position={'relative'} w = '80px' h = '80px'>
-                            <Image src = '/icons/clinic-1.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
-                        </Flex>
-                        <Heading textAlign={textAlign} fontSize={'25px'}>Comprehensive Clinic-Focused Coverage</Heading>
-                    </Flex>
-
-                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
-                        <Flex position={'relative'} w = '80px' h = '80px'>
-                            <Image src = '/icons/Loss.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
-                        </Flex>
-                        <Heading textAlign={textAlign} fontSize={'25px'}>Consequential Loss Coverage</Heading>
-                    </Flex>
-
-                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
-                        <Flex position={'relative'} w = '80px' h = '80px'>
-                            <Image src = '/icons/Reliable.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
-                        </Flex>
-                        <Heading textAlign={textAlign} fontSize={'25px'}>Fidelity Guarantee</Heading>
-                    </Flex>
+                    <BenifitCard 
+                        textAlign = {textAlign}
+                        title = 'Comprehensive Clinic-Focused Coverage'
+                        icon = '/icons/clinic-1.svg'
+                    />
+                    <BenifitCard 
+                        textAlign = {textAlign}
+                        title = 'Consequential Loss Coverage'
+                        icon = '/icons/Loss.svg'
+                    />
+                    <BenifitCard 
+                        textAlign = {textAlign}
+                        title = 'Fidelity Guarantee'
+                        icon = '/icons/Reliable.svg'
+                    />
 
                 </Flex>
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
-                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
-                        <Flex position={'relative'} w = '80px' h = '80px'>
-                            <Image src = '/icons/Equipment.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
-                        </Flex>
-                        <Heading textAlign={textAlign} fontSize={'25px'}>All Risks Coverage for Equipment and Machinery</Heading>
-                    </Flex>
-
-                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
-                        <Flex position={'relative'} w = '80px' h = '80px'>
-                            <Image src = '/icons/Group.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
-                        </Flex>
-                        <Heading textAlign={textAlign} fontSize={'25px'}>Group Personal Accident Coverage</Heading>
-                    </Flex>
-
-                    <Flex w = '100%' h = '100%' direction={'column'} gap = '20px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '80px', '80px', '80px']} borderRadius={'10px'}>
-                        <Flex position={'relative'} w = '80px' h = '80px'>
-                            <Image src = '/icons/Burglary.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
-                        </Flex>
-                        <Heading textAlign={textAlign} fontSize={'25px'}>Specialized Coverages like Plate Glass and Burglary</Heading>
-                    </Flex>
+                    <BenifitCard 
+                        textAlign = {textAlign}
+                        title = 'All Risks Coverage for Equipment and Machinery'
+                        icon = '/icons/Equipment.svg'
+                    />
+                    <BenifitCard 
+                        textAlign = {textAlign}
+                        title = 'Group Personal Accident Coverage'
+                        icon = '/icons/Group.svg'
+                    />
+                    <BenifitCard 
+                        textAlign = {textAlign}
+                        title = 'Specialized Coverages like Plate Glass and Burglary'
+                        icon = '/icons/Burglary.svg'
+                    />
 
                 </Flex>
 
                 <Flex w = '100%' direction={['column-reverse', 'column-reverse', 'column-reverse', 'row', 'row']} gap = '20px' alignItems={'center'}>
 
                     <Flex h = 'fit-content' w = {['100%', '100%', '100%', '66.6%', '66.6%']} direction={'column'}>
-                        <Heading fontSize={'45px'}>Have a Question? We're Here to Help!</Heading>
+                        <Heading fontSize={'45px'}>{`Have a Question? We're Here to Help!`}</Heading>
                         <Text my = '20px' fontSize={'16px'} color = 'brand.text'>Your concerns and queries matter to us. If you have any questions or need assistance, our dedicated support team is ready to provide the information you seek.</Text>
                         <Heading fontSize={'32px'}>Feel free to reach out</Heading>
                         <Heading fontSize={'32px'}>+60 11-1077 1700</Heading>
@@ -291,7 +264,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                     <Heading mt = '20px' fontSize={'35px'} textAlign={textAlign}>DoctorShield Partner Association</Heading>
 
-                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:</Text>
+                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text>
 
                     <Flex position={'relative'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']}>
                         <Image src = '/images/asso-logo.png' alt = 'asso-logo' fill style = {{ objectFit: 'contain' }} />
@@ -303,66 +276,21 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} gap = '30px' px = {['0px', '0px', '0px', '100px', '100px']}>
 
-                    <FAQ 
-                        title = "What types of damages does the Fire coverage under the FlexiGuard Plus policy protect against?"
-                        content = "The Fire coverage protects against loss of or damage to insured buildings, renovations, furniture, fixtures, fittings, machinery, equipment, and stocks-in-trade due to fire or lightning."
-                    />
-
-                    <FAQ 
-                        title = "How does the Consequential Loss coverage benefit my clinic in the event of a disaster?"
-                        content = "This coverage compensates for loss of profits due to reduced turnover and increased cost of working caused by fire, lightning, and explosion, helping your clinic to maintain financial stability during recovery."
-                    />
-                    
-                    <FAQ 
-                        title = "What is covered under the All Risks insurance in this policy?"
-                        content = "The All Risks coverage includes protection for equipment, plant, and machinery in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
-                    />
-                    
-                    <FAQ 
-                        title = "What does the Burglary insurance cover in the FlexiGuard Plus policy?"
-                        content = "The Burglary insurance protects your goods and all properties that are properly locked and secured in your insured premises against burglary or robbery with forcible entry."
-                    />
-
-                    <FAQ 
-                        title = "How does the Money coverage safeguard my clinic's finances?"
-                        content = "This coverage insures your cash, bank and currency notes, cheques, and money orders against burglary or robbery while in transit and in your insured premises during and after business hours."
-                    />
-
-                    <FAQ 
-                        title = "What does the Plate Glass insurance cover?"
-                        content = "The Plate Glass insurance covers your signage and glass panels against accidental breakage."
-                    />
-
-                    <FAQ 
-                        title = "Can you explain the Public Liability coverage in this policy?"
-                        content = "Public Liability coverage protects against third-party claims resulting from bodily injury or property damage occurring at your premises."
-                    />
-
-                    <FAQ 
-                        title = "What is Employer’s Liability insurance and why is it important for my clinic?"
-                        content = "Employer’s Liability insurance covers liabilities in the event of bodily injury sustained by employees due to work-related accidents or disease, essential for protecting both your employees and your clinic."
-                    />
-
-                    <FAQ 
-                        title = "What does the Fidelity Guarantee in this policy cover?"
-                        content = "The Fidelity Guarantee insures against loss of money and/or property due to fraud or acts of dishonesty by your employees."
-                    />
-
-                    <FAQ 
-                        title = "What are the benefits of the Group Personal Accident coverage in this policy?"
-                        content = "This coverage insures against accidental bodily injury which results in death or disablement, providing essential protection for you and your employees."
-                    />
+                    {
+                        FAQ_LIST.map(faq => {
+                            return <FAQ 
+                                key = {faq.question}
+                                title = {faq.question}
+                                content = {faq.answer}
+                            />
+                        })
+                    }
 
                 </Flex>
 
                 <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '20px' px = {['10px', '50px', '50px', '100px', '250px']}>
-
-                    <Text textAlign={'center'} fontSize={'16px'} color={'brand.text'}>For any other questions or inquiries, feel free to contact us. We're here to assist you in every way possible.</Text>
-
-                    <Flex w = {['100%', '100%', 'fit-content', 'fit-content', 'fit-content']} px = '40px' py = '10px' alignItems={'center'} bg = 'brand.primary' borderRadius={'50px'}>
-                        <Text w = '100%' textAlign={'center'} fontSize={'18px'} color={'white'}>+60 11-1077 1700</Text>
-                    </Flex>
-
+                    <Text textAlign={'center'} fontSize={'16px'} color={'brand.text'}>{`For any other questions or inquiries, feel free to contact us. We're here to assist you in every way possible.`}</Text>
+                    <BadgeText textAlign={'center'} text = '+60 11-1077 1700' />
                 </Flex>
 
             </Flex>
@@ -377,7 +305,7 @@ export default async function Home({ searchParams }: PageProps) {
                 </Flex>
 
                 <Flex w = {['100%', '100%', '100%', '25%', '25%']} direction={'column'}>
-                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8'>Insurance</Heading>
+                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8' fontWeight={'semibold'}>Insurance</Heading>
                     <Flex direction={'column'} gap = '10px'>
                         <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Medical Professional Indemnity</Link>
                         <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Clinic Property Insurance</Link>
@@ -386,7 +314,7 @@ export default async function Home({ searchParams }: PageProps) {
                 </Flex>
 
                 <Flex w = {['100%', '100%', '100%', '25%', '25%']} direction={'column'} pl = {['0px', '0px', '0px', '10px', '40px']}>
-                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8'>Quick Links</Heading>
+                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8' fontWeight={'semibold'}>Quick Links</Heading>
                     <Flex direction={'column'} gap = '10px'>
                         <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Home</Link>
                         <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>About us</Link>
