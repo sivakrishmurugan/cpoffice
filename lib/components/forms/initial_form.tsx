@@ -308,6 +308,10 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     }
 
     const onClickClosePopup = () => {
+        if(popupDetails.popupFor == 'ALREADY_PAID') {
+            // clear sesssion data
+            setLocalData(null);
+        }
         setPopupDetails({ popupFor: null, content: '', quoteId: '' })
     }
 
@@ -501,7 +505,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                             </span>
                             <span>, </span>
                             <span>
-                                <Link as = {NextLink} href = {'/'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal> Privacy Policy</Link>
+                                <Link as = {NextLink} href = {'/privacy_policy'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal> Privacy Policy</Link>
                             </span>
                             <span> and I meet all local regulation.</span>
                         </Text>

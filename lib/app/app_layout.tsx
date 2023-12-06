@@ -12,7 +12,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 w = {APP_WIDTH} 
                 minH = {'calc(100vh - 60px)'} 
                 px = {['10px', '10px', '20px', '20px', '20px']}
-                overflowX={'hidden'}
             >
                 {children}
             </Flex>

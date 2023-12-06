@@ -41,6 +41,16 @@ export const removeTrailingZeros = (number: number | string) =>  {
     return number.toString().replace(/\.00$/,'');;
 }
   
+// checks if the string contians special characters other than space, & and ,(comma)
+export const isContainsSpecialCharacters = (value: string) => {
+    const regEx = /[`!@#$%^*()_+\-=\[\]{};':"\\|.<>\/?~]/;
+    return { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') }
+}
+
+export const isContainsNumericCharacters = (value: string) => {
+    const regEx = /[`0-9]/;
+    return{ isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') };
+}
 
 export const convertToPriceFormat = (value: number | string | null | undefined, acceptZero: boolean = false, removeTrailingZero: boolean = false) => {
     const numberValue = Number(value);

@@ -45,8 +45,11 @@ const Nav = ({ hideNavLinks }: { hideNavLinks: boolean }) => {
                         <DrawerOverlay display={'none'} />
                         <DrawerContent mt = '60px' borderTop={'2px'} borderColor={'brand.secondary'}>
                             <DrawerBody py = '20px' px = '20px'>
-                                <Flex direction={'column'}>
+                                <Flex direction={'column'} gap = '10px'>
                                     <NavLinks withHoverBg onNavClicked = {onNavClicked} />
+                                    <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
+                                        <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
+                                    </Flex>
                                 </Flex>
                             </DrawerBody>
                         </DrawerContent>
