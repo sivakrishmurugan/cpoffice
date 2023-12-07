@@ -83,7 +83,7 @@ const components = {
     Heading: {
         baseStyle: {
             color: 'brand.heading',
-            fontWeight: '500'
+            fontWeight: 'bold'
         }
     },
     Text: {

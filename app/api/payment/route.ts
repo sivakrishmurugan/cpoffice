@@ -6,9 +6,11 @@ export async function POST(req: NextRequest){
     console.log('payment post request: ', req);
     console.log('payment post request origin: ', req.nextUrl.origin);
     console.log('payment post req token: ', token);
-
-    return new NextResponse('', {
-        status: 302,
-        headers: { 'Location': `${req.nextUrl.origin}/payment?token=${token}` },
-    })
+    return NextResponse.redirect(
+        new URL('/payment', req.nextUrl.origin),
+    );
+    // return new NextResponse('', {
+    //     status: 302,
+    //     headers: { 'Location': `${req.nextUrl.origin}/payment?token=${token}` },
+    // })
 }

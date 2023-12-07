@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { Image as ChakraImage, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import FAQList from '@/lib/components/homepage/faq';
+import FAQ from '@/lib/components/homepage/faq';
 import { FAQ_LIST } from '@/lib/app/app_constants';
 import BenifitCard from '@/lib/components/homepage/benifit_card';
 import BadgeText from '@/lib/components/homepage/badge_text';
@@ -87,8 +87,8 @@ export default async function Home({ searchParams }: PageProps) {
                 >
                     <Flex w = {['60%', '60%', '60%', '100%', '100%']} mt = {['0px', '0px', '0px', '20px', '20px']} direction={'column'}>
                         <Flex direction={'column'} m = 'auto'>
-                            <Heading fontFamily={'kanit'} textAlign={['start', 'start', 'start', 'center', 'center']} color = 'brand.secondary' fontSize={['18px', '23px', '45px', '45px', '45px']} as = 'h1'>Insurance Protection</Heading>
-                            <Heading fontFamily={'kanit'} textAlign={['start', 'start', 'start', 'center', 'center']} fontSize={['18px', '23px', '45px', '45px', '45px']} as = 'h1'>for Your Clinic Property</Heading>
+                            <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={['start', 'start', 'start', 'center', 'center']} color = 'brand.secondary' fontSize={['18px', '23px', '45px', '45px', '45px']} as = 'h1'>Insurance Protection</Heading>
+                            <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={['start', 'start', 'start', 'center', 'center']} fontSize={['18px', '23px', '45px', '45px', '45px']} as = 'h1'>for Your Clinic Property</Heading>
                         </Flex>
                     </Flex>
                     <Flex position={'relative'} w = {['40%', '40%', '40%', 'initial', 'initial']} minH = {['130px','150px', '200px', '600px', '650px']}>
@@ -109,7 +109,7 @@ export default async function Home({ searchParams }: PageProps) {
 
             <Flex mt = '35px' w = '100%' gap = '40px' direction={'column'} bg = 'white' minH = '700px' borderRadius={'30px'} paddingY = '60px' px = {['15px', '20px', '20px', '130px', '130px']}>
 
-                <Heading id = 'coverages' fontFamily={'kanit'} fontSize={'45px'} textAlign={textAlign}>Your Clinic Deserves the Finest Protection</Heading>
+                <Heading id = 'coverages' fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>Your Clinic Deserves the Finest Protection</Heading>
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
@@ -117,7 +117,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Flex position={'relative'} w = '80px' h = '120px'>
                             <Image src = '/images/fire_1fire.png' alt = 'fire_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
                         </Flex>
-                        <Heading fontFamily={'kanit'} textAlign={textAlign} fontSize={'35px'}>Fire Insurance</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Fire Insurance</Heading>
                         <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Comprehensive coverage against loss or damage to your clinic property caused by fire or lightning. With DoctorShield, you can rebuild your clinic with confidence, knowing your assets are protected.</Text>
                     </Flex>
 
@@ -125,7 +125,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Flex position={'relative'} w = '150px' h = '120px'>
                             <Image src = '/images/perils.png' alt = 'perils_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
                         </Flex>
-                        <Heading fontFamily={'kanit'} textAlign={textAlign} fontSize={'35px'}>Fire & Perils Insurance</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Fire & Perils Insurance</Heading>
                         <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Go beyond basic coverage and safeguard your clinic against a broader range of risks. Our Fire & Perils Insurance provides enhanced protection, giving you peace of mind in the face of unforeseen events.</Text>
                     </Flex>
 
@@ -133,7 +133,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
 
-                    <Heading fontFamily={'kanit'} mt = '10px' fontSize={'35px'} textAlign={textAlign}>Also Buy Additional Coverages</Heading>
+                    <Heading fontFamily={'kanit'} fontWeight={'500'} mt = '10px' fontSize={'35px'} textAlign={textAlign}>Also Buy Additional Coverages</Heading>
 
                     <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text>
 
@@ -172,7 +172,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 </Flex>
 
-                <Heading fontFamily={'kanit'} fontSize={'45px'} textAlign={textAlign}>{`What Makes Us Malaysia's Favorite Place to Buy Insurance?`}</Heading>
+                <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>{`What Makes Us Malaysia's Favorite Place to Buy Insurance?`}</Heading>
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
@@ -180,7 +180,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Flex position={'relative'} w = '100px' h = '100px'>
                             <Image src = '/icons/Convenient.svg' alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
                         </Flex>
-                        <Heading fontFamily={'kanit'} textAlign={textAlign} fontSize={'35px'}>Convenient</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Convenient</Heading>
                         <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>No paperwork or documents required</Text>
                     </Flex>
 
@@ -188,7 +188,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Flex position={'relative'} w = '100px' h = '100px'>
                             <Image src = '/icons/Customizable.svg' alt = 'perils_insurance' fill style={{ objectFit: 'contain' }} />
                         </Flex>
-                        <Heading fontFamily={'kanit'} textAlign={textAlign} fontSize={'35px'}>Customizable</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Customizable</Heading>
                         <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>To your unique needs and practice</Text>
                     </Flex>
 
@@ -196,13 +196,13 @@ export default async function Home({ searchParams }: PageProps) {
                         <Flex position={'relative'} w = '100px' h = '100px'>
                             <Image src = '/icons/Competitive.svg' alt = 'perils_insurance' fill style={{ objectFit: 'contain' }} />
                         </Flex>
-                        <Heading fontFamily={'kanit'} textAlign={textAlign} fontSize={'35px'}>Competitive</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Competitive</Heading>
                         <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Premiums with flexible pricing options</Text>
                     </Flex>
 
                 </Flex>
 
-                <Heading id = 'advantages' fontFamily={'kanit'} fontSize={'45px'} textAlign={textAlign}>Unique Benefits to Protect you</Heading>
+                <Heading id = 'advantages' fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>Unique Benefits to Protect you</Heading>
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
@@ -247,10 +247,10 @@ export default async function Home({ searchParams }: PageProps) {
                 <Flex w = '100%' direction={['column-reverse', 'column-reverse', 'column-reverse', 'row', 'row']} gap = '20px' alignItems={'center'}>
 
                     <Flex h = 'fit-content' w = {['100%', '100%', '100%', '66.6%', '66.6%']} direction={'column'}>
-                        <Heading fontFamily={'kanit'} fontSize={'45px'}>{`Have a Question? We're Here to Help!`}</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'}>{`Have a Question? We're Here to Help!`}</Heading>
                         <Text my = '20px' fontSize={'16px'} color = 'brand.text'>Your concerns and queries matter to us. If you have any questions or need assistance, our dedicated support team is ready to provide the information you seek.</Text>
-                        <Heading fontFamily={'kanit'} fontSize={'32px'}>Feel free to reach out</Heading>
-                        <Heading fontFamily={'kanit'} fontSize={'32px'}>+60 11-1077 1700</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}>Feel free to reach out</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}>+60 11-1077 1700</Heading>
                     </Flex>
 
                     <Flex w = {['100%', '100%', '100%', '33.3%', '33.3%']}>
@@ -263,7 +263,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
 
-                    <Heading mt = '20px' fontFamily={'kanit'} fontSize={'35px'} textAlign={textAlign}>DoctorShield Partner Association</Heading>
+                    <Heading mt = '20px' fontFamily={'kanit'} fontWeight={'500'} fontSize={'35px'} textAlign={textAlign}>DoctorShield Partner Association</Heading>
 
                     <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text>
 
@@ -273,10 +273,10 @@ export default async function Home({ searchParams }: PageProps) {
 
                 </Flex>
 
-                <Heading id = 'faq' mt = '30px' fontFamily={'kanit'} fontSize={'32px'} textAlign={textAlign}>Frequently Asked Questions</Heading>
+                <Heading id = 'faq' mt = '30px' fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'} textAlign={textAlign}>Frequently Asked Questions</Heading>
 
                 <Flex w = '100%' direction={'column'} gap = '30px' px = {['0px', '0px', '0px', '100px', '100px']}>
-                    <FAQList />
+                    <FAQ />
                 </Flex>
 
                 <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '20px' px = {['10px', '50px', '50px', '100px', '250px']}>

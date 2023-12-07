@@ -13,7 +13,7 @@ const BenifitCard = ({ textAlign, icon, title }: BenifitCardProps) => {
             <Flex position={'relative'} w = '80px' h = '80px'>
                 <Image src = {icon} alt = 'fire_insurance' fill style={{ objectFit: 'contain' }} />
             </Flex>
-            <Heading fontFamily={'kanit'} textAlign={textAlign} fontSize={'25px'}>{title}</Heading>
+            <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'25px'}>{title}</Heading>
         </Flex>
     );
 }
