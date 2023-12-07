@@ -299,7 +299,7 @@ const Summary: NextPage<{}> = ({}) => {
                                             <Thead>
                                                 <Tr >
                                                     <Th colSpan={2}  px = '0px'>
-                                                        <Heading fontSize={'20px'} color = 'brand.primary'>
+                                                        <Heading fontWeight={'bold'} fontSize={'20px'} color = 'brand.primary'>
                                                             EXCESS
                                                             <ResponsiveTooltip 
                                                                 wrapperDivProps = {{ verticalAlign: 'middle', ml: '10px' }}
@@ -332,7 +332,7 @@ const Summary: NextPage<{}> = ({}) => {
                                             <Thead>
                                                 <Tr>
                                                     <Th colSpan={2} fontSize={'20px'} color = 'brand.primary' px = '0px'>
-                                                        <Heading fontSize={'20px'} color = 'brand.primary'>
+                                                        <Heading fontWeight={'bold'} fontSize={'20px'} color = 'brand.primary'>
                                                             EXCESS
                                                             <ResponsiveTooltip 
                                                                 wrapperDivProps = {{ verticalAlign: 'middle', ml: '10px' }}

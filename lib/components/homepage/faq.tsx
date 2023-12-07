@@ -7,13 +7,13 @@ interface FAQListProps {}
 
 const FAQList = ({}: FAQListProps) => {
     return (
-        <Accordion display={'flex'} flexDir={'column'} gap = '30px' w = "100%">
+        <Accordion allowToggle display={'flex'} flexDir={'column'} gap = '30px' w = "100%">
             {
                 FAQ_LIST.map(faq => {
                     return <AccordionItem key = {faq.question} py = "20px" border = "1px" borderColor={'brand.borderColor'} borderRadius={"10px"} transition={'box-shadow 300ms ease-in-out'} boxShadow={'0 1px 2px rgba(46, 50, 60, .09)'} _hover={{ boxShadow: '0 3px 9px rgba(46, 50, 60, .09)' }}> 
                         {(props) => 
                             <>
-                                <AccordionButton px = {['20px', '20px', '20px', '32px', '32px']} gap = {['20px', '20px', '20px', '30px', '30px']} border = "0px" borderRadius={"8px"} _hover={{}} _focus = {{boxShadow: "none"}} display={"flex"} justifyContent={"space-between"}>
+                                <AccordionButton px = {['20px', '20px', '20px', '32px', '32px']} gap = {['20px', '20px', '20px', '30px', '30px']} border = "0px" borderRadius={"8px"} _hover={{}} _focus = {{boxShadow: "none"}} display={"flex"} justifyContent={"space-between"} _focusVisible={{ boxShadow: 'var(--chakra-shadows-outline)' }}>
                                     <Flex gap = {['15px', '15px', '15px', '25px', '25px']} alignItems={'center'}>
                                         <Flex flexShrink={0} position={'relative'} w = {['35px', '35px', '35px', '50px', '50px']} h = {['35px', '35px', '35px', '50px', '50px']}>
                                             <Image src = '/icons/discuss-issue.svg' alt = 'logo' fill style={{ objectFit: 'contain' }} />

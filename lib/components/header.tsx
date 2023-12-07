@@ -4,15 +4,21 @@ import Image from "next/image";
 import { NavMenuIcon } from "../icons";
 import { APP_MAX_WIDTH } from "../app/app_constants";
 import NextLink from 'next/link';
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const Header = () => {
     const pathname = usePathname();
-    const hideNavLinks = pathname != '/'
+    const router = useRouter()
+    const hideNavLinks = pathname != '/';
+
+    const onClickLogo = () => {
+        router.push('/');
+    }
+
     return (
         <Flex position={'sticky'} top = '0px' zIndex={3000} borderBottom={'1px'} borderColor={'brand.borderColor'} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
             <Flex w = {APP_MAX_WIDTH.map((e, i) => i < 4 ? e : (Number(e.replace('px', '')) + 100).toString() + 'px')} alignItems={'center'} justifyContent={'space-between'} px = {['20px', '35px', '40px', '20px', '20px']} gap = '20px'>
-                <Flex h = '100%'>
+                <Flex h = '100%' onClick={onClickLogo} as = 'button' _focusVisible={{ boxShadow: 'var(--chakra-shadows-outline)', outline: 'none' }}>
                     <Flex position={'relative'} w = {hideNavLinks ? '300px' : '150px'} h = '100%'>
                         <Image src = {hideNavLinks ? '/icons/My-Ds-logo.svg' : '/icons/My-logo.svg'} priority = {true} alt="logo" fill style = {{ objectFit: 'contain' }} />
                     </Flex>
