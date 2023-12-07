@@ -16,20 +16,20 @@ const Footer = () => {
                 </Flex>
 
                 <Flex w = {['100%', '100%', '100%', '25%', '25%']} direction={'column'}>
-                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8' fontWeight={'semibold'}>Insurance</Heading>
+                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontFamily={'kanit'} fontSize={'20px'} color = '#98a2c8'>Insurance</Heading>
                     <Flex direction={'column'} gap = '10px'>
-                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Medical Professional Indemnity</Link>
-                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Clinic Property Insurance</Link>
-                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Clinic Indemnity <Text as = 'span' fontSize={'20px'} fontWeight={'semibold'} color = 'brand.secondary'>(Coming Soon)</Text></Link>
+                        <Link as = {NextLink} href = {'#'} fontFamily={'kanit'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Medical Professional Indemnity</Link>
+                        <Link as = {NextLink} href = {'#'} fontFamily={'kanit'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Clinic Property Insurance</Link>
+                        <Link as = {NextLink} href = {'#'} fontFamily={'kanit'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Clinic Indemnity <Text as = 'span' fontFamily={'kanit'} fontSize={'20px'} color = 'brand.secondary'>(Coming Soon)</Text></Link>
                     </Flex>
                 </Flex>
 
                 <Flex w = {['100%', '100%', '100%', '25%', '25%']} direction={'column'} pl = {['0px', '0px', '0px', '10px', '40px']}>
-                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontSize={'20px'} color = '#98a2c8' fontWeight={'semibold'}>Quick Links</Heading>
+                    <Heading mb = {['20px', '20px', '20px', '40px', '40px']} fontFamily={'kanit'} fontSize={'20px'} color = '#98a2c8'>Quick Links</Heading>
                     <Flex direction={'column'} gap = '10px'>
-                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Home</Link>
-                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>About us</Link>
-                        <Link as = {NextLink} href = {'#'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}} fontWeight={'semibold'}>Contact us</Link>
+                        <Link as = {NextLink} href = {'#'} fontFamily={'kanit'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Home</Link>
+                        <Link as = {NextLink} href = {'#'} fontFamily={'kanit'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>About us</Link>
+                        <Link as = {NextLink} href = {'https://www.thedoctorshield.com/contact-us'} fontFamily={'kanit'} fontSize={'20px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Contact us</Link>
                     </Flex>
                     <Flex position={'relative'} w = {['230px', '230px', '200px', '200px', '230px']} h = '100px'>
                         <Image src = '/icons/Chubb-logo.svg' alt = 'chubb_logo' fill style={{ objectFit: 'contain' }} />
@@ -41,7 +41,7 @@ const Footer = () => {
             <Flex flexWrap={'wrap'} mt = '20px' w = '100%' gap = '20px' px = '20px'>
                 <Link flexGrow={1} as = {NextLink} href = {'#'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>© DoctorShield™ All Rights Reserved 2023</Link>
                 <Link as = {NextLink} href = {'/privacy_policy'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Privacy Policy</Link>
-                <Link as = {NextLink} href = {'#'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Terms of Use</Link>
+                <Link as = {NextLink} href = {'/terms_of_use'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Terms of Use</Link>
             </Flex>
 
         </Flex>

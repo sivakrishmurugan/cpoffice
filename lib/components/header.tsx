@@ -76,31 +76,32 @@ const NavLinks = ({ withHoverBg, onNavClicked }: { withHoverBg?: boolean, onNavC
         <>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#'} 
+                //as = {NextLink} 
+                href = {'#home'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Home</Link>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#'} 
+                as = {NextLink} href = {'#coverages'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Coverages</Link>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#'} 
+                as = {NextLink} href = {'#advantages'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Advantages</Link>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#'} 
+                as = {NextLink} href = {'#faq'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >FAQ</Link>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#'} 
+                as = {NextLink} href = {'https://www.thedoctorshield.com/contact-us'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Contact us</Link>

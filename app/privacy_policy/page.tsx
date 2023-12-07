@@ -21,15 +21,7 @@ export const metadata: Metadata = {
     title: 'Privacy plicy'
 };
 
-const apiResStatusToStatus: Record<string, PaymentStatusType> = {
-    approved: 'success',
-    failed: 'failed',
-    pending: 'pending',
-    rejected: 'rejected',
-    cancelled: 'cancelled'
-}
-
-const PaymentStatusPage: NextPage<PageProps> = async ({}) => {
+const PrivacyPolicy: NextPage<PageProps> = async ({}) => {
 
     return (
         <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '10px' pb = '20px'>
@@ -150,7 +142,7 @@ const PaymentStatusPage: NextPage<PageProps> = async ({}) => {
     );
 }
 
-export default PaymentStatusPage;
+export default PrivacyPolicy;
 
 const PolicyCard = ({ title, content }: { title: string, content: JSX.Element }) => {
     return (

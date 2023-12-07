@@ -1,8 +1,18 @@
-import { APP_BG_COLOR, APP_BORDER_COLOR, APP_DARK_VIOLET_COLOR, APP_GRAY_COLOR, APP_GREEN_COLOR, APP_MEDIUM_VIOLET_COLOR, APP_PRIMARY_COLOR, APP_SECONDARY_COLOR, APP_TEXT_COLOR, APP_YELLOW_COLOR } from './app_constants'
-import { extendTheme } from '@chakra-ui/react'
+import { APP_BG_COLOR, APP_BORDER_COLOR, APP_DARK_VIOLET_COLOR, APP_GRAY_COLOR, APP_GREEN_COLOR, APP_MEDIUM_VIOLET_COLOR, APP_PRIMARY_COLOR, APP_SECONDARY_COLOR, APP_TEXT_COLOR, APP_YELLOW_COLOR } from './app_constants';
+import { Inter, Kanit } from 'next/font/google';
+import { extendTheme } from '@chakra-ui/react';
+
+const inter = Inter({ subsets: ['latin'] });
+const kanit = Kanit({ subsets: ['latin'], weight: ['500'] });
 
 const getColor = (color: string) => {
     return [...Array(9).keys()].reduce((out, item) => { out[`${item+1}00`] = color; return out; }, {} as { [x: string]: string })
+}
+
+const fonts = {
+    inter: inter.style.fontFamily,
+    kanit: kanit.style.fontFamily,
+    body: inter.style.fontFamily
 }
 
 const colors = {
@@ -15,6 +25,7 @@ const colors = {
         gray: APP_GRAY_COLOR,
         yellow: APP_YELLOW_COLOR,
         text: APP_TEXT_COLOR,
+        heading: '#333',
         borderColor: APP_BORDER_COLOR,
         bgColor: APP_BG_COLOR
     },
@@ -34,6 +45,10 @@ const colors = {
 
 const styles = {
     global: {
+        html: {
+            scrollBehavior: 'smooth',
+            scrollPadding: '80px'
+        },
         body: {
             bg: APP_BG_COLOR
         }
@@ -63,6 +78,12 @@ const components = {
             mb: '12px',
             color: 'brand.text',
             fontSize: '14px'
+        }
+    },
+    Heading: {
+        baseStyle: {
+            color: 'brand.heading',
+            fontWeight: '500'
         }
     },
     Text: {
@@ -125,4 +146,4 @@ const components = {
     }
 }
 
-export const theme = extendTheme({ styles, colors, components })
+export const theme = extendTheme({ fonts, styles, colors, components })

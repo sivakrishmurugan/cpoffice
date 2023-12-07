@@ -501,7 +501,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                         <Text as = {'label'} htmlFor = 'checkbox' cursor={'pointer'}>
                             <span>I understand and agree to the </span>
                             <span>
-                                <Link as = {NextLink} href = {'/'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal>Terms and Conditions</Link>
+                                <Link as = {NextLink} href = {'/terms_of_use'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal>Terms and Conditions</Link>
                             </span>
                             <span>, </span>
                             <span>

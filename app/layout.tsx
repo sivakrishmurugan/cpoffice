@@ -1,8 +1,6 @@
 import AppLayout from '@/lib/app/app_layout';
-import { Inter } from 'next/font/google';
 import { Providers } from "./providers";
-
-const inter = Inter({ subsets: ['latin'] })
+import { LenisScroller } from '@/lib/app/lenis_scroller';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -14,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdZfT5YqMgVu_92CgR3PxJUdVLbXtv0vI&libraries=places&language=en&callback=Function.prototype"
             ></script>
           </head>
-          <body className={inter.className}>
+          <body>
             <Providers>
               <main>
                 <AppLayout>
@@ -22,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </AppLayout>
               </main>
             </Providers>
+            {/* <LenisScroller /> */}
           </body>
       </html>
     );
