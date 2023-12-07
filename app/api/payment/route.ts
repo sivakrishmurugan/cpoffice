@@ -7,5 +7,5 @@ export async function POST(req: NextRequest){
     console.log('payment post request origin: ', req.nextUrl.origin);
     console.log('payment post req token: ', token);
 
-    return NextResponse.json({}, { status: 302, headers: { 'Location': `https://www.devcp.doctor.insure/payment?token=${token}` } })
+    return NextResponse.json({}, { status: 302, headers: { 'Location': `/payment?token=${token}` } })
 }
