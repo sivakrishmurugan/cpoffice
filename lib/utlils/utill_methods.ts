@@ -47,6 +47,11 @@ export const isContainsSpecialCharacters = (value: string) => {
     return { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') }
 }
 
+export const isContainsAlphabets = (value: string) => {
+    const regEx = /[a-zA-Z]/;
+    return { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') }
+}
+
 export const isContainsNumericCharacters = (value: string) => {
     const regEx = /[`0-9]/;
     return{ isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') };

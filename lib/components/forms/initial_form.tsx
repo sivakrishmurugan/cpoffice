@@ -4,7 +4,7 @@ import { IcEmail, IcMobile, IcLocationPin, IcClinic, PICNameIcon, PICIDIcon } fr
 import useSessionStorage from "../../hooks/use_sessionstorage";
 import { CONSTRUCTION_TYPES, FLOOR_LEVEL } from "../../app/app_constants";
 import useLocalStorage from "../../hooks/use_localstorage";
-import { convertClinicQuoteResDataToLocalStateData, getNumberFromString, getRedirectRouteBasedOnQuote, setAuthToken } from "../../utlils/utill_methods";
+import { convertClinicQuoteResDataToLocalStateData, getNumberFromString, getRedirectRouteBasedOnQuote, isContainsAlphabets, isContainsNumericCharacters, isContainsSpecialCharacters, setAuthToken } from "../../utlils/utill_methods";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { coveragesData } from "../../utlils/mocks";
@@ -25,6 +25,37 @@ interface BasicInfoFormProps {
     }
 }
 
+const formFieldErrorMessages = {
+    name: {
+        required: 'Clinic name is required!',
+        format: 'Clinic name should contains only alphabets and less than 200 characters'
+    },
+    number: {
+        required: 'Clinic number is requried!',
+        format: 'Clinic number should contains only alphabets, numbers and should be less than 200 characters!'
+    },
+    address: {
+        required: 'Address is required!',
+        format: 'Address cannot have more than 200 characters!'
+    },
+    PICName: {
+        required: 'Person in charge name is required!',
+        format: 'Person in charge name should contains only alphabets and less than 200 characters'
+    },
+    PICID: {
+        required: 'Person in charge IC is requried!',
+        format: 'Person in charge IC should contains only alphabets, numbers and should be less than 200 characters!'
+    },
+    email: {
+        required: 'Email is required!',
+        format: 'Invalid email format!'
+    },
+    mobile: {
+        required: 'Mobile number is required!',
+        format: 'Mobile number must contains only numbers and be no longer than 20 digits'
+    }
+}
+
 const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     const { isLoading, coveragesData, updateDataWithNewQuoteId, updateDataWithNewQuoteAndCoverages } = useCoverage();
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -42,14 +73,14 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         mobile: Number(((localData?.basic?.mobile ?? '000').toString()).slice(2))
     });
     const [errors, setErrors] = useState({
-        name: false,
-        number: false,
-        mobile: false,
-        address: false,
+        name: null as null | string,
+        number: null as null | string,
+        mobile: null as null | string,
+        address: null as null | string,
         floorLevel: false,
         constructionType: false,
-        PICName: false,
-        PICID: false,
+        PICName: null as null | string,
+        PICID: null as null | string,
         termsAndConditions: false,
         email: null as string | null,
     })
@@ -110,36 +141,119 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         ) != null;
     };
 
-    const onChangeName = (event: ChangeEvent<HTMLInputElement>) => {
-        setData(prev => ({ ...prev, name: event.target.value }));
-
-        if(event.target.value == '' && errors.name == false) {
-            setErrors(prev => ({ ...prev, name: true }))
+    const validateField = (value: string, field: 'name' | 'number' | 'mobile' | 'address' | 'PICName' | 'PICID' | 'email' | 'mobile') => {
+        switch(field) {
+            case 'name': {
+                return {
+                    isEmpty: value == '',
+                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain || isContainsNumericCharacters(value).isContain
+                }
+            }
+            case 'number': {
+                return {
+                    isEmpty: value == '',
+                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain
+                }
+            }
+            case 'address': {
+                return {
+                    isEmpty: value == '',
+                    isContainsFormatError: value.length > 200
+                }
+            }
+            case 'PICName': {
+                return {
+                    isEmpty: value == '',
+                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain || isContainsNumericCharacters(value).isContain
+                }
+            }
+            case 'PICID': {
+                return {
+                    isEmpty: value == '',
+                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain
+                }
+            }
+            case 'email': {
+                return {
+                    isEmpty: value == '',
+                    isContainsFormatError: value.length > 200 || validateEmail(value) == false
+                }
+            }
+            case 'mobile': {
+                return {
+                    isEmpty: Number(value) < 1,
+                    isContainsFormatError: value.length > 20 || isContainsSpecialCharacters(value).isContain || isContainsAlphabets(value).isContain
+                }
+            }
         }
-        if(event.target.value != '' && errors.name == true) {
-            setErrors(prev => ({ ...prev, name: false }))
+    }
+
+    const onChangeName = (event: ChangeEvent<HTMLInputElement>) => {
+        let inputValue = event.target.value.trimStart();
+
+        setData(prev => ({ ...prev, name: inputValue }));
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'name');
+        const currentError = errors.name == null ? 'NO_ERROR' :  errors.name == formFieldErrorMessages.name.required ? 'REQUIRED' : 'FORMAT';
+
+        if(isEmpty && currentError != 'REQUIRED') {
+            setErrors(prev => ({ ...prev, name: formFieldErrorMessages.name.required }))
+            return ;
+        }
+
+        if(isContainsFormatError && currentError != 'FORMAT') {
+            setErrors(prev => ({ ...prev, name: formFieldErrorMessages.name.format }))
+            return ;
+        }
+        
+        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
+            setErrors(prev => ({ ...prev, name: null }))
         }
     }
 
     const onChangeNumber = (event: ChangeEvent<HTMLInputElement>) => {
-        setData(prev => ({ ...prev, number: event.target.value }));
+        let inputValue = event.target.value.trimStart();
 
-        if(event.target.value == '' && errors.number == false) {
-            setErrors(prev => ({ ...prev, number: true }))
+        setData(prev => ({ ...prev, number: inputValue }));
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'number');
+        const currentError = errors.number == null ? 'NO_ERROR' :  errors.number == formFieldErrorMessages.number.required ? 'REQUIRED' : 'FORMAT';
+
+        if(isEmpty && currentError != 'REQUIRED') {
+            setErrors(prev => ({ ...prev, number: formFieldErrorMessages.number.required }))
+            return ;
         }
-        if(event.target.value != '' && errors.number == true) {
-            setErrors(prev => ({ ...prev, number: false }))
+
+        if(isContainsFormatError && currentError != 'FORMAT') {
+            setErrors(prev => ({ ...prev, number: formFieldErrorMessages.number.format }))
+            return ;
+        }
+        
+        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
+            setErrors(prev => ({ ...prev, number: null }))
         }
     }
 
     const onChangeAddress = (value: string) => {
-        setData(prev => ({ ...prev, address: value }));
+        let inputValue = value.trimStart();
 
-        if(value == '' && errors.address == false) {
-            setErrors(prev => ({ ...prev, address: true }))
+        setData(prev => ({ ...prev, address: inputValue }));
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'address');
+        const currentError = errors.address == null ? 'NO_ERROR' :  errors.address == formFieldErrorMessages.address.required ? 'REQUIRED' : 'FORMAT';
+
+        if(isEmpty && currentError != 'REQUIRED') {
+            setErrors(prev => ({ ...prev, address: formFieldErrorMessages.address.required }))
+            return ;
         }
-        if(value != '' && errors.address == true) {
-            setErrors(prev => ({ ...prev, address: false }))
+
+        if(isContainsFormatError && currentError != 'FORMAT') {
+            setErrors(prev => ({ ...prev, address: formFieldErrorMessages.address.format }))
+            return ;
+        }
+        
+        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
+            setErrors(prev => ({ ...prev, address: null }))
         }
     }
 
@@ -166,52 +280,96 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     }
 
     const onChangePICName = (event: ChangeEvent<HTMLInputElement>) => {
-        setData(prev => ({ ...prev, PICName: event.target.value }));
+        let inputValue = event.target.value.trimStart();
 
-        if(event.target.value == '' && errors.PICName == false) {
-            setErrors(prev => ({ ...prev, PICName: true }))
+        setData(prev => ({ ...prev, PICName: inputValue }));
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'PICName');
+        const currentError = errors.PICName == null ? 'NO_ERROR' :  errors.PICName == formFieldErrorMessages.PICName.required ? 'REQUIRED' : 'FORMAT';
+
+        if(isEmpty && currentError != 'REQUIRED') {
+            setErrors(prev => ({ ...prev, PICName: formFieldErrorMessages.PICName.required }))
+            return ;
         }
-        if(event.target.value != '' && errors.PICName == true) {
-            setErrors(prev => ({ ...prev, PICName: false }))
+
+        if(isContainsFormatError && currentError != 'FORMAT') {
+            setErrors(prev => ({ ...prev, PICName: formFieldErrorMessages.PICName.format }))
+            return ;
+        }
+        
+        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
+            setErrors(prev => ({ ...prev, PICName: null }))
         }
     }
 
     const onChangePICID = (event: ChangeEvent<HTMLInputElement>) => {
-        setData(prev => ({ ...prev, PICID: event.target.value }));
+        let inputValue = event.target.value.trimStart();
 
-        if(event.target.value == '' && errors.PICID == false) {
-            setErrors(prev => ({ ...prev, PICID: true }))
+        setData(prev => ({ ...prev, PICID: inputValue }));
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'PICID');
+        const currentError = errors.PICID == null ? 'NO_ERROR' :  errors.PICID == formFieldErrorMessages.PICID.required ? 'REQUIRED' : 'FORMAT';
+
+        if(isEmpty && currentError != 'REQUIRED') {
+            setErrors(prev => ({ ...prev, PICID: formFieldErrorMessages.PICID.required }))
+            return ;
         }
-        if(event.target.value != '' && errors.PICID == true) {
-            setErrors(prev => ({ ...prev, PICID: false }))
+
+        if(isContainsFormatError && currentError != 'FORMAT') {
+            setErrors(prev => ({ ...prev, PICID: formFieldErrorMessages.PICID.format }))
+            return ;
+        }
+        
+        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
+            setErrors(prev => ({ ...prev, PICID: null }))
         }
     }
 
     const onChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
-        const email = event.target.value;
-        const isValid = validateEmail(email);
-        setData(prev => ({ ...prev, email: email }));
+        let inputValue = event.target.value.trimStart();
 
-        if((email == '' || isValid == false) && errors.email == null) {
-            setErrors(prev => ({ ...prev, email: email == '' ? 'Email is requried!' : isValid == false ? 'Invalid email format!' : null}))
+        setData(prev => ({ ...prev, email: inputValue }));
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'email');
+        const currentError = errors.email == null ? 'NO_ERROR' :  errors.email == formFieldErrorMessages.email.required ? 'REQUIRED' : 'FORMAT';
+
+        if(isEmpty && currentError != 'REQUIRED') {
+            setErrors(prev => ({ ...prev, email: formFieldErrorMessages.email.required }))
+            return ;
         }
-        if(email != '' && isValid && errors.email != null) {
+
+        if(isContainsFormatError && currentError != 'FORMAT') {
+            setErrors(prev => ({ ...prev, email: formFieldErrorMessages.email.format }))
+            return ;
+        }
+        
+        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
             setErrors(prev => ({ ...prev, email: null }))
         }
     }
 
     const onChangeMobile = (event: ChangeEvent<HTMLInputElement>) => {
-        let value: null | number = 0;
-        if(event.target.value != '') { value = getNumberFromString(event.target.value) ?? 0 }
-        value = Math.trunc(value);
-        
-        setData(prev => ({ ...prev, mobile: value as number }));
+        let inputValue: null | number = 0;
+        if(event.target.value != '') { inputValue = getNumberFromString(event.target.value) ?? 0 }
+        inputValue = Math.trunc(inputValue);
 
-        if(value < 1 && errors.mobile == false) {
-            setErrors(prev => ({ ...prev, mobile: true }))
+        setData(prev => ({ ...prev, mobile: inputValue as number }));
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue.toString(), 'mobile');
+        const currentError = errors.mobile == null ? 'NO_ERROR' :  errors.mobile == formFieldErrorMessages.mobile.required ? 'REQUIRED' : 'FORMAT';
+
+        if(isEmpty && currentError != 'REQUIRED') {
+            setErrors(prev => ({ ...prev, mobile: formFieldErrorMessages.mobile.required }))
+            return ;
         }
-        if(value > 0 && errors.mobile == true) {
-            setErrors(prev => ({ ...prev, mobile: false }))
+
+        if(isContainsFormatError && currentError != 'FORMAT') {
+            setErrors(prev => ({ ...prev, mobile: formFieldErrorMessages.mobile.format }))
+            return ;
+        }
+        
+        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
+            setErrors(prev => ({ ...prev, mobile: null }))
         }
     }
 
@@ -249,13 +407,31 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     const validate = () => {
         const tempErrors: typeof errors = JSON.parse(JSON.stringify(errors));
         const tempSubmitErrors: string[] = [];
-        tempErrors.name = data.name.trim() == '';
-        tempErrors.number = data.number.trim() == '';
-        tempErrors.address = data.address.trim() == '';
+
+        const validatedNameResult = validateField(data.name.trim(), 'name');
+        tempErrors.name = validatedNameResult.isEmpty ? formFieldErrorMessages.name.required : validatedNameResult.isContainsFormatError ? formFieldErrorMessages.name.format : null;
+
+        const validatedNumberResult = validateField(data.number.trim(), 'number');
+        tempErrors.number = validatedNumberResult.isEmpty ? formFieldErrorMessages.number.required : validatedNumberResult.isContainsFormatError ? formFieldErrorMessages.number.format : null;
+
+        const validatedAddressResult = validateField(data.address.trim(), 'address');
+        tempErrors.address = validatedAddressResult.isEmpty ? formFieldErrorMessages.address.required : validatedAddressResult.isContainsFormatError ? formFieldErrorMessages.address.format : null;
+        
         tempErrors.floorLevel = data.floorLevel.trim() == '';
         tempErrors.constructionType = data.constructionType.trim() == '';
-        tempErrors.email = data.email.trim() == '' ? 'Email is required!' : validateEmail(data.email) == false ? 'Invalid email format!' : null;
-        tempErrors.mobile = data.mobile < 0;
+
+        const validatedPICNameResult = validateField(data.PICName.trim(), 'PICName');
+        tempErrors.PICName = validatedPICNameResult.isEmpty ? formFieldErrorMessages.PICName.required : validatedPICNameResult.isContainsFormatError ? formFieldErrorMessages.PICName.format : null;
+
+        const validatedPICIDResult = validateField(data.PICID.trim(), 'PICID');
+        tempErrors.PICID = validatedPICIDResult.isEmpty ? formFieldErrorMessages.PICID.required : validatedPICIDResult.isContainsFormatError ? formFieldErrorMessages.PICID.format : null;
+
+        const validatedEmailResult = validateField(data.email.trim(), 'email');
+        tempErrors.email = validatedEmailResult.isEmpty ? formFieldErrorMessages.email.required : validatedEmailResult.isContainsFormatError ? formFieldErrorMessages.email.format : null;
+
+        const validatedMobileResult = validateField(data.mobile.toString().trim(), 'mobile');
+        tempErrors.mobile = validatedMobileResult.isEmpty ? formFieldErrorMessages.mobile.required : validatedMobileResult.isContainsFormatError ? formFieldErrorMessages.mobile.format : null;
+        
         tempErrors.termsAndConditions = agreedWithTermsAndConditions != true;
 
         if(tempErrors.termsAndConditions) {
@@ -356,7 +532,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
             <form onSubmit={onClickGetStarted}>
                 <Flex w = '100%' direction={'column'} gap = '20px'>
                 
-                    <FormControl isInvalid = {errors.name}>
+                    <FormControl isInvalid = {errors.name != null}>
                         <FormLabel>Registered Clinic Name</FormLabel>
                         <InputGroup>
                             <Input 
@@ -368,10 +544,10 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                                 <Icon as = {IcClinic} w = 'auto' h = 'auto' />
                             </InputRightElement>
                         </InputGroup>
-                        <FormErrorMessage ml = '10px'>Clinic name is required!</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>{errors.name}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid = {errors.number}>
+                    <FormControl isInvalid = {errors.number != null}>
                         <FormLabel>Registered Clinic Number</FormLabel>
                         <InputGroup>
                             <Input 
@@ -384,16 +560,16 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                                 <Icon as = {IcClinic} h = 'auto' w = 'auto' />
                             </InputRightElement>
                         </InputGroup>
-                        <FormErrorMessage ml = '10px'>Clinic number is requried!</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>{errors.number}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid = {errors.address}>
+                    <FormControl isInvalid = {errors.address != null}>
                         <FormLabel>Clinic Address</FormLabel>
                         <AddressInput 
                             currentValue = {data.address}
                             onChange={onChangeAddress}
                         />
-                        <FormErrorMessage ml = '10px'>Address is required!</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>{errors.address}</FormErrorMessage>
                     </FormControl>
 
                     <FormControl isInvalid = {errors.floorLevel || errors.constructionType}>
@@ -430,7 +606,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                         <FormErrorMessage ml = '10px'>Both floor level and construction type is requried!</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid = {errors.PICName}>
+                    <FormControl isInvalid = {errors.PICName != null}>
                         <FormLabel>Person In charge Name</FormLabel>
                         <InputGroup>
                             <Input
@@ -443,10 +619,10 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                                 <Icon as = {PICNameIcon} h = 'auto' w = 'auto' />
                             </InputRightElement>
                         </InputGroup>
-                        <FormErrorMessage ml = '10px'>Person In charge Name is requried!</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>{errors.PICName}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid = {errors.PICID}>
+                    <FormControl isInvalid = {errors.PICID != null}>
                         <FormLabel>Person In charge IC</FormLabel>
                         <InputGroup>
                             <Input
@@ -459,7 +635,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                                 <Icon as = {PICIDIcon} h = 'auto' w = 'auto' />
                             </InputRightElement>
                         </InputGroup>
-                        <FormErrorMessage ml = '10px'>Person In charge IC</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>{errors.PICID}</FormErrorMessage>
                     </FormControl>
 
                     <FormControl isInvalid = {errors.email != null}>
@@ -478,7 +654,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                         <FormErrorMessage ml = '10px'>{errors.email}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid = {errors.mobile}>
+                    <FormControl isInvalid = {errors.mobile != null}>
                         <FormLabel>Mobile Number</FormLabel>
                         <InputGroup>
                             <InputLeftElement h = '100%' ml = '5px'>+60</InputLeftElement>
@@ -493,7 +669,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                                 <Icon as = {IcMobile} h = 'auto' w = 'auto' />
                             </InputRightElement>
                         </InputGroup>
-                        <FormErrorMessage ml = '10px'>Mobile number is required!</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>{errors.mobile}</FormErrorMessage>
                     </FormControl>
 
                     <Flex gap = '10px' alignItems={'flex-start'}>
