@@ -86,237 +86,240 @@ const Coverages: NextPage<{}> = ({}) => {
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
             
-            <Flex 
-                w = '100%' gap = '30px' direction={'column'} minH = '150px'
-                borderRadius={'10px'} bg = 'white'
-                padding={['15px', '20px', '20px', '40px 30px 40px 40px', '40px 30px 40px 40px']}
-                boxShadow={'0 2px 8px rgba(0, 0, 0, .2)'}
-            >
+            {
+                isClient &&
+                <Flex 
+                    w = '100%' gap = '30px' direction={'column'} minH = '150px'
+                    borderRadius={'10px'} bg = 'white'
+                    padding={['15px', '20px', '20px', '40px 30px 40px 40px', '40px 30px 40px 40px']}
+                    boxShadow={'0 2px 8px rgba(0, 0, 0, .2)'}
+                >
 
-                {/* Desktop view table */}
-                <TableContainer w = '100%' display={['none', 'none', 'none', 'block', 'block']}>
-                    <Table variant='unstyled'>
-                        <TableCaption mb = '40px' placement="top" fontSize={'23px'} fontWeight={'bold'} color = '#040431'>Select your coverage</TableCaption>
-                        <Thead>
-                            <Tr>
-                                <Th w = '30%' borderBottom={'none'} padding = '20px 20px 0'></Th>
-                                <Th w = '35%' borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
-                                    <Flex direction={'column'} gap = '10px'>
-                                        <Heading as = 'h1' fontSize={'24px'}>FIRE INSURANCE</Heading>
-                                        <Heading as = 'h3' fontSize={'18px'}>PREMIUM</Heading>
-                                    </Flex>
-                                </Th>
-                                <Th w = '50%' borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
-                                    <Flex direction={'column'} gap = '10px'>
-                                        <Flex>
-                                            <Heading as = 'h1' fontSize={'24px'} >
-                                                FIRE & PERILS INSURANCE
-                                                <FirePerilsInsTooltip>
-                                                    <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
-                                                </FirePerilsInsTooltip>
-                                            </Heading>
-                                        </Flex>
-                                        <Flex gap ='10px' alignItems={'center'}>
+                    {/* Desktop view table */}
+                    <TableContainer w = '100%' display={['none', 'none', 'none', 'block', 'block']}>
+                        <Table variant='unstyled'>
+                            <TableCaption mb = '40px' placement="top" fontSize={'23px'} fontWeight={'bold'} color = '#040431'>Select your coverage</TableCaption>
+                            <Thead>
+                                <Tr>
+                                    <Th w = '30%' borderBottom={'none'} padding = '20px 20px 0'></Th>
+                                    <Th w = '35%' borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
+                                        <Flex direction={'column'} gap = '10px'>
+                                            <Heading as = 'h1' fontSize={'24px'}>FIRE INSURANCE</Heading>
                                             <Heading as = 'h3' fontSize={'18px'}>PREMIUM</Heading>
-                                            <Text w = 'fit-content' fontSize={'12px'} color={'white'} bg = 'brand.yellow' p = '5px 20px' borderRadius={'49px'}>Recommended</Text>
                                         </Flex>
-                                    </Flex>
-                                </Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
-                            {
-                                isClient && localData?.selectedCoverages?.map((coverage, index) => {
-                                    const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
-                                    return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
-                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                    </Th>
+                                    <Th w = '50%' borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
+                                        <Flex direction={'column'} gap = '10px'>
+                                            <Flex>
+                                                <Heading as = 'h1' fontSize={'24px'} >
+                                                    FIRE & PERILS INSURANCE
+                                                    <FirePerilsInsTooltip>
+                                                        <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
+                                                    </FirePerilsInsTooltip>
+                                                </Heading>
+                                            </Flex>
+                                            <Flex gap ='10px' alignItems={'center'}>
+                                                <Heading as = 'h3' fontSize={'18px'}>PREMIUM</Heading>
+                                                <Text w = 'fit-content' fontSize={'12px'} color={'white'} bg = 'brand.yellow' p = '5px 20px' borderRadius={'49px'}>Recommended</Text>
+                                            </Flex>
+                                        </Flex>
+                                    </Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
+                                {
+                                    isClient && localData?.selectedCoverages?.map((coverage, index) => {
+                                        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+                                        return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
+                                            <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
+                                            <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
+                                            <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                        </Tr>
+                                    })
+                                }
+                                {
+                                    isClient &&
+                                    <Tr color = '#424551'>
+                                        <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
+                                        <Td w = '35%' p = '20px' borderBottom={'none'}>
+                                            <Flex gap = '10px' flexWrap={'wrap'}>
+                                                {fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.actual, true)}</Text>}
+                                                <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
+                                            </Flex>
+                                        </Td>
+                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
+                                            <Flex gap = '10px' flexWrap={'wrap'}>
+                                                {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
+                                                <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
+                                            </Flex>
+                                        </Td>
                                     </Tr>
-                                })
-                            }
-                            {
-                                isClient &&
+                                }
                                 <Tr color = '#424551'>
-                                    <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>Total</Td>
-                                    <Td w = '35%' p = '20px' borderBottom={'none'}>
-                                        <Flex gap = '10px' flexWrap={'wrap'}>
-                                            {fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.actual, true)}</Text>}
-                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
-                                        </Flex>
+                                    <Td w = '30%' p = '20px' borderBottom={'none'}></Td>
+                                    <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
+                                        {
+                                            isClient && insType == 'FIRE' ?
+                                            <Flex w = 'fit-content' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
+                                                <Icon as = {CheckIcon} w = '25px' h = '25px' />
+                                                <Text>SELECTED</Text>
+                                            </Flex> :
+                                            <Button onClick={() => onSelectInsType('FIRE')} minW = '150px' variant={'outline'} fontSize={'18px'} h = '45px'>Select</Button>
+                                        }
                                     </Td>
                                     <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
-                                        <Flex gap = '10px' flexWrap={'wrap'}>
-                                            {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
-                                            <Text fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
-                                        </Flex>
+                                        {
+                                            isClient && insType == 'FIRE_PERILS' ?
+                                            <Flex w = 'fit-content' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
+                                                <Icon as = {CheckIcon} w = '25px' h = '25px' />
+                                                <Text>SELECTED</Text>
+                                            </Flex> :
+                                            <Button onClick={() => onSelectInsType('FIRE_PERILS')} minW = '150px' variant={'outline'} fontSize={'18px'} h = '45px'>Select</Button>
+                                        }
                                     </Td>
                                 </Tr>
-                            }
-                            <Tr color = '#424551'>
-                                <Td w = '30%' p = '20px' borderBottom={'none'}></Td>
-                                <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
-                                    {
-                                        isClient && insType == 'FIRE' ?
-                                        <Flex w = 'fit-content' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
-                                            <Icon as = {CheckIcon} w = '25px' h = '25px' />
-                                            <Text>SELECTED</Text>
-                                        </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE')} minW = '150px' variant={'outline'} fontSize={'18px'} h = '45px'>Select</Button>
-                                    }
-                                </Td>
-                                <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} borderBottom={'none'}>
-                                    {
-                                        isClient && insType == 'FIRE_PERILS' ?
-                                        <Flex w = 'fit-content' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
-                                            <Icon as = {CheckIcon} w = '25px' h = '25px' />
-                                            <Text>SELECTED</Text>
-                                        </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE_PERILS')} minW = '150px' variant={'outline'} fontSize={'18px'} h = '45px'>Select</Button>
-                                    }
-                                </Td>
-                            </Tr>
-                        </Tbody>
-                    </Table>
-                </TableContainer>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
 
-                {/* Mobile view heading */}
-                <Heading as = "h1" mt = '20px' textAlign={'center'} fontSize={'23px'} fontWeight={'bold'} color = '#040431' display={['block', 'block', 'block', 'none', 'none']}>Select your coverage</Heading>
+                    {/* Mobile view heading */}
+                    <Heading as = "h1" mt = '20px' textAlign={'center'} fontSize={'23px'} fontWeight={'bold'} color = '#040431' display={['block', 'block', 'block', 'none', 'none']}>Select your coverage</Heading>
 
-                {/* Mobile view fire insurance table */}
-                <TableContainer w = '100%' display={['block', 'block', 'block', 'none', 'none']} border = '1px' borderColor={'brand.borderColor'} borderRadius={'8px'}>
-                    <Table variant='unstyled'>
-                        <Thead>
-                            <Tr>
-                                <Th colSpan={2} borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
-                                    <Flex direction={'column'} gap = '10px'>
-                                        <Heading as = 'h1' fontSize={['22px', '22px', '24px', '24px', '24px']} whiteSpace={'pre-wrap'}>FIRE INSURANCE</Heading>
-                                        <Heading as = 'h3' fontSize={['16px','18px', '18px', '18px', '18px']}>PREMIUM</Heading>
-                                    </Flex>
-                                </Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
-                            {
-                                isClient && localData?.selectedCoverages?.map((coverage, index) => {
-                                    const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
-                                    return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
-                                    </Tr>
-                                })
-                            }
-                            {
-                                isClient &&
-                                <Tr color = '#424551'>
-                                    <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'} whiteSpace={'pre-wrap'}>
-                                        <Flex gap = '10px' flexWrap={'wrap'}>
-                                            {fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.actual, true)}</Text>}
-                                            <Text fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
-                                        </Flex>
-                                    </Td>
-                                </Tr>
-                            }
-                            <Tr color = '#424551'>
-                                <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>
-                                    {
-                                        isClient && insType == 'FIRE' ?
-                                        <Flex w = '100%' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
-                                            <Icon as = {CheckIcon} w = '25px' h = '25px' />
-                                            <Text>SELECTED</Text>
-                                        </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE')} h = '45px' w = '100%' variant={'outline'} fontSize={['16px','18px', '18px', '18px', '18px']}>Select</Button>
-                                    }
-                                </Td>
-                            </Tr>
-                        </Tbody>
-                    </Table>
-                </TableContainer>
-
-                {/* Mobile view fire and perils insurance table */}
-                <TableContainer w = '100%' display={['block', 'block', 'block', 'none', 'none']} border = '1px' borderColor={'brand.borderColor'} borderRadius={'8px'}>
-                    <Table variant='unstyled'>
-                        <Thead>
-                            <Tr>
-                                <Th colSpan={2} borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
-                                    <Flex direction={'column'} gap = '10px'>
-                                        <Flex>
-                                            <Heading as = 'h1' fontSize={['22px', '22px', '24px', '24px', '24px']} whiteSpace={'pre-wrap'}>
-                                                FIRE & PERILS INSURANCE
-                                                <FirePerilsInsTooltip>
-                                                    <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
-                                                </FirePerilsInsTooltip>
-                                            </Heading>
-                                        </Flex>
-                                        <Flex gap ='10px' alignItems={'center'} flexWrap={'wrap'}>
+                    {/* Mobile view fire insurance table */}
+                    <TableContainer w = '100%' display={['block', 'block', 'block', 'none', 'none']} border = '1px' borderColor={'brand.borderColor'} borderRadius={'8px'}>
+                        <Table variant='unstyled'>
+                            <Thead>
+                                <Tr>
+                                    <Th colSpan={2} borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
+                                        <Flex direction={'column'} gap = '10px'>
+                                            <Heading as = 'h1' fontSize={['22px', '22px', '24px', '24px', '24px']} whiteSpace={'pre-wrap'}>FIRE INSURANCE</Heading>
                                             <Heading as = 'h3' fontSize={['16px','18px', '18px', '18px', '18px']}>PREMIUM</Heading>
-                                            <Text w = 'fit-content' fontSize={'12px'} color={'white'} bg = 'brand.yellow' p = '5px 20px' borderRadius={'49px'}>Recommended</Text>
                                         </Flex>
-                                    </Flex>
-                                </Th> 
-                            </Tr>
-                        </Thead>
-                        <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
-                            {
-                                isClient && localData?.selectedCoverages?.map((coverage, index) => {
-                                    const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
-                                    return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                        <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                    </Th>
+                                </Tr>
+                            </Thead>
+                            <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
+                                {
+                                    isClient && localData?.selectedCoverages?.map((coverage, index) => {
+                                        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+                                        return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
+                                        </Tr>
+                                    })
+                                }
+                                {
+                                    isClient &&
+                                    <Tr color = '#424551'>
+                                        <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>Total</Td>
+                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'} whiteSpace={'pre-wrap'}>
+                                            <Flex gap = '10px' flexWrap={'wrap'}>
+                                                {fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={'18px'}>RM {convertToPriceFormat(fireInsPremiumTotal.actual, true)}</Text>}
+                                                <Text fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireInsPremiumTotal.rounded, true)}</Text>
+                                            </Flex>
+                                        </Td>
                                     </Tr>
-                                })
-                            }
-                            {
-                                isClient &&
+                                }
                                 <Tr color = '#424551'>
-                                    <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>Total</Td>
-                                    <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'} whiteSpace={'pre-wrap'}>
-                                        <Flex gap = '10px' flexWrap={'wrap'}>
-                                            {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
-                                            <Text fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
-                                        </Flex>
+                                    <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>
+                                        {
+                                            isClient && insType == 'FIRE' ?
+                                            <Flex w = '100%' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
+                                                <Icon as = {CheckIcon} w = '25px' h = '25px' />
+                                                <Text>SELECTED</Text>
+                                            </Flex> :
+                                            <Button onClick={() => onSelectInsType('FIRE')} h = '45px' w = '100%' variant={'outline'} fontSize={['16px','18px', '18px', '18px', '18px']}>Select</Button>
+                                        }
                                     </Td>
                                 </Tr>
-                            }
-                            <Tr color = '#424551'>
-                                <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>
-                                    {
-                                        isClient && insType == 'FIRE_PERILS' ?
-                                        <Flex w = '100%' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
-                                            <Icon as = {CheckIcon} w = '25px' h = '25px' />
-                                            <Text>SELECTED</Text>
-                                        </Flex> :
-                                        <Button onClick={() => onSelectInsType('FIRE_PERILS')} h = '45px' w = '100%' variant={'outline'} fontSize={'18px'}>Select</Button>
-                                    }
-                                </Td>
-                            </Tr>
-                        </Tbody>
-                    </Table>
-                </TableContainer>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
 
-                {
-                    error &&
-                    <Alert mt = '20px' status='error' borderRadius={'8px'}>
-                        <AlertIcon />
-                        Please select insurance type!
-                    </Alert>
-                }
+                    {/* Mobile view fire and perils insurance table */}
+                    <TableContainer w = '100%' display={['block', 'block', 'block', 'none', 'none']} border = '1px' borderColor={'brand.borderColor'} borderRadius={'8px'}>
+                        <Table variant='unstyled'>
+                            <Thead>
+                                <Tr>
+                                    <Th colSpan={2} borderBottom={'none'} padding = '20px 20px 0' textTransform={'none'} color = '#424551'>
+                                        <Flex direction={'column'} gap = '10px'>
+                                            <Flex>
+                                                <Heading as = 'h1' fontSize={['22px', '22px', '24px', '24px', '24px']} whiteSpace={'pre-wrap'}>
+                                                    FIRE & PERILS INSURANCE
+                                                    <FirePerilsInsTooltip>
+                                                        <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
+                                                    </FirePerilsInsTooltip>
+                                                </Heading>
+                                            </Flex>
+                                            <Flex gap ='10px' alignItems={'center'} flexWrap={'wrap'}>
+                                                <Heading as = 'h3' fontSize={['16px','18px', '18px', '18px', '18px']}>PREMIUM</Heading>
+                                                <Text w = 'fit-content' fontSize={'12px'} color={'white'} bg = 'brand.yellow' p = '5px 20px' borderRadius={'49px'}>Recommended</Text>
+                                            </Flex>
+                                        </Flex>
+                                    </Th> 
+                                </Tr>
+                            </Thead>
+                            <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
+                                {
+                                    isClient && localData?.selectedCoverages?.map((coverage, index) => {
+                                        const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+                                        return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                        </Tr>
+                                    })
+                                }
+                                {
+                                    isClient &&
+                                    <Tr color = '#424551'>
+                                        <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>Total</Td>
+                                        <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'} whiteSpace={'pre-wrap'}>
+                                            <Flex gap = '10px' flexWrap={'wrap'}>
+                                                {fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded && <Text as = 's' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.actual, true)}</Text>}
+                                                <Text fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']}>RM {convertToPriceFormat(fireAndPerilsInsPremiumTotal.rounded, true)}</Text>
+                                            </Flex>
+                                        </Td>
+                                    </Tr>
+                                }
+                                <Tr color = '#424551'>
+                                    <Td colSpan={2} p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} borderBottom={'none'}>
+                                        {
+                                            isClient && insType == 'FIRE_PERILS' ?
+                                            <Flex w = '100%' h = '45px' px = '20px' bg = 'green.200' borderRadius={'8px'} justifyContent={'center'} alignItems={'center'} gap = '10px'>
+                                                <Icon as = {CheckIcon} w = '25px' h = '25px' />
+                                                <Text>SELECTED</Text>
+                                            </Flex> :
+                                            <Button onClick={() => onSelectInsType('FIRE_PERILS')} h = '45px' w = '100%' variant={'outline'} fontSize={'18px'}>Select</Button>
+                                        }
+                                    </Td>
+                                </Tr>
+                            </Tbody>
+                        </Table>
+                    </TableContainer>
 
-                {
-                    fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded  || fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded ?
-                    <Alert mt = '20px' status='info' borderRadius={'8px'}>
-                        <AlertIcon />
-                        Minimun coverage premium is RM 75.00
-                    </Alert> : <></>
-                }
+                    {
+                        fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded  || fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded ?
+                        <Alert mt = '-10px' status='info' borderRadius={'8px'}>
+                            <AlertIcon />
+                            Minimun coverage premium is RM 75.00
+                        </Alert> : <></>
+                    }
 
-                <Flex mt = '20px' w = '100%' gap = '20px' justifyContent={'center'}>
-                    <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
-                    <Button onClick = {onClickNext} isLoading = {submitLoading} isDisabled = {error} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>NEXT</Button>
+                    {
+                        error &&
+                        <Alert mt = '-10px' status='error' borderRadius={'8px'}>
+                            <AlertIcon />
+                            Please select insurance type!
+                        </Alert>
+                    }
+
+                    <Flex mt = '20px' w = '100%' gap = '20px' justifyContent={'center'}>
+                        <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
+                        <Button onClick = {onClickNext} isLoading = {submitLoading} isDisabled = {error} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>NEXT</Button>
+                    </Flex>
+
                 </Flex>
-
-            </Flex>
+            }
 
         </Flex>
     );

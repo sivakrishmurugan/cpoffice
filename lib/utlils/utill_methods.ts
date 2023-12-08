@@ -159,9 +159,9 @@ export const getRedirectRouteBasedOnQuote = (quote: ClinicData) => {
         return '/optional_coverage'
     }
 
-    if(quote.selectedOptionalCoverages.length > 0 && quote.selectedOptionalCoverages.find(e => e.id == PROTECTION_AND_LIABILITY_COVERAGE.id) == null && quote.insStartDate == null) {
-        return '/protection_liability_coverage'
-    }
+    // if(quote.selectedOptionalCoverages.length > 0 && quote.selectedOptionalCoverages.find(e => e.id == PROTECTION_AND_LIABILITY_COVERAGE.id) == null && quote.insStartDate == null) {
+    //     return '/protection_liability_coverage'
+    // }
     
     if(quote.insStartDate == null) {
         return '/summary'

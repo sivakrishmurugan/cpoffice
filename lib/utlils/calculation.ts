@@ -43,10 +43,10 @@ export const calculatePremiumForOptionalCoverage = (
 
     const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = getTotalPremiumsForFireAndPerilsInsurance(selectedCoverages, coveragesData)
 
-    const abrPercentage = selectedInsType == 'FIRE' ?
+    const abrPercentage = (selectedInsType == 'FIRE' ?
         fireInsPremiumTotal.rounded / sumInsuredTotal :
-        fireAndPerilsInsPremiumTotal.rounded / sumInsuredTotal;
-        
+        fireAndPerilsInsPremiumTotal.rounded / sumInsuredTotal) * 100;
+
     return optionalCoverageData.IsABR != 1 ? percentageResult(optionalCoverageData.InsPercent, total) : percentageResult(abrPercentage, total);
 }
 
@@ -78,7 +78,7 @@ export const calculateSummary = (
     const totalPremium = Number((coveragesTotalPremium + optionalCoveragesTotalPremium).toFixed(2));
     const discount = Number(Number(percentageResult(promoCodeDiscount, totalPremium)).toFixed(2));
     const netPremium = Number((totalPremium - discount).toFixed(2));
-    const tax = Number(Number(percentageResult(TAX_PERCENTAGE, totalPremium)).toFixed(2));
+    const tax = Number(Number(percentageResult(TAX_PERCENTAGE, netPremium)).toFixed(2));
     const finalPremium = Number((netPremium + tax + STAMP_DUTY).toFixed(2));
 
     return { totalPremium, discount, netPremium, tax, finalPremium }

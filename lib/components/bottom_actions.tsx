@@ -18,7 +18,7 @@ const BottomActions = ({ children }: BottomActionsProps) => {
                     alignItems={'center'}
                     justifyContent={['center', 'center', 'center', 'flex-end', 'flex-end']}
                     gap = '20px'
-                    pr = {['0px', '0px', '40px', '40px', '40px']}
+                    px = '40px'
                 >
                     {...children}
                 </Flex>

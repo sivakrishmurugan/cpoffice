@@ -2,7 +2,7 @@
 import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/lib/app/app_constants";
 import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { InfoIcon, PromoCodeIcon } from "@/lib/icons";
+import { CheckIcon, CheckIconGreen, InfoIcon, PromoCodeIcon } from "@/lib/icons";
 import { ChangeEvent, useEffect, useState } from "react";
 import ResponsiveTooltip from "@/lib/components/tooltip";
 import { useRouter } from "next/navigation";
@@ -125,6 +125,7 @@ const Summary: NextPage<{}> = ({}) => {
         setData(prev => ({ ...prev, loading: submitFor }));
         try {
             const res = await axiosClient.post('/api/clinicshield/setquote', {
+                QuoteType: submitFor == 'EMAIL_QUOTE' ? 'email' : 'proceed',
                 QuoteID: localData?.quoteId,
                 InsuranceStartDate: data.insStartDate.value,
                 InsuranceEndDate: getDateAfter365Days(data.insStartDate.value),
@@ -227,16 +228,12 @@ const Summary: NextPage<{}> = ({}) => {
                                             <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.name}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>
-                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>12 Months</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person Incharge Name</Td>
+                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICName}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
                                             <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>12 Months</Td>
-                                        </Tr>
-                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Location</Td>
-                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.address}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
                                             <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Location</Td>
@@ -522,8 +519,11 @@ const Summary: NextPage<{}> = ({}) => {
                             <FormControl isInvalid = {data.promoCode.error != null}>
                                 <InputGroup>
                                     <Input value = {data.promoCode.value} onChange = {onChangePromoCode} isDisabled = {data.promoCode.isApplied} placeholder = "Ex. DS1234" />
-                                    <InputRightElement h = '100%'>
-                                        <Icon as = {PromoCodeIcon} h = 'auto' w = 'auto' />
+                                    <InputRightElement h = '100%' w = 'auto' pr = '15px'>
+                                        <Flex gap = '15px' alignItems={'center'}>
+                                            {data.promoCode.isApplied && <Icon as = {CheckIconGreen} h = '100%' w = '20px' />}
+                                            <Icon as = {PromoCodeIcon} h = 'auto' w = 'auto' />
+                                        </Flex>
                                     </InputRightElement>
                                 </InputGroup>
                                 <FormErrorMessage ml = '10px'>{data.promoCode.error}</FormErrorMessage>

@@ -39,12 +39,12 @@ const formFieldErrorMessages = {
         format: 'Address cannot have more than 200 characters!'
     },
     PICName: {
-        required: 'Person in charge name is required!',
-        format: 'Person in charge name should contains only alphabets and less than 200 characters'
+        required: 'Person Incharge name is required!',
+        format: 'Person Incharge name should contains only alphabets and less than 200 characters'
     },
     PICID: {
-        required: 'Person in charge IC is requried!',
-        format: 'Person in charge IC should contains only alphabets, numbers and should be less than 200 characters!'
+        required: 'Person Incharge IC is requried!',
+        format: 'Person Incharge IC should contains only alphabets, numbers and should be less than 200 characters!'
     },
     email: {
         required: 'Email is required!',
@@ -607,7 +607,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     </FormControl>
 
                     <FormControl isInvalid = {errors.PICName != null}>
-                        <FormLabel>Person In charge Name</FormLabel>
+                        <FormLabel>Person Incharge Name</FormLabel>
                         <InputGroup>
                             <Input
                                 name = 'person_in_charge_name'
@@ -623,7 +623,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     </FormControl>
 
                     <FormControl isInvalid = {errors.PICID != null}>
-                        <FormLabel>Person In charge IC</FormLabel>
+                        <FormLabel>Person Incharge IC</FormLabel>
                         <InputGroup>
                             <Input
                                 name = 'person_in_charge_ic'
@@ -639,7 +639,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     </FormControl>
 
                     <FormControl isInvalid = {errors.email != null}>
-                        <FormLabel>Email id</FormLabel>
+                        <FormLabel>Email ID</FormLabel>
                         <InputGroup>
                             <Input
                                 name = 'email'

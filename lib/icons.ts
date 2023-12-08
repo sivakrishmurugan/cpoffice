@@ -1,3 +1,4 @@
+export { default as CheckIconGreen } from 'public/icons/check_icon_green.svg'
 export { default as DeleteIcon } from 'public/icons/Delete-show-icon.svg'
 export { default as IcLocationPin } from 'public/icons/location-pin.svg'
 export { default as PromoCodeIcon } from 'public/icons/icon-promo.svg'

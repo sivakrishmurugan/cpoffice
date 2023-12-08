@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 const TermsOfUse: NextPage<PageProps> = async ({}) => {
 
     return (
-        <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '10px' pb = '20px'>
+        <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '30px' pb = '20px'>
             <Flex direction={'column'} maxW = '100vw' w = '100%' position={'absolute'} left={0} alignItems={'center'} justifyContent={'center'}>
                 <Flex 
                     w = '100%'
@@ -34,16 +34,16 @@ const TermsOfUse: NextPage<PageProps> = async ({}) => {
                     justifyContent={'center'}
                     alignItems={'center'}
                 >
-                    <Heading textAlign={'center'} fontSize={['32px', '32px', '42px', '42px', '42px']} color = 'white' fontWeight={'bold'} textTransform={'uppercase'}>Terms of use</Heading>
+                    <Heading fontFamily={'kanit'} textAlign={'center'} fontSize={['32px', '32px', '42px', '42px', '42px']} color = 'white' fontWeight={'bold'} textTransform={'uppercase'}>Terms of use</Heading>
                 </Flex>
             </Flex>
             <Flex 
-                mt = '150px'
+                mt = '180px'
                 maxW = {APP_MAX_WIDTH}
                 w = {APP_WIDTH}
-                gap = '30px' py = '50px'
-                direction={'column'}
-                px = {['10px', '10px', '20px', '20px', '20px']}
+                gap = '30px'
+                direction={'column'} bg= ' white'
+                borderRadius={'30px'} paddingY = '60px' px = {['15px', '20px', '20px', '130px', '130px']}
             >
                 <TermsOfUseCard 
                     title = "Terms Of Use Website"
@@ -133,7 +133,7 @@ export default TermsOfUse;
 const TermsOfUseCard = ({ title, content }: { title: string, content: JSX.Element }) => {
     return (
         <Flex direction={'column'} gap = '20px' fontSize={'18px'}>
-            <Heading fontSize={'25px'} textTransform={'uppercase'}>{title}</Heading>
+            <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'25px'} textTransform={'uppercase'}>{title}</Heading>
             {content}
         </Flex>
     );

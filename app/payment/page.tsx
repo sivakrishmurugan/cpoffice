@@ -61,7 +61,7 @@ const PaymentStatusPage: NextPage<PageProps> = async ({ searchParams }) => {
     }
 
     return (
-        <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '10px'  py = '20px' maxH = '700px'>
+        <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '10px'  py = '20px' maxH = {['100%', '100%', '700px', '700px', '700px']}>
             <Flex 
                 w = {['100%', '100%', '80%', '60%', '60%']} 
                 minH = '100%' 

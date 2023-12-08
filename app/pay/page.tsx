@@ -122,12 +122,8 @@ const Summary: NextPage<{}> = ({}) => {
                                             <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.name}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person In Charge Name</Td>
-                                            <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICName}</Td>
-                                        </Tr>
-                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person In Charge IC</Td>
-                                            <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICID}</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person Incharge Name</Td>
+                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICName}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
                                             <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>

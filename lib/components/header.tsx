@@ -2,21 +2,23 @@
 import { Drawer, DrawerBody, DrawerContent, DrawerOverlay, Flex, Icon, IconButton, Link, useDisclosure } from "@chakra-ui/react";
 import Image from "next/image";
 import { NavMenuIcon } from "../icons";
-import { APP_MAX_WIDTH } from "../app/app_constants";
+import { APP_BORDER_COLOR, APP_MAX_WIDTH, APP_SECONDARY_COLOR } from "../app/app_constants";
 import NextLink from 'next/link';
 import { useRouter, usePathname } from "next/navigation";
 
 const Header = () => {
+    const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
     const pathname = usePathname();
-    const router = useRouter()
-    const hideNavLinks = pathname != '/';
+    const router = useRouter();
+    const navSuportedRoutes = ['/', '/privacy_policy', '/terms_of_use']
+    const hideNavLinks = navSuportedRoutes.includes(pathname) == false;
 
     const onClickLogo = () => {
         router.push('/');
     }
 
     return (
-        <Flex position={'sticky'} top = '0px' zIndex={3000} borderBottom={'1px'} borderColor={'brand.borderColor'} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
+        <Flex position={'sticky'} top = '0px' zIndex={3000} boxShadow={isOpen ? `0px 2px 0px ${APP_SECONDARY_COLOR}` : `0px 1px 1px ${APP_BORDER_COLOR}`} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
             <Flex w = {APP_MAX_WIDTH.map((e, i) => i < 4 ? e : (Number(e.replace('px', '')) + 100).toString() + 'px')} alignItems={'center'} justifyContent={'space-between'} px = {['20px', '35px', '40px', '20px', '20px']} gap = '20px'>
                 <Flex h = '100%' onClick={onClickLogo} as = 'button' _focusVisible={{ boxShadow: 'var(--chakra-shadows-outline)', outline: 'none' }}>
                     <Flex position={'relative'} w = {hideNavLinks ? '300px' : '150px'} h = '100%'>
@@ -24,7 +26,7 @@ const Header = () => {
                     </Flex>
                 </Flex>
                 <Flex w = '100%' h = '100%' justifyContent={'flex-end'} alignItems={'center'} gap  ='40px'>
-                    <Nav hideNavLinks = {hideNavLinks} />
+                    <Nav hideNavLinks = {hideNavLinks} onClose={onClose} onToggle={onToggle} isOpen={isOpen} />
                     <Flex display={['none',  'none', 'none', 'flex', 'flex']} position={'relative'} w = '150px' h = '100%'>
                         <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
                     </Flex>
@@ -36,8 +38,7 @@ const Header = () => {
 
 export default Header;
 
-const Nav = ({ hideNavLinks }: { hideNavLinks: boolean }) => {
-    const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
+const Nav = ({ hideNavLinks, isOpen, onClose, onToggle }: { hideNavLinks: boolean, isOpen: boolean, onClose: () => void, onToggle: () => void }) => {
     const onNavClicked = () => onClose();
     return (
         <>
@@ -49,7 +50,7 @@ const Nav = ({ hideNavLinks }: { hideNavLinks: boolean }) => {
                     </Flex>
                     <Drawer isOpen = {isOpen} onClose={onClose} placement = "top" blockScrollOnMount = {false}>
                         <DrawerOverlay display={'none'} />
-                        <DrawerContent mt = '60px' borderTop={'2px'} borderColor={'brand.secondary'}>
+                        <DrawerContent mt = '60px'>
                             <DrawerBody py = '20px' px = '20px'>
                                 <Flex direction={'column'} gap = '10px'>
                                     <NavLinks withHoverBg onNavClicked = {onNavClicked} />
