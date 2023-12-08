@@ -2,7 +2,7 @@
 import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
 import { convertToPriceFormat, getNumberFromString } from "@/lib/utlils/utill_methods";
 import { OptionalCoverageForm } from "@/lib/components/forms";
-import { Alert, AlertIcon, Button, Flex, Heading } from "@chakra-ui/react";
+import { Text, Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import BottomActions from "@/lib/components/bottom_actions";
 import { ClinicData, SelectedCoverage } from "@/lib/types";
@@ -11,6 +11,7 @@ import { NextPage } from "next";
 import useCoverage from "@/lib/hooks/use_coverage";
 import { MAX_COVERAGE_VALUE, PROTECTION_AND_LIABILITY_COVERAGE } from "@/lib/app/app_constants";
 import MaxLimitExceededPopup from "@/lib/components/max_cover_limit_popup";
+import Image from "next/image";
 
 const OptionalCoverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -26,6 +27,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         fieldErrors: { id: number | string, field_1: boolean, field_2?: boolean }[] 
     }
     const [maxLimitPopupOpen, setMaxLimitPopupOpen] = useState(false);
+    const [skipConfirmPopup, setSkipConfirmPopup] = useState(false);
     const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, maxLimit: { isExceeded: false, currentTotalValue: 0 }, fieldErrors: [] });
     const isClient = useClient();
     const router = useRouter();
@@ -137,6 +139,15 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         return tempErrors.maxLimit.isExceeded == true || tempErrors.fieldErrors.some(e => e.field_1 == true);
     }
 
+    const onClickSkipOrNext = () => {
+        if(localData == null || validate()) return ;
+        if(selectedCoverages.length < 1 && data.some(e => ((e.field_1 ?? 0) + (e.field_2 ?? 0)) > 0)) {
+            setSkipConfirmPopup(true);
+        } else {
+            onClickNext()
+        }
+    }
+
     const onClickNext = () => {
         if(localData == null || validate()) return ;
         updateLocalData(data.filter(e => selectedCoverages.includes(e.id)));
@@ -149,10 +160,16 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
-             <MaxLimitExceededPopup 
+            <MaxLimitExceededPopup 
                 isOpen = {maxLimitPopupOpen}
                 onClose = {() => setMaxLimitPopupOpen(false)}
                 currentValue = {errors.maxLimit.currentTotalValue}
+            />
+
+            <SkipConfirmPopup 
+                isOpen = {skipConfirmPopup}
+                onClose = {() => setSkipConfirmPopup(false)}
+                onClickYes = {onClickNext}
             />
 
             <Heading as = 'h1' ml = '20px' my = '20px' fontSize={'23px'}>Optional Coverage</Heading> 
@@ -183,7 +200,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
                 <BottomActions>
                     <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
                     <Button 
-                        onClick = {onClickNext} 
+                        onClick = {onClickSkipOrNext} 
                         isDisabled = {errors.fieldErrors.filter(e => selectedCoverages.includes(e.id)).some(e => e.field_1)} 
                         width = {['100%', '100%', '250px', '250px', '250px']} 
                         minW = '150px' 
@@ -199,3 +216,30 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
 }
 
 export default OptionalCoverages;
+
+interface SkipConfirmPopupProps {
+    isOpen: boolean,
+    onClose: () => void,
+    onClickYes: () => void
+}
+ 
+const SkipConfirmPopup = ({ isOpen, onClose, onClickYes }: SkipConfirmPopupProps) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
+                <ModalBody py ={['40px', '40px', '20px', '20px', '20px']} >
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {'10px'} alignItems={'center'}>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>You have entered values for optional coverages,</Heading>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>but the package is not added</Heading>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>Are you still want to skip?</Heading>
+                        <Flex mt = '30px' gap = '20px'>
+                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>No</Button>
+                            <Button onClick = {onClickYes} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Yes</Button>
+                        </Flex>
+                    </Flex>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    );
+}

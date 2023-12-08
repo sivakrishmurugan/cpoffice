@@ -13,7 +13,7 @@ import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/typ
 import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from "@/lib/utlils/utill_methods";
 import axiosClient from "@/lib/utlils/axios";
 import Image from 'next/image';
-import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary } from "@/lib/utlils/calculation";
+import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary, getTotalPremiumsForFireAndPerilsInsurance } from "@/lib/utlils/calculation";
 
 const Summary: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -74,6 +74,10 @@ const Summary: NextPage<{}> = ({}) => {
         setPayLoading(false)
     }
 
+    const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal } = getTotalPremiumsForFireAndPerilsInsurance(localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [])
+    const selectedInsTotalPremium = localData?.selectedInsType == 'FIRE' ? fireInsPremiumTotal : fireAndPerilsInsPremiumTotal;
+    const min75NoteText = selectedInsTotalPremium.actual != selectedInsTotalPremium.rounded ? 'Minimum coverage premium is RM 75.00' : null
+
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
             {
@@ -99,7 +103,7 @@ const Summary: NextPage<{}> = ({}) => {
         
                         {/* Summary heading and edit details button */}
                         <Flex w = '100%' gap = '35px' alignItems={'center'} justifyContent={'space-between'}>
-                            <Heading as = {'h1'} fontSize={'23px'}>Payment approved</Heading>
+                            <Heading as = {'h1'} fontSize={'23px'}>Proposal approved</Heading>
                         </Flex>
                         
                         {/* Divider */}
@@ -172,6 +176,8 @@ const Summary: NextPage<{}> = ({}) => {
                                 </Table>
                             </TableContainer>
 
+                            {min75NoteText != null && <Heading display={['none', 'none', 'none', 'flex', 'flex']} color = 'red' fontSize={'16px'}>{min75NoteText}</Heading>}
+
                             {/* Mobile view insurance coverage table */}
                             <TableContainer display={['block', 'block', 'block', 'none', 'none']}>
                                 <Table variant={'unstyled'}>
@@ -203,6 +209,8 @@ const Summary: NextPage<{}> = ({}) => {
                                     </Tbody>
                                 </Table>
                             </TableContainer>
+
+                            {min75NoteText != null && <Heading display={['flex', 'flex', 'flex', 'none', 'none']} color = 'red' fontSize={'16px'}>{min75NoteText}</Heading>}
                             
                             {
                                 localData?.selectedOptionalCoverages && localData?.selectedOptionalCoverages?.length > 0 &&
@@ -381,17 +389,17 @@ const Summary: NextPage<{}> = ({}) => {
                             <Table variant={'unstyled'}>
                                 <Tbody>
                                     <Tr>
-                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Total Premium</Td>
+                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Min Total Premium</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(totalPremium)}</Td>
                                     </Tr>
-                                    <Tr>
+                                    {/* <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Discount</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(discount, true)}</Td>
-                                    </Tr>
-                                    <Tr>
+                                    </Tr> */}
+                                    {/* <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Nett Premium</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(netPremium)}</Td>
-                                    </Tr>
+                                    </Tr> */}
                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Tax 6%</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(tax)}</Td>

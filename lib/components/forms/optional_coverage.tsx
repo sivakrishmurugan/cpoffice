@@ -27,6 +27,16 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
     const premium = calculatePremiumForOptionalCoverage(values, coverage, selectedInsType, localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [])
     const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
 
+    const isProtectAgainstLossOfRevenueCoverage = coverage.CoverageName == 'Protect against Loss of Revenue';
+    let replaceText = isProtectAgainstLossOfRevenueCoverage && (values?.field_2 ?? 0) > 0 ? 'RM ' + convertToPriceFormat(values?.field_2 ?? 0, false, true) : '';
+
+    const coverageIncludes = coverage.Includes['Coverage includes'].map(item => {
+        if(isProtectAgainstLossOfRevenueCoverage && item.includes('AUDITOR_FEE_REPLACE_TEXT')) {
+            return item.replace('AUDITOR_FEE_REPLACE_TEXT', replaceText);
+        }
+        return item;
+    })
+
     return (
         <Flex 
             w = '100%' 
@@ -61,7 +71,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
                     <Flex w = {'100%'} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']}>
                         <Flex display={['flex', 'flex', 'none', 'none', 'none']}>
                             <ExpanableList
-                                list = {coverage.Includes["Coverage includes"]}
+                                list = {coverageIncludes}
                                 title = "Coverage includes" 
                             />
                         </Flex>
@@ -69,7 +79,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
                             <Text fontSize = '16px' fontWeight={'bold'}>Coverage includes: </Text>
                             <UnorderedList ml = '40px' fontSize={'14px'}>
                                 {
-                                    coverage.Includes["Coverage includes"].map(includedItem => {
+                                    coverageIncludes.map(includedItem => {
                                         return <ListItem key = {includedItem}>{includedItem}</ListItem>;
                                     })
                                 }

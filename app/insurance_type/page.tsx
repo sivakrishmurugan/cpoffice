@@ -301,7 +301,7 @@ const Coverages: NextPage<{}> = ({}) => {
                         fireInsPremiumTotal.actual != fireInsPremiumTotal.rounded  || fireAndPerilsInsPremiumTotal.actual != fireAndPerilsInsPremiumTotal.rounded ?
                         <Alert mt = '-10px' status='info' borderRadius={'8px'}>
                             <AlertIcon />
-                            Minimun coverage premium is RM 75.00
+                            Minimum coverage premium is RM 75.00
                         </Alert> : <></>
                     }
 

@@ -87,7 +87,7 @@ export default async function Home({ searchParams }: PageProps) {
                 >
                     <Flex w = {['60%', '60%', '60%', '100%', '100%']} mt = {['0px', '0px', '0px', '20px', '20px']} direction={'column'}>
                         <Flex direction={'column'} m = 'auto'>
-                            <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={['start', 'start', 'start', 'center', 'center']} color = 'brand.secondary' fontSize={['18px', '23px', '45px', '45px', '45px']} as = 'h1'>Insurance Protection</Heading>
+                            <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={['start', 'start', 'start', 'center', 'center']} color = 'brand.secondary' fontSize={['18px', '23px', '45px', '45px', '45px']} as = 'h1'>Insurance</Heading>
                             <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={['start', 'start', 'start', 'center', 'center']} fontSize={['18px', '23px', '45px', '45px', '45px']} as = 'h1'>for Your Clinic Property</Heading>
                         </Flex>
                     </Flex>

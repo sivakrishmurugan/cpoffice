@@ -97,7 +97,6 @@ export const STAMP_DUTY = 10.00;
 
 export const TYPE_OF_CLAIM = [
     { id: 'Property', value: 'Property' },
-    { id: 'Liability', value: 'Liability' },
     { id: 'Consequential Loss', value: 'Consequential Loss' },
     { id: 'Other', value: 'Other' }
 ]
@@ -127,15 +126,15 @@ export const PROTECTION_AND_LIABILITY_COVERAGE = {
             contents: ['Amount of Guarantee (in aggregate for all employee)']
         },
         {
-            title: 'Plate glass MYR 10,000 ',
+            title: 'Plate glass RM 10,000 ',
             contents: ['On Glass and signage']
         },
         {
-            title: 'Public liability MYR 1,000,000 ',
+            title: 'Public liability RM 1,000,000 ',
             contents: ['Limit of Liability during the Period of Insurance']
         },
         {
-            title: 'Employer liability MYR 250,000 ',
+            title: 'Employer liability RM 250,000 ',
             contents: ['Limit of Liability any one claim or series of claims arising out of one event irrespective of the number of claims that may arise therefrom and during any one Period of Insurance']
         }
     ]
@@ -145,16 +144,16 @@ export const TOOLTIP_INFO = {
     fireAndPerilsIns: {
         title: 'Protection from fire and listed perils',
         contents: [
-            'Strom,',
+            'Storm,',
             'Tempest,',
             'Flood,',
             'Bursting or Overflowing of water tanks,',
             'Explosion - Non-industrial without Boilers,',
             'Earthquake & Volcanic Eruption',
-            "impact Damage (including insured's own vehicles),",
+            "Impact Damage (including insured's own vehicles),",
             "Riot Strike and Malicious Damage (Non-Residential),",
             "Sprinkler Leakage Building and contents",
-            "Electical installations clause (Applicable for Plant & Machinery only)"
+            "Electrical installations clause (Applicable for Plant & Machinery only)"
         ]
     },
     excess: {
