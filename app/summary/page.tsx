@@ -1,36 +1,61 @@
 "use client"
-import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/lib/app/app_constants";
+import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr, FormLabel, useRadioGroup, useRadio, UseRadioProps, IconButton, Alert, AlertIcon } from "@chakra-ui/react";
+import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, FORM_FIELD_ERROR_MESSAGES, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/lib/app/app_constants";
 import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { CheckIcon, CheckIconGreen, InfoIcon, PromoCodeIcon } from "@/lib/icons";
-import { ChangeEvent, useEffect, useState } from "react";
+import { CheckIcon, CheckIconGreen, EditIcon, IcLocationPin, InfoIcon, PICIDIcon, PICNameIcon, PromoCodeIcon } from "@/lib/icons";
+import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import ResponsiveTooltip from "@/lib/components/tooltip";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import React from "react";
 import useCoverage from "@/lib/hooks/use_coverage";
-import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/types";
-import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from "@/lib/utlils/utill_methods";
+import { ClaimDeclarationAdditionalData, ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/types";
+import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days, getNumberFromString, getRecentYears, validateField } from "@/lib/utlils/utill_methods";
 import axiosClient from "@/lib/utlils/axios";
 import Image from 'next/image';
 import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary, getTotalPremiumsForFireAndPerilsInsurance } from "@/lib/utlils/calculation";
+import ClaimFormPopup from "@/lib/components/forms/claim_form_popup";
 
 const Summary: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData, updateDataWithNewQuoteId } = useCoverage(localData?.quoteId);
+    const[showProcessingPopup, setShowProcessingPopup] = useState(false);
     const [data, setData] = useState({ 
         loading: null as null | 'PROMO_CODE' | 'EMAIL_QUOTE' | 'PROCEED',
         emailQuoteSuccessPopupOpen: false,
+        claimInfoPopupOpen: false,
         promoCode: { 
             value: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? '' : localData?.promoCode, 
             isApplied: localData?.promoCode == null || localData?.promoCode == '' || localData?.promoCode == '0.00' ? false : true, 
             appliedPercentage: localData?.promoCodePercentage ?? 0,
             error: null as string | null 
         }, 
-        insStartDate: { value: localData?.insStartDate ?? '', error: false } 
+        PICName: { value: localData?.PICName ?? '', error: null as string | null },
+        PICID: { value: localData?.PICID ?? '', error: null as string | null },
+        insStartDate: { value: localData?.insStartDate ?? '', error: false },
+        previouslyClaimed: {
+            isClaimed: localData?.claimDeclaration?.previouslyClaimed ?? null as boolean | null,
+            error: false
+        },
+        claimInfoList: localData?.claimDeclaration?.addtionalInfo ?? []
     });
     const isClient = useClient();
     const router = useRouter();
+
+    const { getRootProps: getPreviouslyClaimedRootProps, getRadioProps: getPreviouslyClaimedRadioProps } = useRadioGroup({
+        name: 'previously_claimed_radio',
+        onChange: (value: 'yes' | 'no') => {
+            setData(prev => ({ 
+                ...prev,
+                claimInfoPopupOpen: value == 'yes',
+                previouslyClaimed: {
+                    isClaimed: value == 'yes',
+                    error: false
+                }
+            }))
+        },
+    });
+    const previouslyClaimedRadioGroup = getPreviouslyClaimedRootProps();
 
     useEffect(() => {
         if(localData == null || localData.quoteId == null || localData.quoteId == '') {
@@ -43,11 +68,6 @@ const Summary: NextPage<{}> = ({}) => {
     const onChangePromoCode = (event: ChangeEvent<HTMLInputElement>) => {
         if(data.promoCode.isApplied) return ;
         setData(prev => ({ ...prev, promoCode: { value: event.target.value, isApplied: false, appliedPercentage: 0, error: null } }))
-    }
-
-    const onChangeInsStartDate = (event: ChangeEvent<HTMLInputElement>) => {
-        const date = event.target.value;
-        setData(prev => ({ ...prev, insStartDate: { value: date, error: date == '' } }))
     }
 
     const onApplyOrRemovePromoCode = async () => {
@@ -93,6 +113,45 @@ const Summary: NextPage<{}> = ({}) => {
         }))
     }
 
+    const onChangePICName = (event: ChangeEvent<HTMLInputElement>) => {
+        let inputValue = event.target.value.trimStart();
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'PICName');
+        setData(prev => ({ 
+            ...prev, 
+            PICName: {
+                value: inputValue,
+                error: isEmpty ? FORM_FIELD_ERROR_MESSAGES.PICName.required : isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.PICName.format : null
+            } 
+        }));
+    }
+
+    const onChangePICID = (event: ChangeEvent<HTMLInputElement>) => {
+        let inputValue = event.target.value.trimStart();
+
+        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'PICID');
+        setData(prev => ({ 
+            ...prev, 
+            PICID: {
+                value: inputValue,
+                error: isEmpty ? FORM_FIELD_ERROR_MESSAGES.PICID.required : isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.PICID.format : null
+            } 
+        }));
+    }
+
+    const onChangeInsStartDate = (event: ChangeEvent<HTMLInputElement>) => {
+        const date = event.target.value;
+        setData(prev => ({ ...prev, insStartDate: { value: date, error: date == '' } }))
+    }
+
+    const onClickEditClaimInfo = () => {
+        setData(prev => ({ ...prev, claimInfoPopupOpen: true }))
+    }
+
+    const onClickSubmitClaims = (claims: ClaimDeclarationAdditionalData[]) => {
+        setData(prev => ({ ...prev, claimInfoPopupOpen: false, claimInfoList: claims, previouslyClaimed: { isClaimed: true, error: false } }))
+    }
+
     const coverageValue = (coverage: SelectedCoverage) => {
         return (coverage?.field_1 ?? 0) + (coverage?.field_2 ?? 0)
     }
@@ -107,9 +166,19 @@ const Summary: NextPage<{}> = ({}) => {
 
     const validate = () => {
         const tempData: typeof data = JSON.parse(JSON.stringify(data));
+        
         tempData.insStartDate.error = tempData.insStartDate.value == '';
+
+        const validatedPICNameResult = validateField(data.PICName.value.trim(), 'PICName');
+        tempData.PICName.error = validatedPICNameResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.PICName.required : validatedPICNameResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.PICName.format : null;
+
+        const validatedPICIDResult = validateField(data.PICID.value.trim(), 'PICID');
+        tempData.PICID.error = validatedPICIDResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.PICID.required : validatedPICIDResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.PICID.format : null;
+
+        tempData.previouslyClaimed.error = tempData.previouslyClaimed.isClaimed == null;
+
         setData(tempData);
-        return tempData.insStartDate.error == true;
+        return tempData.PICName.error != null || tempData.PICID.error != null || tempData.insStartDate.error == true || tempData.previouslyClaimed.error == true;
     }
 
     const onClickSubmit =  async (submitFor: 'EMAIL_QUOTE' | 'PROCEED' = 'PROCEED') => {
@@ -127,6 +196,9 @@ const Summary: NextPage<{}> = ({}) => {
             const res = await axiosClient.post('/api/clinicshield/setquote', {
                 QuoteType: submitFor == 'EMAIL_QUOTE' ? 'email' : 'proceed',
                 QuoteID: localData?.quoteId,
+                PICName: data.PICName.value,
+                PICID: data.PICID.value,
+                ClaimDeclaration: data.previouslyClaimed.isClaimed ? 'YES' : 'NO',
                 InsuranceStartDate: data.insStartDate.value,
                 InsuranceEndDate: getDateAfter365Days(data.insStartDate.value),
                 TotalPremium: totalPremium,
@@ -142,14 +214,29 @@ const Summary: NextPage<{}> = ({}) => {
             if(res.data && res.data[0] && res.data[0].Success == 1) {
                 setLocalData({ 
                     ...localData, 
+                    claimDeclaration: {
+                        previouslyClaimed: data.previouslyClaimed.isClaimed,
+                        addtionalInfo: data.claimInfoList
+                    },
                     promoCode: data.promoCode.isApplied ? data.promoCode.value : '',
                     promoCodePercentage: data.promoCode.isApplied ? data.promoCode.appliedPercentage : 0,
                     insStartDate: data.insStartDate.value
                 })
 
                 if(submitFor == 'PROCEED') {
-                    router.push('/claim_declaration');
-                    setData(prev => ({ ...prev, loading: null }));
+                    //router.push('/claim_declaration');
+                    if(data.previouslyClaimed.isClaimed) {
+                        setShowProcessingPopup(true)
+                    } else {
+                        const { finalPremium } = calculateSummary(
+                            localData?.selectedCoverages ?? [],
+                            localData?.selectedOptionalCoverages ?? [], 
+                            localData?.selectedInsType ?? 'FIRE', 
+                            localData?.promoCodePercentage ?? 0, 
+                            coveragesData ?? { coverages: [], optionalCoverages: [] }
+                        )
+                        await redirectToPayment(localData.quoteId, finalPremium)
+                    }
                 } else {
                     setData(prev => ({ ...prev, loading: null, emailQuoteSuccessPopupOpen: true }));
                 }
@@ -164,9 +251,39 @@ const Summary: NextPage<{}> = ({}) => {
         setData(prev => ({ ...prev, loading: null }));
     }
 
+    const redirectToPayment = async (encryptedQuoteId: string, amount: number) => {
+        try {
+            const res = await axiosClient.post('/api/clinicshield/dopayment', {
+                QuoteID: encryptedQuoteId,
+                Payment: amount.toString()
+            })
+            if(res.data && res.data.Success == 1 && res.data.Data.respCode && res.data.Data.respCode == '0000') {
+                router.push(res.data.Data.webPaymentUrl);
+            }
+        } catch(e) {
+            console.log('do payment api failed: ', e)
+        }
+    }
+
     const onClickCloseEmailQuotePopup = () => {
         setData(prev => ({ ...prev, emailQuoteSuccessPopupOpen: false }));
         router.replace('/');
+    }
+
+    const onCloseClaimPopup = () => {
+        setData(prev => ({ 
+            ...prev, 
+            claimInfoPopupOpen: false, 
+            previouslyClaimed: { 
+                isClaimed: prev.claimInfoList.length > 0 ? prev.previouslyClaimed.isClaimed : null, 
+                error: false 
+            } 
+        }))
+    }
+
+    const onCloseProccessingPopup = () => {
+        router.replace('/')
+        setShowProcessingPopup(false); 
     }
 
     const onClickEditDetails = () => router.push('/coverage');
@@ -181,9 +298,20 @@ const Summary: NextPage<{}> = ({}) => {
 
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
+            <QutoeClaimInfoProcessPopup 
+                isOpen = {showProcessingPopup}
+                onClose = {onCloseProccessingPopup}
+            />
             <EmailQuotePopup 
                 isOpen = {data.emailQuoteSuccessPopupOpen}
                 onClose = {onClickCloseEmailQuotePopup}
+            />
+            <ClaimFormPopup 
+                isOpen = {data.claimInfoPopupOpen}
+                onClose = {onCloseClaimPopup}
+                quoteId = {localData?.quoteId ?? ''}
+                list = {data.claimInfoList}
+                onClickSubmit = {onClickSubmitClaims}
             />
             {
                 isClient && <Flex 
@@ -232,15 +360,11 @@ const Summary: NextPage<{}> = ({}) => {
                                             <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.name}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person Incharge Name</Td>
-                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICName}</Td>
-                                        </Tr>
-                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
                                             <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>12 Months</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Location</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'} verticalAlign={'top'}>Location</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.address}</Td>
                                         </Tr>
                                     </Tbody>
@@ -302,12 +426,12 @@ const Summary: NextPage<{}> = ({}) => {
                                                         <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.3} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                     </Tr>
                                                     <Tr>
-                                                        <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                        <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
+                                                        <Th px = '10px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
+                                                        <Td px = '10px' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
                                                     </Tr>
                                                     <Tr>
-                                                        <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData))}</Td>
+                                                        <Th px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
+                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData))}</Td>
                                                     </Tr>
                                                 </React.Fragment>
                                             })
@@ -384,12 +508,12 @@ const Summary: NextPage<{}> = ({}) => {
                                                                 <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.3} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                             </Tr>
                                                             <Tr>
-                                                                <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                                <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
+                                                                <Th px = '10px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
+                                                                <Td px = '10px' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
                                                             </Tr>
                                                             <Tr>
-                                                                <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []))}</Td>
+                                                                <Th px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
+                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []))}</Td>
                                                             </Tr>
                                                         </React.Fragment>
                                                     })
@@ -547,23 +671,81 @@ const Summary: NextPage<{}> = ({}) => {
                             </Button>
                         </Flex> */}
 
-                        <Flex w = '100%' gap = '10px' direction={'column'}>
-                            <Heading as = 'h1' color = 'brand.text' fontSize={'23px'}>Insurance Start Date</Heading>
-                            <FormControl isInvalid = {data.insStartDate.error}>
-                                <InputGroup>
-                                    <Input value = {data.insStartDate.value} onChange = {onChangeInsStartDate} min = {formatDateToYyyyMmDd(new Date())} type = 'date' placeholder = "Choose" />
-                                    {/* <InputRightElement h = '100%'>
-                                        <Icon as = {CalendarIcon} h = 'auto' w = 'auto' />
-                                    </InputRightElement> */}
-                                </InputGroup>
-                                <FormErrorMessage ml = '10px'>Insurance start date is required!</FormErrorMessage>
-                            </FormControl>
+                        <FormControl isInvalid = {data.PICName.error != null}>
+                            <FormLabel>Person in charge Name (PCN)</FormLabel>
+                            <InputGroup>
+                                <Input
+                                    name = 'person_in_charge_name'
+                                    value = {data.PICName.value}
+                                    onChange = {onChangePICName}
+                                    placeholder="ex. John Smith" 
+                                />
+                                <InputRightElement h = '100%'>
+                                    <Icon as = {PICNameIcon} h = 'auto' w = 'auto' />
+                                </InputRightElement>
+                            </InputGroup>
+                            <FormErrorMessage ml = '10px'>{data.PICName.error}</FormErrorMessage>
+                        </FormControl>
+
+                        <FormControl isInvalid = {data.PICID.error != null}>
+                            <FormLabel>Person in charge IC (PIC)</FormLabel>
+                            <InputGroup>
+                                <Input
+                                    name = 'person_in_charge_ic'
+                                    value = {data.PICID.value}
+                                    onChange = {onChangePICID}
+                                    placeholder="ex. MY12367" 
+                                />
+                                <InputRightElement h = '100%'>
+                                    <Icon as = {PICIDIcon} h = 'auto' w = 'auto' />
+                                </InputRightElement>
+                            </InputGroup>
+                            <FormErrorMessage ml = '10px'>{data.PICID.error}</FormErrorMessage>
+                        </FormControl>
+
+                        <FormControl isInvalid = {data.insStartDate.error}>
+                            <FormLabel>Insurance Start Date</FormLabel>
+                            <InputGroup>
+                                <Input value = {data.insStartDate.value} onChange = {onChangeInsStartDate} min = {formatDateToYyyyMmDd(new Date())} type = 'date' placeholder = "Choose" />
+                                {/* <InputRightElement h = '100%'>
+                                    <Icon as = {CalendarIcon} h = 'auto' w = 'auto' />
+                                </InputRightElement> */}
+                            </InputGroup>
+                            <FormErrorMessage ml = '10px'>Insurance start date is required!</FormErrorMessage>
+                        </FormControl>
+
+                        <Flex direction={'column'} gap = '15px'>
+                            <Text fontSize={'16px'} color = 'brand.text' fontWeight={'bold'}>Have you suffered any loss or any insurance claim at the insured premises in the past 3 years?</Text>
+                            <Flex gap = '15px' {...previouslyClaimedRadioGroup}>
+                                <RadioCard {...getPreviouslyClaimedRadioProps({ value: 'yes' })} isChecked = {data.previouslyClaimed.isClaimed == true} width = {'100px'}>
+                                    Yes
+                                </RadioCard>
+                                <RadioCard {...getPreviouslyClaimedRadioProps({ value: 'No' })} isChecked = {data.previouslyClaimed.isClaimed == false} width = {'100px'}>
+                                    No
+                                </RadioCard>
+                            </Flex>
+                            {
+                                data.previouslyClaimed?.isClaimed &&
+                                <Flex gap = '10px' alignItems={'center'}>
+                                    <Flex w = '100%' p = '10px' bg = 'brand.bgColor' borderRadius={'3px'}>Number of Claims - {data.claimInfoList.length}</Flex>
+                                    <IconButton onClick={onClickEditClaimInfo} variant = {'unstyled'} _hover={{bg: 'gray.100'}} isRound aria-label = 'edit_claims' icon = {<Icon  w = 'auto' h = 'auto' minW = '45px' minH = '45px' as = {EditIcon} />} />
+                                </Flex>
+                            }
+                            {
+                                data.previouslyClaimed.error &&
+                                <Alert mt = '20px' status='error' borderRadius={'8px'}>
+                                    <AlertIcon />
+                                    Please select yes or no!
+                                </Alert>
+                            }
                         </Flex>
                         
-                        <Flex mt = '20px' w = '100%' flexWrap={'wrap'} gap ='15px'>
+                        <Flex mt = '20px' w = '100%' direction={'column'} flexWrap={'wrap'} gap ='15px'>
                             <Button onClick = {e => onClickSubmit('PROCEED')} isLoading = {data.loading == 'PROCEED'} w = '100%' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>PROCEED TO PURCHASE</Button>
-                            <Button onClick = {onClickBack} flex = {1} bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
-                            <Button onClick = {e => onClickSubmit('EMAIL_QUOTE')} isLoading = {data.loading == 'EMAIL_QUOTE'} flex = {1} bg = 'brand.darkViolet' color = 'white' _hover = {{}} _focus={{}} whiteSpace={'pre-wrap'}>EMAIL ME A QUOTE</Button>
+                            <Flex gap = '15px'>
+                                <Button w = '35%' onClick = {onClickBack} bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
+                                <Button flexGrow={1} onClick = {e => onClickSubmit('EMAIL_QUOTE')} isLoading = {data.loading == 'EMAIL_QUOTE'} bg = 'brand.darkViolet' color = 'white' _hover = {{}} _focus={{}} whiteSpace={'pre-wrap'}>EMAIL ME A QUOTE</Button>
+                            </Flex>
                         </Flex>
 
                     </Flex>
@@ -587,13 +769,70 @@ const EmailQuotePopup = ({ isOpen, onClose }: EmailQuotePopupProps) => {
             <ModalOverlay />
             <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
                 <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = '20px' alignItems={'center'}>
+                        <Flex ml = '30px' position={'relative'} w = '120px' h = '120px'>
+                            <Image src='/icons/quote-sent.svg' fill style = {{ objectFit: 'contain' }} alt={"quate_submit_in_process_image"} />
+                        </Flex>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>Your Quote has been sent to your email.</Heading>
+                        <Button my = '20px' onClick = {onClose} w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                    </Flex>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    );
+}
+
+interface RadioCardProps extends UseRadioProps {
+    children: ReactNode;
+    width?: string | string[]
+    height?: string | string[]
+}
+
+const RadioCard = ({ width = '100%', height = '40px', ...restProps }: RadioCardProps) => {
+    const { getInputProps, getRadioProps } = useRadio(restProps)
+  
+    const input = getInputProps()
+    const checkbox = getRadioProps()
+  
+    return (
+      <Flex 
+        w = {width} minH = {height}
+        flexShrink={0}
+        p = '10px' as='label' cursor='pointer'
+        opacity = {restProps.isDisabled ? '0.6' : 'auto'}
+        bg = {restProps.isChecked ? 'brand.secondary' : 'white'}
+        color = {!restProps.isChecked ? 'black' : 'white'} 
+        border = {!restProps.isChecked ? '1px' : '0px'} 
+        borderRadius = {'6px'}
+        borderColor={'brand.borderColor'}
+    >
+        <input {...input} />
+        <Flex {...checkbox} m = 'auto' textAlign={'center'}>
+            {restProps.children}
+        </Flex>
+      </Flex>
+    )
+}
+
+interface QutoeClaimInfoProcessPopupProps {
+    isOpen: boolean,
+    onClose: () => void
+}
+ 
+const QutoeClaimInfoProcessPopup = ({ isOpen, onClose }: QutoeClaimInfoProcessPopupProps) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
+                <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
                     <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = '30px' alignItems={'center'}>
                         <Flex m = 'auto' position={'relative'} w = '100px' h = '100px'>
                             <Image src='/icons/Doc-processing.svg' fill style = {{ objectFit: 'contain' }} alt={"quate_submit_in_process_image"} />
                         </Flex>
-                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>Your Quote has been sent to your email.</Heading>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>We have received your request and we need more information and time to process your Insurance Application.</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
-                           
+                            Our friendly relationship manager will contact you shortly to work with you on your case. Should you have any queries, do call us at our hotline or whatsapp our friendly consultants at
+                            <Text as = 'span' fontWeight={'bold'} fontSize={'16px'}> +60 1253 60700</Text>
                         </Text>
                         <Button onClick = {onClose} h = '40px' w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
                     </Flex>

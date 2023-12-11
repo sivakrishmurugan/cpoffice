@@ -4,7 +4,7 @@ import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
 import { getNumberFromString, getRecentYears } from "@/lib/utlils/utill_methods";
 import { ClaimDeclarationAdditionalData, ClinicData } from "@/lib/types";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import ClaimInfoForm from "@/lib/components/forms/claim_info";
+import ClaimInfoRowForm from "@/lib/components/forms/claim_info_row_form";
 import BottomActions from "@/lib/components/bottom_actions";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
@@ -279,7 +279,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
                                     
                                     {
                                         data.claimInfoList.map((item, index, array) => {
-                                            return <ClaimInfoForm
+                                            return <ClaimInfoRowForm
                                                 key = {item.id}
                                                 isNotDeletable = {index == 0 && array.length == 1}
                                                 values = {item}

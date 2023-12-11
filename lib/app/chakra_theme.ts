@@ -12,7 +12,8 @@ const getColor = (color: string) => {
 const fonts = {
     inter: inter.style.fontFamily,
     kanit: kanit.style.fontFamily,
-    body: inter.style.fontFamily
+    body: inter.style.fontFamily,
+    heading: inter.style.fontFamily,
 }
 
 const colors = {

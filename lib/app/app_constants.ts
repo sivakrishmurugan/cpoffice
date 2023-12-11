@@ -25,6 +25,37 @@ export const CONSTRUCTION_TYPES = [
     { id: '1B', value: 'Partial Brick Walls, Partial Non-Combustible Roof' },
 ]
 
+export const FORM_FIELD_ERROR_MESSAGES = {
+    name: {
+        required: 'Clinic name is required!',
+        format: 'Clinic name should contain only alphabets and less than 200 characters'
+    },
+    number: {
+        required: 'Clinic number is requried!',
+        format: 'Clinic number should contain only alphabets, numbers and should be less than 200 characters!'
+    },
+    address: {
+        required: 'Address is required!',
+        format: 'Address cannot have more than 200 characters!'
+    },
+    PICName: {
+        required: 'Person in charge name is required!',
+        format: 'Person in charge name should contain only alphabets and less than 200 characters'
+    },
+    PICID: {
+        required: 'Person in charge IC is requried!',
+        format: 'Person in charge IC should contain only alphabets, numbers and should be less than 200 characters!'
+    },
+    email: {
+        required: 'Email is required!',
+        format: 'Invalid email format!'
+    },
+    mobile: {
+        required: 'Mobile number is required!',
+        format: 'Mobile number must contain only numbers and be no longer than 20 digits'
+    }
+}
+
 export const FAQ_LIST = [
     {
         question: "What types of damages does the Fire coverage under the FlexiGuard Plus policy protect against?",

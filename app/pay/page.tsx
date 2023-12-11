@@ -74,6 +74,8 @@ const Summary: NextPage<{}> = ({}) => {
         setPayLoading(false)
     }
 
+    const onClickEditDetails = () => router.push('/coverage');
+
     const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal } = getTotalPremiumsForFireAndPerilsInsurance(localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [])
     const selectedInsTotalPremium = localData?.selectedInsType == 'FIRE' ? fireInsPremiumTotal : fireAndPerilsInsPremiumTotal;
     const min75NoteText = selectedInsTotalPremium.actual != selectedInsTotalPremium.rounded ? 'Minimum coverage premium is RM 75.00' : null
@@ -104,6 +106,7 @@ const Summary: NextPage<{}> = ({}) => {
                         {/* Summary heading and edit details button */}
                         <Flex w = '100%' gap = '35px' alignItems={'center'} justifyContent={'space-between'}>
                             <Heading as = {'h1'} fontSize={'23px'}>Proposal approved</Heading>
+                            <Button onClick={onClickEditDetails} size = 'sm' variant={'outline'} borderColor = 'brand.borderColor' h = '40px'>EDIT PROPOSAL</Button>
                         </Flex>
                         
                         {/* Divider */}
@@ -126,15 +129,11 @@ const Summary: NextPage<{}> = ({}) => {
                                             <Td minW = '150px' py = '10px'  px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.name}</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Person Incharge Name</Td>
-                                            <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.PICName}</Td>
-                                        </Tr>
-                                        <Tr fontSize={'16px'} fontWeight={'bold'}>
                                             <Td py = '10px' w = '40%' px = {'0px'}pr = '20px'  whiteSpace={'pre-wrap'}>Coverage Period</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>12 Months</Td>
                                         </Tr>
                                         <Tr fontSize={'16px'} fontWeight={'bold'}>
-                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'}>Location</Td>
+                                            <Td py = '10px' w = '40%' px = {'0px'} pr = '20px' whiteSpace={'pre-wrap'} verticalAlign={'top'}>Location</Td>
                                             <Td minW = '150px' py = '10px' px = {'0px'} whiteSpace={'pre-wrap'}>{localData?.basic?.address}</Td>
                                         </Tr>
                                     </Tbody>
@@ -196,12 +195,12 @@ const Summary: NextPage<{}> = ({}) => {
                                                         <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.3} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                     </Tr>
                                                     <Tr>
-                                                        <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                        <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
+                                                        <Th px = '10px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
+                                                        <Td px = '10px' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
                                                     </Tr>
                                                     <Tr>
-                                                        <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData))}</Td>
+                                                        <Th px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
+                                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData))}</Td>
                                                     </Tr>
                                                 </React.Fragment>
                                             })
@@ -278,12 +277,12 @@ const Summary: NextPage<{}> = ({}) => {
                                                                 <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.3} textTransform={'none'}>{coverageData?.CoverageName}</Th>
                                                             </Tr>
                                                             <Tr>
-                                                                <Th px = '10px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
-                                                                <Td px = '10px' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
+                                                                <Th px = '10px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
+                                                                <Td px = '10px' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(coverageValue(coverage))}</Td>
                                                             </Tr>
                                                             <Tr>
-                                                                <Th px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []))}</Td>
+                                                                <Th px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
+                                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []))}</Td>
                                                             </Tr>
                                                         </React.Fragment>
                                                     })

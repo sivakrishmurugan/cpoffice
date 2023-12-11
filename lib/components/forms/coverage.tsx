@@ -15,15 +15,27 @@ interface CoverageFromProps {
     coverage: Coverage,
     onClickAddOrRemove: () => void,
     onChangeFieldValue: (event: ChangeEvent<HTMLInputElement>) => void,
+    alwaysOpen?: boolean,
+    isAdded?: boolean | null,
     values?: SelectedCoverage,
     errors?: { field_1: { isInvalid: boolean, message: string }, field_2?: { isInvalid: boolean, message: string } }
 }
 
-const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFieldValue }: CoverageFromProps) => {
+const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFieldValue, alwaysOpen = false, isAdded = null }: CoverageFromProps) => {
     const total = (values?.field_1 ?? 0) + (values?.field_2 ?? 0)
     const fireInsPremium = percentageResult(coverage.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total);
     const fireAndPerilsInsPremium = percentageResult(coverage.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
     const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
+
+    const isBuildingCoverage = coverage.CoverageName == 'Building';
+    let replaceText = isBuildingCoverage && (values?.field_2 ?? 0) > 0 ? 'RM ' + convertToPriceFormat(values?.field_2 ?? 0, false, true) : '';
+
+    const coverageIncludes = coverage.Includes['Coverage includes'].map(item => {
+        if(isBuildingCoverage && item.includes('CONSULTANT_FEE_REPLACE_TEXT')) {
+            return item.replace('CONSULTANT_FEE_REPLACE_TEXT', replaceText);
+        }
+        return item;
+    })
 
     return (
         <Flex 
@@ -48,17 +60,17 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                     <Flex position={'relative'} flexShrink={0} w = {['40px', '40px', '80px', '80px', '80px']} h = {['40px', '40px', '80px', '80px', '80px']}>
                         <Image src={icon} alt={'Coverage Icon'} fill />
                     </Flex>
-                    <Heading as = {'h1'} fontSize={'23px'}>{coverage.CoverageName}</Heading>
+                    <Heading fontSize={'23px'}>{coverage.CoverageName}</Heading>
                 </Flex>
 
                 <Flex w = '20%' display={['none', 'none', 'flex', 'flex', 'flex']}>
                     <Button 
                         onClick={onClickAddOrRemove} 
                         w = {['100%', '250px', '250px', '250px', '250px']} 
-                        bg={values != null ? 'brand.gray' : "brand.primary"} color = 'white' 
+                        bg={values == null || isAdded == false ? 'brand.primary' : 'brand.gray'} color = 'white' 
                         _hover = {{}} _focus={{}}
                     >
-                        {values != null ? 'REMOVE' : 'ADD'}
+                        {values == null || isAdded == false ? 'ADD' : 'REMOVE'}
                     </Button>
                 </Flex>
 
@@ -66,12 +78,12 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
             
             <Flex my = '20px' w = {'calc(100% + 40px)'} ml = '-20px' display={['flex', 'flex', 'none', 'none', 'none']} h ='1px' bg = 'brand.borderColor'></Flex>
 
-            <Collapse unmountOnExit animateOpacity in = {values != null}>
+            <Collapse unmountOnExit animateOpacity in = {values != null || alwaysOpen}>
                 <Flex mt = {['0px', '0px', '60px', '60px', '60px']} minH = '200px' gap = {['30px', '30px', '20px', '20px', '20px']} w = '100%' direction={['column', 'column', 'column', 'row', 'row']}>
                     
                     <Flex direction={'column'} gap ='20px' display={['flex', 'flex', 'none', 'none', 'none']}>
                         <ExpanableList
-                            list = {coverage.Includes["Coverage includes"]}
+                            list = {coverageIncludes}
                             title = "Coverage includes" 
                         />
                         {
@@ -88,7 +100,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                             <Text fontSize = '16px' fontWeight={'bold'}>Coverage includes: </Text>
                             <UnorderedList ml = '40px' fontSize={'14px'}>
                                 {
-                                    coverage.Includes["Coverage includes"].map(includedItem => {
+                                    coverageIncludes.map(includedItem => {
                                         return <ListItem key = {includedItem}>{includedItem}</ListItem>;
                                     })
                                 }
@@ -165,10 +177,10 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                 <Button 
                     onClick={onClickAddOrRemove} 
                     w = {['100%', '100%', '250px', '250px', '250px']} 
-                    bg={values != null ? 'brand.gray' : "brand.primary"} color = 'white' 
+                    bg={values == null || isAdded == false ? 'brand.primary' : 'brand.gray'} color = 'white' 
                     _hover = {{}} _focus={{}}
                 >
-                    {values != null ? 'REMOVE' : 'ADD'}
+                    {values == null || isAdded == false ? 'ADD' : 'REMOVE'}
                 </Button>
             </Flex>
         </Flex>

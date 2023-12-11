@@ -2,9 +2,9 @@
 import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading, InputLeftElement, Spinner } from "@chakra-ui/react";
 import { IcEmail, IcMobile, IcLocationPin, IcClinic, PICNameIcon, PICIDIcon } from "../../icons";
 import useSessionStorage from "../../hooks/use_sessionstorage";
-import { CONSTRUCTION_TYPES, FLOOR_LEVEL } from "../../app/app_constants";
+import { CONSTRUCTION_TYPES, FLOOR_LEVEL, FORM_FIELD_ERROR_MESSAGES } from "../../app/app_constants";
 import useLocalStorage from "../../hooks/use_localstorage";
-import { convertClinicQuoteResDataToLocalStateData, getNumberFromString, getRedirectRouteBasedOnQuote, isContainsAlphabets, isContainsNumericCharacters, isContainsSpecialCharacters, setAuthToken } from "../../utlils/utill_methods";
+import { convertClinicQuoteResDataToLocalStateData, getNumberFromString, getRedirectRouteBasedOnQuote, isContainsAlphabets, isContainsNumericCharacters, isContainsSpecialCharacters, setAuthToken, validateField } from "../../utlils/utill_methods";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { coveragesData } from "../../utlils/mocks";
@@ -15,6 +15,7 @@ import { ClinicData, NecessaryBasicInfo } from "../../types";
 import axiosClient from "../../utlils/axios";
 import useCoverage from "../../hooks/use_coverage";
 import AddressInput from "../inputs/address_input";
+import Image from 'next/image';
 
 interface BasicInfoFormProps {
     quoteFromQuery: null | {
@@ -22,37 +23,6 @@ interface BasicInfoFormProps {
         coverages: any,
         encryptedQuoteId: string,
         failedMessage: string | null | undefined
-    }
-}
-
-const formFieldErrorMessages = {
-    name: {
-        required: 'Clinic name is required!',
-        format: 'Clinic name should contain only alphabets and less than 200 characters'
-    },
-    number: {
-        required: 'Clinic number is requried!',
-        format: 'Clinic number should contain only alphabets, numbers and should be less than 200 characters!'
-    },
-    address: {
-        required: 'Address is required!',
-        format: 'Address cannot have more than 200 characters!'
-    },
-    PICName: {
-        required: 'Person in charge name is required!',
-        format: 'Person in charge name should contain only alphabets and less than 200 characters'
-    },
-    PICID: {
-        required: 'Person in charge IC is requried!',
-        format: 'Person in charge IC should contain only alphabets, numbers and should be less than 200 characters!'
-    },
-    email: {
-        required: 'Email is required!',
-        format: 'Invalid email format!'
-    },
-    mobile: {
-        required: 'Mobile number is required!',
-        format: 'Mobile number must contain only numbers and be no longer than 20 digits'
     }
 }
 
@@ -67,8 +37,6 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         address: localData?.basic?.address ?? '',
         floorLevel: localData?.basic?.floorLevel ?? '',
         constructionType: localData?.basic?.constructionType ?? '',
-        PICName: localData?.basic?.PICName ?? '',
-        PICID: localData?.basic?.PICID ?? '',
         email: localData?.basic?.email ?? '',
         mobile: Number(((localData?.basic?.mobile ?? '000').toString()).slice(2))
     });
@@ -79,8 +47,6 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         address: null as null | string,
         floorLevel: false,
         constructionType: false,
-        PICName: null as null | string,
-        PICID: null as null | string,
         termsAndConditions: false,
         email: null as string | null,
     })
@@ -128,64 +94,9 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
             address: localData?.basic?.address ?? '',
             floorLevel: localData?.basic?.floorLevel ?? '',
             constructionType: localData?.basic?.constructionType ?? '',
-            PICName: localData?.basic?.PICName ?? '',
-            PICID: localData?.basic?.PICID ?? '',
             email: localData?.basic?.email ?? '',
             mobile: Number(((localData?.basic?.mobile ?? '000').toString()).slice(2))
         })
-    }
-
-    const validateEmail = (email: string) => {
-        return email.match(
-          /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        ) != null;
-    };
-
-    const validateField = (value: string, field: 'name' | 'number' | 'mobile' | 'address' | 'PICName' | 'PICID' | 'email' | 'mobile') => {
-        switch(field) {
-            case 'name': {
-                return {
-                    isEmpty: value == '',
-                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain || isContainsNumericCharacters(value).isContain
-                }
-            }
-            case 'number': {
-                return {
-                    isEmpty: value == '',
-                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain
-                }
-            }
-            case 'address': {
-                return {
-                    isEmpty: value == '',
-                    isContainsFormatError: value.length > 200
-                }
-            }
-            case 'PICName': {
-                return {
-                    isEmpty: value == '',
-                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain || isContainsNumericCharacters(value).isContain
-                }
-            }
-            case 'PICID': {
-                return {
-                    isEmpty: value == '',
-                    isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain
-                }
-            }
-            case 'email': {
-                return {
-                    isEmpty: value == '',
-                    isContainsFormatError: value.length > 200 || validateEmail(value) == false
-                }
-            }
-            case 'mobile': {
-                return {
-                    isEmpty: Number(value) < 1,
-                    isContainsFormatError: value.length > 20 || isContainsSpecialCharacters(value).isContain || isContainsAlphabets(value).isContain
-                }
-            }
-        }
     }
 
     const onChangeName = (event: ChangeEvent<HTMLInputElement>) => {
@@ -194,15 +105,15 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         setData(prev => ({ ...prev, name: inputValue }));
 
         const { isEmpty, isContainsFormatError } = validateField(inputValue, 'name');
-        const currentError = errors.name == null ? 'NO_ERROR' :  errors.name == formFieldErrorMessages.name.required ? 'REQUIRED' : 'FORMAT';
+        const currentError = errors.name == null ? 'NO_ERROR' :  errors.name == FORM_FIELD_ERROR_MESSAGES.name.required ? 'REQUIRED' : 'FORMAT';
 
         if(isEmpty && currentError != 'REQUIRED') {
-            setErrors(prev => ({ ...prev, name: formFieldErrorMessages.name.required }))
+            setErrors(prev => ({ ...prev, name: FORM_FIELD_ERROR_MESSAGES.name.required }))
             return ;
         }
 
         if(isContainsFormatError && currentError != 'FORMAT') {
-            setErrors(prev => ({ ...prev, name: formFieldErrorMessages.name.format }))
+            setErrors(prev => ({ ...prev, name: FORM_FIELD_ERROR_MESSAGES.name.format }))
             return ;
         }
         
@@ -217,15 +128,15 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         setData(prev => ({ ...prev, number: inputValue }));
 
         const { isEmpty, isContainsFormatError } = validateField(inputValue, 'number');
-        const currentError = errors.number == null ? 'NO_ERROR' :  errors.number == formFieldErrorMessages.number.required ? 'REQUIRED' : 'FORMAT';
+        const currentError = errors.number == null ? 'NO_ERROR' :  errors.number == FORM_FIELD_ERROR_MESSAGES.number.required ? 'REQUIRED' : 'FORMAT';
 
         if(isEmpty && currentError != 'REQUIRED') {
-            setErrors(prev => ({ ...prev, number: formFieldErrorMessages.number.required }))
+            setErrors(prev => ({ ...prev, number: FORM_FIELD_ERROR_MESSAGES.number.required }))
             return ;
         }
 
         if(isContainsFormatError && currentError != 'FORMAT') {
-            setErrors(prev => ({ ...prev, number: formFieldErrorMessages.number.format }))
+            setErrors(prev => ({ ...prev, number: FORM_FIELD_ERROR_MESSAGES.number.format }))
             return ;
         }
         
@@ -240,15 +151,15 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         setData(prev => ({ ...prev, address: inputValue }));
 
         const { isEmpty, isContainsFormatError } = validateField(inputValue, 'address');
-        const currentError = errors.address == null ? 'NO_ERROR' :  errors.address == formFieldErrorMessages.address.required ? 'REQUIRED' : 'FORMAT';
+        const currentError = errors.address == null ? 'NO_ERROR' :  errors.address == FORM_FIELD_ERROR_MESSAGES.address.required ? 'REQUIRED' : 'FORMAT';
 
         if(isEmpty && currentError != 'REQUIRED') {
-            setErrors(prev => ({ ...prev, address: formFieldErrorMessages.address.required }))
+            setErrors(prev => ({ ...prev, address: FORM_FIELD_ERROR_MESSAGES.address.required }))
             return ;
         }
 
         if(isContainsFormatError && currentError != 'FORMAT') {
-            setErrors(prev => ({ ...prev, address: formFieldErrorMessages.address.format }))
+            setErrors(prev => ({ ...prev, address: FORM_FIELD_ERROR_MESSAGES.address.format }))
             return ;
         }
         
@@ -279,67 +190,21 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         }
     }
 
-    const onChangePICName = (event: ChangeEvent<HTMLInputElement>) => {
-        let inputValue = event.target.value.trimStart();
-
-        setData(prev => ({ ...prev, PICName: inputValue }));
-
-        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'PICName');
-        const currentError = errors.PICName == null ? 'NO_ERROR' :  errors.PICName == formFieldErrorMessages.PICName.required ? 'REQUIRED' : 'FORMAT';
-
-        if(isEmpty && currentError != 'REQUIRED') {
-            setErrors(prev => ({ ...prev, PICName: formFieldErrorMessages.PICName.required }))
-            return ;
-        }
-
-        if(isContainsFormatError && currentError != 'FORMAT') {
-            setErrors(prev => ({ ...prev, PICName: formFieldErrorMessages.PICName.format }))
-            return ;
-        }
-        
-        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
-            setErrors(prev => ({ ...prev, PICName: null }))
-        }
-    }
-
-    const onChangePICID = (event: ChangeEvent<HTMLInputElement>) => {
-        let inputValue = event.target.value.trimStart();
-
-        setData(prev => ({ ...prev, PICID: inputValue }));
-
-        const { isEmpty, isContainsFormatError } = validateField(inputValue, 'PICID');
-        const currentError = errors.PICID == null ? 'NO_ERROR' :  errors.PICID == formFieldErrorMessages.PICID.required ? 'REQUIRED' : 'FORMAT';
-
-        if(isEmpty && currentError != 'REQUIRED') {
-            setErrors(prev => ({ ...prev, PICID: formFieldErrorMessages.PICID.required }))
-            return ;
-        }
-
-        if(isContainsFormatError && currentError != 'FORMAT') {
-            setErrors(prev => ({ ...prev, PICID: formFieldErrorMessages.PICID.format }))
-            return ;
-        }
-        
-        if(isEmpty == false && isContainsFormatError == false && currentError != 'NO_ERROR') {
-            setErrors(prev => ({ ...prev, PICID: null }))
-        }
-    }
-
     const onChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
         let inputValue = event.target.value.trimStart();
 
         setData(prev => ({ ...prev, email: inputValue }));
 
         const { isEmpty, isContainsFormatError } = validateField(inputValue, 'email');
-        const currentError = errors.email == null ? 'NO_ERROR' :  errors.email == formFieldErrorMessages.email.required ? 'REQUIRED' : 'FORMAT';
+        const currentError = errors.email == null ? 'NO_ERROR' :  errors.email == FORM_FIELD_ERROR_MESSAGES.email.required ? 'REQUIRED' : 'FORMAT';
 
         if(isEmpty && currentError != 'REQUIRED') {
-            setErrors(prev => ({ ...prev, email: formFieldErrorMessages.email.required }))
+            setErrors(prev => ({ ...prev, email: FORM_FIELD_ERROR_MESSAGES.email.required }))
             return ;
         }
 
         if(isContainsFormatError && currentError != 'FORMAT') {
-            setErrors(prev => ({ ...prev, email: formFieldErrorMessages.email.format }))
+            setErrors(prev => ({ ...prev, email: FORM_FIELD_ERROR_MESSAGES.email.format }))
             return ;
         }
         
@@ -356,15 +221,15 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         setData(prev => ({ ...prev, mobile: inputValue as number }));
 
         const { isEmpty, isContainsFormatError } = validateField(inputValue.toString(), 'mobile');
-        const currentError = errors.mobile == null ? 'NO_ERROR' :  errors.mobile == formFieldErrorMessages.mobile.required ? 'REQUIRED' : 'FORMAT';
+        const currentError = errors.mobile == null ? 'NO_ERROR' :  errors.mobile == FORM_FIELD_ERROR_MESSAGES.mobile.required ? 'REQUIRED' : 'FORMAT';
 
         if(isEmpty && currentError != 'REQUIRED') {
-            setErrors(prev => ({ ...prev, mobile: formFieldErrorMessages.mobile.required }))
+            setErrors(prev => ({ ...prev, mobile: FORM_FIELD_ERROR_MESSAGES.mobile.required }))
             return ;
         }
 
         if(isContainsFormatError && currentError != 'FORMAT') {
-            setErrors(prev => ({ ...prev, mobile: formFieldErrorMessages.mobile.format }))
+            setErrors(prev => ({ ...prev, mobile: FORM_FIELD_ERROR_MESSAGES.mobile.format }))
             return ;
         }
         
@@ -395,6 +260,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
             promoCode: '',
             promoCodePercentage: null,
             insStartDate: '',
+            PICName: '',
+            PICID: '',
             claimDeclaration: {
                 previouslyClaimed: false,
                 addtionalInfo: []
@@ -409,28 +276,22 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         const tempSubmitErrors: string[] = [];
 
         const validatedNameResult = validateField(data.name.trim(), 'name');
-        tempErrors.name = validatedNameResult.isEmpty ? formFieldErrorMessages.name.required : validatedNameResult.isContainsFormatError ? formFieldErrorMessages.name.format : null;
+        tempErrors.name = validatedNameResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.name.required : validatedNameResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.name.format : null;
 
         const validatedNumberResult = validateField(data.number.trim(), 'number');
-        tempErrors.number = validatedNumberResult.isEmpty ? formFieldErrorMessages.number.required : validatedNumberResult.isContainsFormatError ? formFieldErrorMessages.number.format : null;
+        tempErrors.number = validatedNumberResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.number.required : validatedNumberResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.number.format : null;
 
         const validatedAddressResult = validateField(data.address.trim(), 'address');
-        tempErrors.address = validatedAddressResult.isEmpty ? formFieldErrorMessages.address.required : validatedAddressResult.isContainsFormatError ? formFieldErrorMessages.address.format : null;
+        tempErrors.address = validatedAddressResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.address.required : validatedAddressResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.address.format : null;
         
         tempErrors.floorLevel = data.floorLevel.trim() == '';
         tempErrors.constructionType = data.constructionType.trim() == '';
 
-        const validatedPICNameResult = validateField(data.PICName.trim(), 'PICName');
-        tempErrors.PICName = validatedPICNameResult.isEmpty ? formFieldErrorMessages.PICName.required : validatedPICNameResult.isContainsFormatError ? formFieldErrorMessages.PICName.format : null;
-
-        const validatedPICIDResult = validateField(data.PICID.trim(), 'PICID');
-        tempErrors.PICID = validatedPICIDResult.isEmpty ? formFieldErrorMessages.PICID.required : validatedPICIDResult.isContainsFormatError ? formFieldErrorMessages.PICID.format : null;
-
         const validatedEmailResult = validateField(data.email.trim(), 'email');
-        tempErrors.email = validatedEmailResult.isEmpty ? formFieldErrorMessages.email.required : validatedEmailResult.isContainsFormatError ? formFieldErrorMessages.email.format : null;
+        tempErrors.email = validatedEmailResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.email.required : validatedEmailResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.email.format : null;
 
         const validatedMobileResult = validateField(data.mobile.toString().trim(), 'mobile');
-        tempErrors.mobile = validatedMobileResult.isEmpty ? formFieldErrorMessages.mobile.required : validatedMobileResult.isContainsFormatError ? formFieldErrorMessages.mobile.format : null;
+        tempErrors.mobile = validatedMobileResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.mobile.required : validatedMobileResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.mobile.format : null;
         
         tempErrors.termsAndConditions = agreedWithTermsAndConditions != true;
 
@@ -455,8 +316,6 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                 Phone: "60" + data.mobile.toString(),
                 Floor: data.floorLevel.toString(),
                 CType: data.constructionType,
-                PICName: data.PICName,
-                PICID: data.PICID,
                 ClinicAddress: data.address,
                 QuoteID: localData?.quoteId && localData?.quoteId != '' ? localData?.quoteId : null,
             }, { headers: { secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY } });
@@ -606,38 +465,6 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                         <FormErrorMessage ml = '10px'>Both floor level and construction type is requried!</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid = {errors.PICName != null}>
-                        <FormLabel>Person in charge Name</FormLabel>
-                        <InputGroup>
-                            <Input
-                                name = 'person_in_charge_name'
-                                value = {data.PICName}
-                                onChange = {onChangePICName}
-                                placeholder="ex. John Smith" 
-                            />
-                            <InputRightElement h = '100%'>
-                                <Icon as = {PICNameIcon} h = 'auto' w = 'auto' />
-                            </InputRightElement>
-                        </InputGroup>
-                        <FormErrorMessage ml = '10px'>{errors.PICName}</FormErrorMessage>
-                    </FormControl>
-
-                    <FormControl isInvalid = {errors.PICID != null}>
-                        <FormLabel>Person in charge IC</FormLabel>
-                        <InputGroup>
-                            <Input
-                                name = 'person_in_charge_ic'
-                                value = {data.PICID}
-                                onChange = {onChangePICID}
-                                placeholder="ex. MY12367" 
-                            />
-                            <InputRightElement h = '100%'>
-                                <Icon as = {PICIDIcon} h = 'auto' w = 'auto' />
-                            </InputRightElement>
-                        </InputGroup>
-                        <FormErrorMessage ml = '10px'>{errors.PICID}</FormErrorMessage>
-                    </FormControl>
-
                     <FormControl isInvalid = {errors.email != null}>
                         <FormLabel>Email ID</FormLabel>
                         <InputGroup>
@@ -728,14 +555,17 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
             <ModalOverlay />
             <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
                 <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
-                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']} alignItems={'center'}>
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} px = {['0px', '0px', '50px', '80px', '80px']} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']} alignItems={'center'}>
+                        <Flex ml = '30px' mt = '-10px' position={'relative'} w = '120px' h = '120px'>
+                            <Image src='/icons/quote-exist.svg' fill style = {{ objectFit: 'contain' }} alt={"quote_exist_image"} />
+                        </Flex>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
                            Quote ID already exist. Are you sure you want to continue with existing quote?
                         </Text>
                         <Flex gap = '20px'>
-                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
-                            <Button onClick = {onClickOk} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
+                            <Button onClick = {onClose} w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                            <Button onClick = {onClickOk} w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>
@@ -757,12 +587,15 @@ const QuotePaidPopup = ({ content, isOpen, onClose }: QuotePaidPopupProps) => {
             <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
                 <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
                     <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']} alignItems={'center'}>
+                        <Flex position={'relative'} w = '120px' h = '120px'>
+                            <Image src='/icons/already-paid.svg' fill style = {{ objectFit: 'contain' }} alt={"quote_paid_image"} />
+                        </Flex>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{'Quote Already Paid!'}</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
                            {content}
                         </Text>
                         <Flex gap = '20px'>
-                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                            <Button onClick = {onClose} w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>
@@ -784,6 +617,9 @@ const QuoteFailedPopup = ({ content, isOpen, onClose }: QuoteFailedPopupProps) =
             <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
                 <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
                     <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']} alignItems={'center'}>
+                        <Flex ml = '30px' mt = '-10px' position={'relative'} w = '120px' h = '120px'>
+                            <Image src='/icons/no-quote-exist.svg' fill style = {{ objectFit: 'contain' }} alt={"quote_not_exist_image"} />
+                        </Flex>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
                         <Flex gap = '20px'>
                             <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>

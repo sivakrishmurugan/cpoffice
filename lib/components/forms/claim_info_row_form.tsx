@@ -5,7 +5,7 @@ import { PriceInput } from "../inputs";
 import { DeleteIcon } from "../../icons";
 import { ChangeEvent } from "react";
 
-interface ClaimInfoFormProps {
+interface ClaimInfoRowFormProps {
     isNotDeletable: boolean,
     values: {
         type: { value: string, error: boolean },
@@ -17,7 +17,7 @@ interface ClaimInfoFormProps {
     onClickDelete: () => void
 }
 
-const ClaimInfoForm = ({ values, isNotDeletable, onChangeValue, onClickDelete }: ClaimInfoFormProps) => {
+const ClaimInfoRowForm = ({ values, isNotDeletable, onChangeValue, onClickDelete }: ClaimInfoRowFormProps) => {
     return (
         <FormControl isInvalid = {Object.values(values).some(e => e.error)}>
             <Flex flexShrink={0} direction={['column', 'column', 'column', 'row', 'row']} w = '100%' py = {['10px', '10px', '10px', '0px', '0px']} gap = '20px' alignItems={['flex-start', 'flex-start', 'flex-start', 'center', 'center']}>
@@ -79,4 +79,4 @@ const ClaimInfoForm = ({ values, isNotDeletable, onChangeValue, onClickDelete }:
     );
 }
 
-export default ClaimInfoForm;
+export default ClaimInfoRowForm;

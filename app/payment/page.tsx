@@ -3,7 +3,7 @@ import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
 import { getNumberFromString, getRecentYears } from "@/lib/utlils/utill_methods";
 import { ClaimDeclarationAdditionalData } from "@/lib/types";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import ClaimInfoForm from "@/lib/components/forms/claim_info";
+import ClaimInfoRowForm from "@/lib/components/forms/claim_info_row_form";
 import BottomActions from "@/lib/components/bottom_actions";
 import { redirect, useRouter } from "next/navigation";
 import { Metadata, NextPage } from "next";

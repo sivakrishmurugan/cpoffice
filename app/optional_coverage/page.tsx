@@ -20,7 +20,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         const fieldValuesFormLocalData = localData?.selectedOptionalCoverages.find(localCoverageData => localCoverageData.id == e.CoverageID);
         return { id: e.CoverageID, field_1: fieldValuesFormLocalData?.field_1 ?? 0, field_2: fieldValuesFormLocalData?.field_2 ?? 0 }
     }) ?? []);
-    const [selectedCoverages, setSelectedCoverages] = useState<(string | number)[]>(localData?.selectedOptionalCoverages.map(e => e.id) ?? []);
+    const [selectedCoverages, setSelectedCoverages] = useState<(string | number)[]>(localData?.selectedOptionalCoverages.filter(e => e.id != PROTECTION_AND_LIABILITY_COVERAGE.id).map(e => e.id) ?? []);
     type ErrorType = { 
         noCoverage: boolean, 
         maxLimit: { isExceeded: boolean, currentTotalValue: number },
@@ -230,12 +230,13 @@ const SkipConfirmPopup = ({ isOpen, onClose, onClickYes }: SkipConfirmPopupProps
             <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
                 <ModalBody py ={['40px', '40px', '20px', '20px', '20px']} >
                     <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {'10px'} alignItems={'center'}>
-                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>You have entered values for optional coverages,</Heading>
-                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>but the package is not added</Heading>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>Are you still want to skip?</Heading>
-                        <Flex mt = '30px' gap = '20px'>
-                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>No</Button>
-                            <Button onClick = {onClickYes} h = '40px' w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Yes</Button>
+                        <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
+                            You have entered values for optional coverages, but the package is not added
+                        </Text>
+                        <Flex mt = '20px' gap = '20px'>
+                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '200px', '200px', '200px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>No</Button>
+                            <Button onClick = {onClickYes} h = '40px' w = {['100px', '150px', '200px', '200px', '200px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Yes</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>

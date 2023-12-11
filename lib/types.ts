@@ -36,8 +36,6 @@ export interface NecessaryBasicInfo {
     address: string,
     floorLevel: string,
     constructionType: string,
-    PICName: string,
-    PICID: string,
     email: string,
     mobile: number
 }
@@ -67,6 +65,8 @@ export interface ClinicData {
     promoCode: string,
     promoCodePercentage: null | number,
     insStartDate: string,
+    PICName: string,
+    PICID: string,
     isPaid: boolean,
     paymentApproved: boolean,
     claimDeclaration: {

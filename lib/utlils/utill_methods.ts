@@ -12,6 +12,12 @@ export const setAuthToken = (token: string) => {
     document.cookie = cookie.serialize('authToken', token);
 }
 
+const validateEmail = (email: string) => {
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    ) != null;
+};
+
 export const getNumberFromString = (text: string, isInt: boolean = false) => {
     var regex = /[+-]?\d+(\.\d+)?/g;
     let value: RegExpMatchArray | null | number = text.match(regex);
@@ -95,6 +101,53 @@ export const getDateAfter365Days = (fromDate: string) => {
     return formatDateToYyyyMmDd(givenDate);
 }
 
+export const validateField = (value: string, field: 'name' | 'number' | 'mobile' | 'address' | 'PICName' | 'PICID' | 'email' | 'mobile') => {
+    switch(field) {
+        case 'name': {
+            return {
+                isEmpty: value == '',
+                isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain || isContainsNumericCharacters(value).isContain
+            }
+        }
+        case 'number': {
+            return {
+                isEmpty: value == '',
+                isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain
+            }
+        }
+        case 'address': {
+            return {
+                isEmpty: value == '',
+                isContainsFormatError: value.length > 200
+            }
+        }
+        case 'PICName': {
+            return {
+                isEmpty: value == '',
+                isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain || isContainsNumericCharacters(value).isContain
+            }
+        }
+        case 'PICID': {
+            return {
+                isEmpty: value == '',
+                isContainsFormatError: value.length > 200 || isContainsSpecialCharacters(value).isContain
+            }
+        }
+        case 'email': {
+            return {
+                isEmpty: value == '',
+                isContainsFormatError: value.length > 200 || validateEmail(value) == false
+            }
+        }
+        case 'mobile': {
+            return {
+                isEmpty: Number(value) < 1,
+                isContainsFormatError: value.length > 20 || isContainsSpecialCharacters(value).isContain || isContainsAlphabets(value).isContain
+            }
+        }
+    }
+}
+
 export const convertCoveragesResDataToLocalStateData = (apiRes: any): CoverageResData => {
     return {
         coverages: apiRes.filter((e: Coverage) => e.isOptional != 1),
@@ -112,9 +165,7 @@ export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encrypted
             constructionType: apiRes.CType,
             address: apiRes.ClinicAddress,
             mobile: apiRes.Phone,
-            email: apiRes.Email,
-            PICName: apiRes.PICName,
-            PICID: apiRes.PICID
+            email: apiRes.Email
         },
         selectedCoverages: apiRes?.Coverage ?? [],
         selectedOptionalCoverages: apiRes?.OptionalCoverage ?? [],
@@ -122,6 +173,8 @@ export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encrypted
         promoCode: apiRes?.PromoCode,
         promoCodePercentage: apiRes?.PromoPercentage ?? 0,
         insStartDate: apiRes?.InsuranceStartDate != null ? apiRes?.InsuranceStartDate.slice(0, 10) : null,
+        PICName: apiRes.PICName ?? '',
+        PICID: apiRes.PICID ?? '',
         claimDeclaration: {
             previouslyClaimed: apiRes?.ClaimDeclration == null ? null : apiRes?.ClaimDeclration != 0,
             addtionalInfo: (apiRes?.Declarations ?? []).map((e: any) => ({
@@ -163,9 +216,11 @@ export const getRedirectRouteBasedOnQuote = (quote: ClinicData) => {
     //     return '/protection_liability_coverage'
     // }
     
-    if(quote.insStartDate == null) {
-        return '/summary'
-    }
+    // if(quote.insStartDate == null) {
+    //     return '/summary'
+    // }
 
-    return '/claim_declaration';
+    // return '/claim_declaration';
+
+    return '/summary'
 }

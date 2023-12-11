@@ -1,6 +1,6 @@
 "use client"
 import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { Alert, AlertIcon, Button, Flex  } from "@chakra-ui/react";
+import { Alert, AlertIcon, Text, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay  } from "@chakra-ui/react";
 import { convertToPriceFormat, getNumberFromString } from "@/lib/utlils/utill_methods";
 import { ClinicData, SelectedCoverage } from "@/lib/types";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -16,7 +16,11 @@ import MaxLimitExceededPopup from "@/lib/components/max_cover_limit_popup";
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
     const { isLoading, coveragesData } = useCoverage(localData?.quoteId);
-    const [data, setData] = useState<SelectedCoverage[]>(localData?.selectedCoverages.filter(e => e.id == coveragesData?.coverages.find(e => e.CoverageName == 'Removal of Debris')?.CoverageID) ?? []);
+    const [data, setData] = useState<SelectedCoverage[]>((coveragesData?.coverages.map(e => {
+        const fieldValuesFormLocalData = localData?.selectedCoverages.find(localCoverageData => localCoverageData.id == e.CoverageID);
+        return { id: e.CoverageID, field_1: fieldValuesFormLocalData?.field_1 ?? 0, field_2: fieldValuesFormLocalData?.field_2 ?? 0 }
+    }) ?? []).filter(e => e.id == coveragesData?.coverages.find(e => e.CoverageName == 'Removal of Debris')?.CoverageID) ?? []);
+    const [selectedCoverages, setSelectedCoverages] = useState<(string | number)[]>(localData?.selectedCoverages?.filter(e => e.id == coveragesData?.coverages.find(e => e.CoverageName == 'Removal of Debris')?.CoverageID).map(e => e.id) ?? []);
     type ErrorType = { 
         noCoverage: boolean, 
         maxLimit: { isExceeded: boolean, currentTotalValue: number },
@@ -27,6 +31,7 @@ const Coverages: NextPage<{}> = ({}) => {
         }[] 
     }
     const [maxLimitPopupOpen, setMaxLimitPopupOpen] = useState(false);
+    const [skipConfirmPopup, setSkipConfirmPopup] = useState(false);
     const [errors, setErrors] = useState<ErrorType>({ noCoverage: false, maxLimit: { isExceeded: false, currentTotalValue: 0 }, fieldErrors: [] });
     const isClient = useClient();
     const router = useRouter();
@@ -52,14 +57,14 @@ const Coverages: NextPage<{}> = ({}) => {
     }
 
     const onClickAddOrRemove = (coverageId: string | number) => {
-        let tempData: typeof data = JSON.parse(JSON.stringify(data));
-        if (tempData.findIndex(e => e.id == coverageId) > -1) {
-            tempData = tempData.filter(e => e.id != coverageId)
+        let tempData: typeof selectedCoverages = JSON.parse(JSON.stringify(selectedCoverages));
+        if (tempData.includes(coverageId)) {
+            tempData = tempData.filter(e => e != coverageId)
         } else {
-            tempData.push({ id: coverageId, field_1: 0, field_2: 0 })
+            tempData.push(coverageId)
         }
-        const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(tempData));
-        setData(tempData)
+        const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data.filter(e => tempData.includes(e.id))));
+        setSelectedCoverages(tempData)
         setErrors(prev => ({ 
             ...prev,
             maxLimit: { isExceeded: totalCoverageValue > MAX_COVERAGE_VALUE, currentTotalValue: totalCoverageValue },
@@ -131,16 +136,25 @@ const Coverages: NextPage<{}> = ({}) => {
         tempErrors.maxLimit.isExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
         tempErrors.maxLimit.currentTotalValue = totalCoverageValue;
         //tempErrors.noCoverage = data.length < 1;
-        tempErrors.fieldErrors = data.map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: { isInvalid: true, message: 'Required!' } } : null).filter(Boolean) as ErrorType['fieldErrors']
+        tempErrors.fieldErrors = data.filter(e => selectedCoverages.includes(e.id)).map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: { isInvalid: true, message: 'Required!' } } : null).filter(Boolean) as ErrorType['fieldErrors']
         setErrors(tempErrors)
         if(tempErrors.maxLimit.isExceeded) setMaxLimitPopupOpen(true)
         return tempErrors.noCoverage == true || tempErrors.maxLimit.isExceeded == true || tempErrors.fieldErrors.some(e => e.field_1.isInvalid == true || e.field_2?.isInvalid == true);
     }
 
+    const onClickSkipOrNext = () => {
+        if(localData == null || validate()) return ;
+        if(selectedCoverages.length < 1 && data.some(e => ((e.field_1 ?? 0) + (e.field_2 ?? 0)) > 0)) {
+            setSkipConfirmPopup(true);
+        } else {
+            onClickNext()
+        }
+    }
+
     const onClickNext = async () => {
         if(validate()) return ;
         if(localData) {
-            updateLocalData(data);
+            updateLocalData(data.filter(e => selectedCoverages.includes(e.id)));
             router.push('/insurance_type');
         }   
     }
@@ -156,15 +170,22 @@ const Coverages: NextPage<{}> = ({}) => {
                 onClose = {() => setMaxLimitPopupOpen(false)}
                 currentValue = {errors.maxLimit.currentTotalValue}
             />
+            <SkipConfirmPopup 
+                isOpen = {skipConfirmPopup}
+                onClose = {() => setSkipConfirmPopup(false)}
+                onClickYes = {onClickNext}
+            />
             {
                 isClient && coveragesData?.coverages.filter(e => e.CoverageName == 'Removal of Debris').map(coverage => {
                     return <CoverageForm 
                         key = {coverage.CoverageID}
                         coverage={coverage} 
+                        isAdded = {selectedCoverages.includes(coverage.CoverageID)}
                         onClickAddOrRemove={() => onClickAddOrRemove(coverage.CoverageID)} 
                         onChangeFieldValue={(e) => onFieldValueChange(e, coverage.CoverageID)} 
                         values = {data.find(e => e.id == coverage.CoverageID)}
                         errors = {errors.fieldErrors.find(e => e.id == coverage.CoverageID)}
+                        alwaysOpen
                     />
                 })
             }
@@ -182,21 +203,51 @@ const Coverages: NextPage<{}> = ({}) => {
                     Total coverage value (coverages & optional coverages) cannot be more than RM 10,000,000. Your current total coverage value is RM {convertToPriceFormat(errors.maxLimit.currentTotalValue, true, true)}
                 </Alert>
             }
-            <BottomActions>
-                <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
-                <Button 
-                    onClick = {onClickNext} 
-                    isDisabled = {errors.noCoverage || errors.fieldErrors.some(e => e.field_1.isInvalid)} 
-                    width = {['100%', '100%', '250px', '250px', '250px']} 
-                    minW = '150px'
-                    bg = {data.length > 0 ? 'brand.secondary' : 'brand.green'}
-                    color = 'white' _hover = {{}} _focus={{}}
-                >
-                    {data.length > 0 ? 'NEXT' : 'SKIP'}
-                </Button>
-            </BottomActions>
+           {
+                isClient &&  <BottomActions>
+                    <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
+                    <Button 
+                        onClick = {onClickSkipOrNext} 
+                        isDisabled = {errors.noCoverage || errors.fieldErrors.some(e => e.field_1.isInvalid)} 
+                        width = {['100%', '100%', '250px', '250px', '250px']} 
+                        minW = '150px'
+                        bg = {selectedCoverages.length > 0 ? 'brand.secondary' : 'brand.green'}
+                        color = 'white' _hover = {{}} _focus={{}}
+                    >
+                        {selectedCoverages.length > 0 ? 'NEXT' : 'SKIP'}
+                    </Button>
+                </BottomActions>
+           }
         </Flex>
     );
 }
 
 export default Coverages;
+
+interface SkipConfirmPopupProps {
+    isOpen: boolean,
+    onClose: () => void,
+    onClickYes: () => void
+}
+ 
+const SkipConfirmPopup = ({ isOpen, onClose, onClickYes }: SkipConfirmPopupProps) => {
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
+                <ModalBody py ={['40px', '40px', '20px', '20px', '20px']} >
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} direction={'column'} gap = {'10px'} alignItems={'center'}>
+                        <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>Are you still want to skip?</Heading>
+                        <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
+                            You have entered values for removal of debris, but the package is not added
+                        </Text>
+                        <Flex mt = '20px' gap = '20px'>
+                            <Button onClick = {onClose} h = '40px' w = {['100px', '150px', '200px', '200px', '200px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>No</Button>
+                            <Button onClick = {onClickYes} h = '40px' w = {['100px', '150px', '200px', '200px', '200px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Yes</Button>
+                        </Flex>
+                    </Flex>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    );
+}

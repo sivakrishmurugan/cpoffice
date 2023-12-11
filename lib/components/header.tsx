@@ -18,7 +18,7 @@ const Header = () => {
     }
 
     return (
-        <Flex position={'sticky'} top = '0px' zIndex={3000} boxShadow={isOpen ? `0px 2px 0px ${APP_SECONDARY_COLOR}` : `0px 1px 1px ${APP_BORDER_COLOR}`} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
+        <Flex position={'sticky'} top = '0px' zIndex={1400} transition = 'box-shadow 500ms ease-in-out' boxShadow={isOpen ? `0px 2px 0px ${APP_SECONDARY_COLOR}` : `0px 1px 1px ${APP_BORDER_COLOR}`} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
             <Flex w = {APP_MAX_WIDTH.map((e, i) => i < 4 ? e : (Number(e.replace('px', '')) + 100).toString() + 'px')} alignItems={'center'} justifyContent={'space-between'} px = {['20px', '35px', '40px', '20px', '20px']} gap = '20px'>
                 <Flex h = '100%' onClick={onClickLogo} as = 'button' _focusVisible={{ boxShadow: 'var(--chakra-shadows-outline)', outline: 'none' }}>
                     <Flex position={'relative'} w = {hideNavLinks ? '300px' : '150px'} h = '100%'>
@@ -45,12 +45,9 @@ const Nav = ({ hideNavLinks, isOpen, onClose, onToggle }: { hideNavLinks: boolea
             {
                 hideNavLinks == false &&
                 <>
-                    <Flex display={['none',  'none', 'none', 'flex', 'flex']} gap = {['0px', '0px', '30px', '40px', '50px']}>
-                        <NavLinks onNavClicked = {onNavClicked} />
-                    </Flex>
                     <Drawer isOpen = {isOpen} onClose={onClose} placement = "top" blockScrollOnMount = {false}>
                         <DrawerOverlay display={'none'} />
-                        <DrawerContent mt = '60px'>
+                        <DrawerContent mt = '60px' containerProps = {{ zIndex: 1300 }}>
                             <DrawerBody py = '20px' px = '20px'>
                                 <Flex direction={'column'} gap = '10px'>
                                     <NavLinks withHoverBg onNavClicked = {onNavClicked} />
@@ -61,6 +58,9 @@ const Nav = ({ hideNavLinks, isOpen, onClose, onToggle }: { hideNavLinks: boolea
                             </DrawerBody>
                         </DrawerContent>
                     </Drawer>
+                    <Flex display={['none',  'none', 'none', 'flex', 'flex']} gap = {['0px', '0px', '30px', '40px', '50px']}>
+                        <NavLinks onNavClicked = {onNavClicked} />
+                    </Flex>
                     <Flex display={['flex',  'flex', 'flex', 'none', 'none']} position={'relative'}>
                         <IconButton 
                             onClick={onToggle}
@@ -84,7 +84,7 @@ const NavLinks = ({ withHoverBg, onNavClicked }: { withHoverBg?: boolean, onNavC
             <Link 
                 onClick={onNavClicked}
                 //as = {NextLink} 
-                href = {'#home'} 
+                href = {'/#home'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Home</Link>
