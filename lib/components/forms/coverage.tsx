@@ -33,7 +33,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
         if(isBuildingCoverage && item.includes(CONSULTANT_FEE_REPLACE_TEXT)) {
             let replaceText = (values?.field_2 ?? 0) > 0 ? 'RM ' + convertToPriceFormat(values?.field_2 ?? 0, false, true) : '';
             const splittedText = item.replace(CONSULTANT_FEE_REPLACE_TEXT, `<replace_text><b>${replaceText}<b><replace_text>`).split('<replace_text>')
-            return <Text>{splittedText.map(e => e.startsWith('<b>') ? <Text key = {e} as = 'b' color = 'brand.primary'>{e.replaceAll('<b>', ' ')}</Text> : e)}</Text>
+            return <Text key = {item}>{splittedText.map(e => e.startsWith('<b>') ? <Text key = {e} as = 'b' color = 'brand.primary'>{e.replaceAll('<b>', ' ')}</Text> : e)}</Text>
             //return item.replace(CONSULTANT_FEE_REPLACE_TEXT, replaceText);
         }
         return item;

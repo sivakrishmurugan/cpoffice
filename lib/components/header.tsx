@@ -1,17 +1,24 @@
 "use client"
-import { Drawer, DrawerBody, DrawerContent, DrawerOverlay, Flex, Icon, IconButton, Link, useDisclosure } from "@chakra-ui/react";
+import { Drawer, DrawerBody, DrawerContent, DrawerOverlay, Flex, Icon, IconButton, Link, useDisclosure, useOutsideClick } from "@chakra-ui/react";
 import Image from "next/image";
 import { NavMenuIcon } from "../icons";
 import { APP_BORDER_COLOR, APP_MAX_WIDTH, APP_SECONDARY_COLOR } from "../app/app_constants";
 import NextLink from 'next/link';
 import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 const Header = () => {
     const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
+    const outsideClickRef = useRef(null);
     const pathname = usePathname();
     const router = useRouter();
     const navSuportedRoutes = ['/', '/privacy_policy', '/terms_of_use']
     const hideNavLinks = navSuportedRoutes.includes(pathname) == false;
+    
+    useOutsideClick({
+        ref: outsideClickRef,
+        handler: () => onClose()
+    })
 
     const onClickLogo = () => {
         router.push('/');
@@ -20,7 +27,7 @@ const Header = () => {
     return (
         <>
             <MobileNavDrawer isOpen = {isOpen} onClose = {onClose} />
-            <Flex position={'sticky'} top = '0px' zIndex={1400} transition = 'box-shadow 500ms ease-in-out' boxShadow={isOpen ? `0px 2px 0px ${APP_SECONDARY_COLOR}` : `0px 1px 1px ${APP_BORDER_COLOR}`} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
+            <Flex ref = {outsideClickRef} position={'sticky'} top = '0px' zIndex={1400} transition = 'box-shadow 500ms ease-in-out' boxShadow={isOpen ? `0px 2px 0px ${APP_SECONDARY_COLOR}` : `0px 1px 1px ${APP_BORDER_COLOR}`} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
                 <Flex w = {APP_MAX_WIDTH.map((e, i) => i < 4 ? e : (Number(e.replace('px', '')) + 100).toString() + 'px')} alignItems={'center'} justifyContent={'space-between'} px = {['20px', '35px', '40px', '20px', '20px']} gap = '20px'>
                     <Flex h = '100%' onClick={onClickLogo} as = 'button' _focusVisible={{ boxShadow: 'var(--chakra-shadows-outline)', outline: 'none' }}>
                         <Flex position={'relative'} w = {hideNavLinks ? '300px' : '150px'} h = '100%'>
@@ -69,10 +76,20 @@ const Nav = ({ hideNavLinks, isOpen, onClose, onToggle }: { hideNavLinks: boolea
 }
 
 const MobileNavDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+    const navRef = useRef(null as null | HTMLDivElement);
+    useEffect(() => {
+        // When the nav is opened, set focus on the first focusable element inside the nav
+        if (isOpen && navRef.current) {
+          const focusableElements = navRef.current.querySelectorAll('a, button, input, [tabindex]:not([tabindex="-1"])');
+          const firstFocusableElement: any = focusableElements[0];
+          if (firstFocusableElement) firstFocusableElement.focus();
+        }
+    }, [isOpen]);
+
     const onNavClicked = () => onClose();
 
     return (
-        <Flex w = '100vw' mt = {!isOpen ? '-400px' : '60px'} boxShadow={'var(--chakra-shadows-lg)'} zIndex={1400} position={'fixed'} transition={'margin 500ms ease-in-out'} right = '0' top = '0' bg = 'white'>
+        <Flex ref = {navRef} w = '100vw' mt = {!isOpen ? '-400px' : '60px'} boxShadow={'var(--chakra-shadows-lg)'} zIndex={1400} position={'fixed'} transition={'margin 500ms ease-in-out'} right = '0' top = '0' bg = 'white'>
             <Flex w = '100%' py = '20px' px = '40px' direction={'column'} gap = '10px'>
                 <NavLinks withHoverBg onNavClicked = {onNavClicked} />
                 <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
@@ -82,21 +99,21 @@ const MobileNavDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
         </Flex>
     );
 
-    return (
-        <Drawer isOpen = {isOpen} onClose={onClose} placement = "top" blockScrollOnMount = {false}>
-            <DrawerOverlay display={'none'} />
-            <DrawerContent mt = '60px' containerProps = {{ zIndex: 1300 }}>
-                <DrawerBody py = '20px' px = '20px'>
-                    <Flex direction={'column'} gap = '10px'>
-                        <NavLinks withHoverBg onNavClicked = {onNavClicked} />
-                        <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
-                            <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
-                        </Flex>
-                    </Flex>
-                </DrawerBody>
-            </DrawerContent>
-        </Drawer>
-    );
+    // return (
+    //     <Drawer isOpen = {isOpen} onClose={onClose} placement = "top" blockScrollOnMount = {false}>
+    //         <DrawerOverlay display={'none'} />
+    //         <DrawerContent mt = '60px' containerProps = {{ zIndex: 1300 }}>
+    //             <DrawerBody py = '20px' px = '20px'>
+    //                 <Flex direction={'column'} gap = '10px'>
+    //                     <NavLinks withHoverBg onNavClicked = {onNavClicked} />
+    //                     <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
+    //                         <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
+    //                     </Flex>
+    //                 </Flex>
+    //             </DrawerBody>
+    //         </DrawerContent>
+    //     </Drawer>
+    // );
 }
 
 const NavLinks = ({ withHoverBg, onNavClicked }: { withHoverBg?: boolean, onNavClicked: () => void }) => {

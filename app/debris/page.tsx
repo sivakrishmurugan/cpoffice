@@ -12,6 +12,7 @@ import useCoverage from "@/lib/hooks/use_coverage";
 import axiosClient from "@/lib/utlils/axios";
 import { MAX_COVERAGE_VALUE } from "@/lib/app/app_constants";
 import MaxLimitExceededPopup from "@/lib/components/max_cover_limit_popup";
+import { percentageResult } from "@/lib/utlils/calculation";
 
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -26,8 +27,8 @@ const Coverages: NextPage<{}> = ({}) => {
         maxLimit: { isExceeded: boolean, currentTotalValue: number },
         fieldErrors: { 
             id: string | number, 
-            field_1: { isInvalid: boolean, message: string }, 
-            field_2?: { isInvalid: boolean, message: string } 
+            field_1: boolean, 
+            field_2: boolean
         }[] 
     }
     const [maxLimitPopupOpen, setMaxLimitPopupOpen] = useState(false);
@@ -74,25 +75,27 @@ const Coverages: NextPage<{}> = ({}) => {
     }
     
     const validateField = (coverage: SelectedCoverage) => {
-        if(coverage.field_1 == null) return ;
-        const fieldError = errors.fieldErrors.find(e => e.id == coverage.id);
+        const field_1_value = coverage.field_1 ?? 0;
+        const field_2_value = coverage.field_2 ?? 0;
+        let fieldError = errors.fieldErrors.find(e => e.id == coverage.id);
+        if(fieldError == null) fieldError = { id: coverage.id, field_1: false, field_2: false };
         const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data.map(e => e.id == coverage.id ? coverage : e)));
         const isMaxCoverageValueExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
+        
+        const isField1ContainsError = field_1_value < 1;
+        const isField2ContainsError = false;
 
-        if(coverage.field_1 == 0 && (fieldError == null || fieldError?.field_1.isInvalid == false)) {
+        if((isField1ContainsError && fieldError.field_1 == false) || (isField2ContainsError && fieldError.field_2 == false)) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
             setErrors(prev => ({
-                ...prev, 
-                maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
-                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: { isInvalid: true, message: 'Required!' } }]
+                ...prev, maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
+                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: isField1ContainsError, field_2: isField2ContainsError }]
             }))
-        }
-        if(coverage.field_1 > 0 && fieldError != null && fieldError?.field_1.isInvalid == true) {
+        } else if((isField1ContainsError == false && fieldError.field_1 == true) || (isField2ContainsError == false && fieldError.field_2 == true)) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
             setErrors(prev => ({
-                ...prev, 
-                maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
-                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: { isInvalid: false, message: '' } }]
+                ...prev, maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
+                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: isField1ContainsError, field_2: isField2ContainsError }]
             }))
         } else if((errors.maxLimit.isExceeded && isMaxCoverageValueExceeded == false) || (errors.maxLimit.isExceeded == false && isMaxCoverageValueExceeded)) {
             setErrors(prev => ({ 
@@ -136,10 +139,10 @@ const Coverages: NextPage<{}> = ({}) => {
         tempErrors.maxLimit.isExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
         tempErrors.maxLimit.currentTotalValue = totalCoverageValue;
         //tempErrors.noCoverage = data.length < 1;
-        tempErrors.fieldErrors = data.filter(e => selectedCoverages.includes(e.id)).map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: { isInvalid: true, message: 'Required!' } } : null).filter(Boolean) as ErrorType['fieldErrors']
+        tempErrors.fieldErrors = data.filter(e => selectedCoverages.includes(e.id)).map(e => e.field_1 == null || e.field_1 < 1 ? { id: e.id, field_1: true, field_2: true } : null).filter(Boolean) as ErrorType['fieldErrors']
         setErrors(tempErrors)
         if(tempErrors.maxLimit.isExceeded) setMaxLimitPopupOpen(true)
-        return tempErrors.noCoverage == true || tempErrors.maxLimit.isExceeded == true || tempErrors.fieldErrors.some(e => e.field_1.isInvalid == true || e.field_2?.isInvalid == true);
+        return tempErrors.noCoverage == true || tempErrors.maxLimit.isExceeded == true || tempErrors.fieldErrors.some(e => e.field_1 == true || e.field_2 == true);
     }
 
     const onClickSkipOrNext = () => {
@@ -208,7 +211,7 @@ const Coverages: NextPage<{}> = ({}) => {
                     <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
                     <Button 
                         onClick = {onClickSkipOrNext} 
-                        isDisabled = {errors.noCoverage || errors.fieldErrors.some(e => e.field_1.isInvalid)} 
+                        isDisabled = {errors.noCoverage || errors.fieldErrors.some(e => e.field_1 == true || e.field_2 == true)} 
                         width = {['100%', '100%', '250px', '250px', '250px']} 
                         minW = '150px'
                         bg = {selectedCoverages.length > 0 ? 'brand.secondary' : 'brand.green'}
