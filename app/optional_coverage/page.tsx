@@ -80,7 +80,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         const isMaxCoverageValueExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
         
         const isField1ContainsError = field_1_value < 1;
-        const isField2ContainsError = field_2_value > Number(percentageResult(MAX_AUDITOR_FEE_PERCENTAGE, field_1_value));
+        const isField2ContainsError = field_2_value > Math.round(Number(percentageResult(MAX_AUDITOR_FEE_PERCENTAGE, field_1_value)));
 
         if((isField1ContainsError && fieldError.field_1 == false) || (isField2ContainsError && fieldError.field_2 == false)) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
