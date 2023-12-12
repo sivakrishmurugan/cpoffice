@@ -18,21 +18,24 @@ const Header = () => {
     }
 
     return (
-        <Flex position={'sticky'} top = '0px' zIndex={1400} transition = 'box-shadow 500ms ease-in-out' boxShadow={isOpen ? `0px 2px 0px ${APP_SECONDARY_COLOR}` : `0px 1px 1px ${APP_BORDER_COLOR}`} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
-            <Flex w = {APP_MAX_WIDTH.map((e, i) => i < 4 ? e : (Number(e.replace('px', '')) + 100).toString() + 'px')} alignItems={'center'} justifyContent={'space-between'} px = {['20px', '35px', '40px', '20px', '20px']} gap = '20px'>
-                <Flex h = '100%' onClick={onClickLogo} as = 'button' _focusVisible={{ boxShadow: 'var(--chakra-shadows-outline)', outline: 'none' }}>
-                    <Flex position={'relative'} w = {hideNavLinks ? '300px' : '150px'} h = '100%'>
-                        <Image src = {hideNavLinks ? '/icons/My-Ds-logo.svg' : '/icons/My-logo.svg'} priority = {true} alt="logo" fill style = {{ objectFit: 'contain' }} />
+        <>
+            <MobileNavDrawer isOpen = {isOpen} onClose = {onClose} />
+            <Flex position={'sticky'} top = '0px' zIndex={1400} transition = 'box-shadow 500ms ease-in-out' boxShadow={isOpen ? `0px 2px 0px ${APP_SECONDARY_COLOR}` : `0px 1px 1px ${APP_BORDER_COLOR}`} w = '100%' h = '60px' bg = 'white' justifyContent={'center'}>
+                <Flex w = {APP_MAX_WIDTH.map((e, i) => i < 4 ? e : (Number(e.replace('px', '')) + 100).toString() + 'px')} alignItems={'center'} justifyContent={'space-between'} px = {['20px', '35px', '40px', '20px', '20px']} gap = '20px'>
+                    <Flex h = '100%' onClick={onClickLogo} as = 'button' _focusVisible={{ boxShadow: 'var(--chakra-shadows-outline)', outline: 'none' }}>
+                        <Flex position={'relative'} w = {hideNavLinks ? '300px' : '150px'} h = '100%'>
+                            <Image src = {hideNavLinks ? '/icons/My-Ds-logo.svg' : '/icons/My-logo.svg'} priority = {true} alt="logo" fill style = {{ objectFit: 'contain' }} />
+                        </Flex>
                     </Flex>
-                </Flex>
-                <Flex w = '100%' h = '100%' justifyContent={'flex-end'} alignItems={'center'} gap  ='40px'>
-                    <Nav hideNavLinks = {hideNavLinks} onClose={onClose} onToggle={onToggle} isOpen={isOpen} />
-                    <Flex display={['none',  'none', 'none', 'flex', 'flex']} position={'relative'} w = '150px' h = '100%'>
-                        <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
+                    <Flex w = '100%' h = '100%' justifyContent={'flex-end'} alignItems={'center'} gap  ='40px'>
+                        <Nav hideNavLinks = {hideNavLinks} onClose={onClose} onToggle={onToggle} isOpen={isOpen} />
+                        <Flex display={['none',  'none', 'none', 'flex', 'flex']} position={'relative'} w = '150px' h = '100%'>
+                            <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
+                        </Flex>
                     </Flex>
                 </Flex>
             </Flex>
-        </Flex>
+        </>
     );
 }
 
@@ -45,19 +48,6 @@ const Nav = ({ hideNavLinks, isOpen, onClose, onToggle }: { hideNavLinks: boolea
             {
                 hideNavLinks == false &&
                 <>
-                    <Drawer isOpen = {isOpen} onClose={onClose} placement = "top" blockScrollOnMount = {false}>
-                        <DrawerOverlay display={'none'} />
-                        <DrawerContent mt = '60px' containerProps = {{ zIndex: 1300 }}>
-                            <DrawerBody py = '20px' px = '20px'>
-                                <Flex direction={'column'} gap = '10px'>
-                                    <NavLinks withHoverBg onNavClicked = {onNavClicked} />
-                                    <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
-                                        <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
-                                    </Flex>
-                                </Flex>
-                            </DrawerBody>
-                        </DrawerContent>
-                    </Drawer>
                     <Flex display={['none',  'none', 'none', 'flex', 'flex']} gap = {['0px', '0px', '30px', '40px', '50px']}>
                         <NavLinks onNavClicked = {onNavClicked} />
                     </Flex>
@@ -75,6 +65,37 @@ const Nav = ({ hideNavLinks, isOpen, onClose, onToggle }: { hideNavLinks: boolea
                 </>
             }
         </>
+    );
+}
+
+const MobileNavDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
+    const onNavClicked = () => onClose();
+
+    return (
+        <Flex w = '100vw' mt = {!isOpen ? '-400px' : '60px'} boxShadow={'var(--chakra-shadows-lg)'} zIndex={1400} position={'fixed'} transition={'margin 500ms ease-in-out'} right = '0' top = '0' bg = 'white'>
+            <Flex w = '100%' py = '20px' px = '40px' direction={'column'} gap = '10px'>
+                <NavLinks withHoverBg onNavClicked = {onNavClicked} />
+                <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
+                    <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
+                </Flex>
+            </Flex>
+        </Flex>
+    );
+
+    return (
+        <Drawer isOpen = {isOpen} onClose={onClose} placement = "top" blockScrollOnMount = {false}>
+            <DrawerOverlay display={'none'} />
+            <DrawerContent mt = '60px' containerProps = {{ zIndex: 1300 }}>
+                <DrawerBody py = '20px' px = '20px'>
+                    <Flex direction={'column'} gap = '10px'>
+                        <NavLinks withHoverBg onNavClicked = {onNavClicked} />
+                        <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
+                            <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
+                        </Flex>
+                    </Flex>
+                </DrawerBody>
+            </DrawerContent>
+        </Drawer>
     );
 }
 

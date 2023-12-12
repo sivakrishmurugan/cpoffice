@@ -1,4 +1,4 @@
-import { Button, Flex, Text, Heading, Modal, ModalOverlay, ModalContent, ModalBody, IconButton, Input, Select } from "@chakra-ui/react";
+import { Button, Flex, Text, Heading, Modal, ModalOverlay, ModalContent, ModalBody, IconButton, Input, Select, ModalFooter, ModalHeader } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { ClaimInfoRowForm } from ".";
 import { ClaimDeclarationAdditionalData } from "@/lib/types";
@@ -37,7 +37,7 @@ const ClaimFormPopup = ({ list, quoteId, isOpen, onClose, onClickSubmit }: Claim
             ...list?.map(e => getModifiedClaimInfoForLocalState(e)) ?? [], 
             ...(list.length < 1 ? [getModifiedClaimInfoForLocalState()] : [])
         ])
-    }, [list])
+    }, [list, isOpen])
 
     const onChangeClaimInfoValues = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: 'type' | 'year' | 'amount' | 'desciption', index: number) => {
         const tempData: typeof data = JSON.parse(JSON.stringify(data));
@@ -124,20 +124,22 @@ const ClaimFormPopup = ({ list, quoteId, isOpen, onClose, onClickSubmit }: Claim
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered scrollBehavior = 'inside' closeOnOverlayClick = {false}>
             <ModalOverlay />
-            <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', 'auto', 'auto', '65rem']}>
-                <ModalBody py ={'40px'} px = '40px'>
-                    <Flex direction={'column'} gap = '20px'>
-                        <Text fontSize={'16px'} color = 'brand.text' fontWeight={'bold'}>Please provide additional information</Text>
-                        <Flex flexShrink={0} w = '100%' gap = '15px' direction={'column'}>
+            <ModalContent borderRadius={'12px'} maxH = {'90%'} maxW = {['90%', '90%', 'auto', 'auto', '65rem']}>
+                <ModalHeader mt = '20px' px = '40px' gap = '15px' display={'flex'} flexDirection={'column'}>
+                    <Text fontSize={'16px'} color = 'brand.text' fontWeight={'bold'}>Please provide additional information</Text>
 
-                            {/* Desktop view information fields header */}
-                            <Flex display={['none', 'none', 'none', 'flex', 'flex']} flexShrink={0} w = '100%' gap = '20px'>
-                                <Text w = '16%' color = 'brand.text' fontSize={'14px'}>Type of Claim</Text>
-                                <Text w = '16%' color = 'brand.text' fontSize={'14px'}>Year of Claim</Text>
-                                <Text w = '16%' color = 'brand.text' fontSize={'14px'}>Amount of Claim</Text>
-                                <Text w = '33%' color = 'brand.text' fontSize={'14px'}>Description</Text>
-                            </Flex>
-                            
+                    {/* Desktop view information fields header */}
+                    <Flex display={['none', 'none', 'none', 'flex', 'flex']} flexShrink={0} w = '100%' gap = '20px'>
+                        <Text w = '16%' color = 'brand.text' fontSize={'14px'}>Type of Claim</Text>
+                        <Text w = '16%' color = 'brand.text' fontSize={'14px'}>Year of Claim</Text>
+                        <Text w = '16%' color = 'brand.text' fontSize={'14px'}>Amount of Claim</Text>
+                        <Text w = '33%' color = 'brand.text' fontSize={'14px'}>Description</Text>
+                    </Flex>
+
+                </ModalHeader>
+                <ModalBody px = '40px'>
+                    <Flex direction={'column'} gap = '20px'>
+                        <Flex flexShrink={0} w = '100%' gap = '15px' direction={'column'}>
                             {
                                 data.map((item, index, array) => {
                                     return <ClaimInfoRowForm
@@ -154,11 +156,13 @@ const ClaimFormPopup = ({ list, quoteId, isOpen, onClose, onClickSubmit }: Claim
 
                         </Flex>
                     </Flex>
-                    <Flex mt = '20px' w = '100%' gap = '20px' justifyContent={'center'}>
+                </ModalBody>
+                <ModalFooter>
+                    <Flex w = '100%' gap = '20px' justifyContent={'center'}>
                         <Button onClick = {onClose} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>Cancel</Button>
                         <Button onClick = {onSubmit} isLoading = {submitLoading} isDisabled = {data.some(e => Object.values(e).some(value => typeof value == 'string' ? false : value.error))} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.secondary' color = 'white' _hover = {{}} _focus={{}}>Add</Button>
                     </Flex>
-                </ModalBody>
+                </ModalFooter>
             </ModalContent>
         </Modal>
     );

@@ -6,7 +6,7 @@ import { ClaimDeclarationAdditionalData, ClinicData } from "@/lib/types";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import ClaimInfoRowForm from "@/lib/components/forms/claim_info_row_form";
 import BottomActions from "@/lib/components/bottom_actions";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
 import axiosClient from "@/lib/utlils/axios";
@@ -21,6 +21,11 @@ const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData
         amount: { value: info?.amount ?? 0, error: false },
         description: { value: info?.description ?? '', error: false }
     }
+}
+
+const TempClaimDeclaration: NextPage<{}> = ({}) => {
+    redirect('/summary');
+    return <></>
 }
 
 const ClaimDeclaration: NextPage<{}> = ({}) => {
@@ -320,7 +325,7 @@ const ClaimDeclaration: NextPage<{}> = ({}) => {
     );
 }
 
-export default ClaimDeclaration;
+export default TempClaimDeclaration;
 
 interface RadioCardProps extends UseRadioProps {
     children: ReactNode;

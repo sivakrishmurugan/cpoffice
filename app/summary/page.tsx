@@ -178,7 +178,7 @@ const Summary: NextPage<{}> = ({}) => {
         tempData.previouslyClaimed.error = tempData.previouslyClaimed.isClaimed == null;
 
         setData(tempData);
-        return tempData.PICName.error != null || tempData.PICID.error != null || tempData.insStartDate.error == true || tempData.previouslyClaimed.error == true;
+        return tempData.PICName.error != null || tempData.PICID.error != null || tempData.insStartDate.error == true || tempData.previouslyClaimed.error == true || (tempData.previouslyClaimed.isClaimed == true && tempData.claimInfoList.length < 1);
     }
 
     const onClickSubmit =  async (submitFor: 'EMAIL_QUOTE' | 'PROCEED' = 'PROCEED') => {

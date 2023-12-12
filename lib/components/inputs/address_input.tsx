@@ -63,7 +63,7 @@ const AddressInput = ({ fieldName = 'price_input', currentValue, onChange, group
                         </InputRightElement>
                     </InputGroup>
                 </Flex>
-                <MenuList>
+                <MenuList zIndex={1401}>
                     {
                         suggestions.data.map((item: { description: string }, index) => {
                             return <MenuItem 

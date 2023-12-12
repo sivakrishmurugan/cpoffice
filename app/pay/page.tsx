@@ -106,7 +106,7 @@ const Summary: NextPage<{}> = ({}) => {
                         {/* Summary heading and edit details button */}
                         <Flex w = '100%' gap = '35px' alignItems={'center'} justifyContent={'space-between'}>
                             <Heading as = {'h1'} fontSize={'23px'}>Proposal approved</Heading>
-                            <Button onClick={onClickEditDetails} size = 'sm' variant={'outline'} borderColor = 'brand.borderColor' h = '40px'>EDIT PROPOSAL</Button>
+                            {/* <Button onClick={onClickEditDetails} size = 'sm' variant={'outline'} borderColor = 'brand.borderColor' h = '40px'>EDIT PROPOSAL</Button> */}
                         </Flex>
                         
                         {/* Divider */}

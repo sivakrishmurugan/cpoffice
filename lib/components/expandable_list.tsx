@@ -3,7 +3,7 @@ import { APP_BG_COLOR } from "../app/app_constants";
 import { MinusIcon, PlusIcon } from "../icons";
 
 interface ExpandableListProps {
-    list: string[],
+    list: (string | JSX.Element)[],
     title: string
 } 
 
@@ -22,8 +22,8 @@ const ExpanableList = ({ list, title }: ExpandableListProps) => {
                         <AccordionPanel borderRadius={"8px"} px = "10px">
                             <UnorderedList ml = '30px' fontSize={'14px'}>
                                 {
-                                    list.map(includedItem => {
-                                        return <ListItem key = {includedItem}>{includedItem}</ListItem>;
+                                    list.map((includedItem, index) => {
+                                        return <ListItem key = {index}>{includedItem}</ListItem>;
                                     })
                                 }
                             </UnorderedList>

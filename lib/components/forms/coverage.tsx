@@ -1,6 +1,6 @@
 import { Button, Collapse, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, ListItem, OrderedList, Text, UnorderedList } from "@chakra-ui/react";
 import { Coverage, SelectedCoverage } from "../../types";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, TOOLTIP_INFO } from "../../app/app_constants";
+import { CONSULTANT_FEE_REPLACE_TEXT, DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MAX_CONSULTANT_FEE_PERCENTAGE, TOOLTIP_INFO } from "../../app/app_constants";
 import ExpanableList from "../expandable_list";
 import ResponsiveTooltip from "../tooltip";
 import { PriceInput } from "../inputs";
@@ -18,7 +18,7 @@ interface CoverageFromProps {
     alwaysOpen?: boolean,
     isAdded?: boolean | null,
     values?: SelectedCoverage,
-    errors?: { field_1: { isInvalid: boolean, message: string }, field_2?: { isInvalid: boolean, message: string } }
+    errors?: { field_1: boolean, field_2: boolean }
 }
 
 const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFieldValue, alwaysOpen = false, isAdded = null }: CoverageFromProps) => {
@@ -28,13 +28,39 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
     const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
 
     const isBuildingCoverage = coverage.CoverageName == 'Building';
-    let replaceText = isBuildingCoverage && (values?.field_2 ?? 0) > 0 ? 'RM ' + convertToPriceFormat(values?.field_2 ?? 0, false, true) : '';
 
     const coverageIncludes = coverage.Includes['Coverage includes'].map(item => {
-        if(isBuildingCoverage && item.includes('CONSULTANT_FEE_REPLACE_TEXT')) {
-            return item.replace('CONSULTANT_FEE_REPLACE_TEXT', replaceText);
+        if(isBuildingCoverage && item.includes(CONSULTANT_FEE_REPLACE_TEXT)) {
+            let replaceText = (values?.field_2 ?? 0) > 0 ? 'RM ' + convertToPriceFormat(values?.field_2 ?? 0, false, true) : '';
+            const splittedText = item.replace(CONSULTANT_FEE_REPLACE_TEXT, `<replace_text><b>${replaceText}<b><replace_text>`).split('<replace_text>')
+            return <Text>{splittedText.map(e => e.startsWith('<b>') ? <Text key = {e} as = 'b' color = 'brand.primary'>{e.replaceAll('<b>', ' ')}</Text> : e)}</Text>
+            //return item.replace(CONSULTANT_FEE_REPLACE_TEXT, replaceText);
         }
         return item;
+    })
+
+    const inputFields = Object.entries(coverage.CoverageFields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
+        let label: null |string | JSX.Element = fieldValues.label;
+        let error = null as string | null;
+        const fieldKey = field == 'field_1' ? 'field_1' : 'field_2';
+        const value = values?.[fieldKey] ?? 0;
+        const field2MaxValue = Math.round(Number(percentageResult(MAX_CONSULTANT_FEE_PERCENTAGE, values?.field_1 ?? 0)));
+        if(isBuildingCoverage && fieldKey == 'field_2' && (values?.field_1 ?? 0) > 0) {   
+            label = <Text>{label} <Text as = 'b' color = 'brand.primary'>(Max. RM {convertToPriceFormat(field2MaxValue, false,  true)})</Text></Text>;
+        }
+        if(errors?.[fieldKey] == true) {
+            if(fieldKey == 'field_1') error = 'Required!';
+            if(fieldKey == 'field_2') error = `Fee cannot be more than RM ${convertToPriceFormat(field2MaxValue, false, true)}`;
+        }
+        
+        return {
+            name: fieldKey,
+            label: label,
+            value: value,
+            error: error,
+            note: fieldValues.note,
+            isDisabled: fieldKey == 'field_2' && (values?.field_1 ?? 0) < 1
+        }
     })
 
     return (
@@ -100,8 +126,8 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                             <Text fontSize = '16px' fontWeight={'bold'}>Coverage includes: </Text>
                             <UnorderedList ml = '40px' fontSize={'14px'}>
                                 {
-                                    coverageIncludes.map(includedItem => {
-                                        return <ListItem key = {includedItem}>{includedItem}</ListItem>;
+                                    coverageIncludes.map((includedItem, index) => {
+                                        return <ListItem key = {index}>{includedItem}</ListItem>;
                                     })
                                 }
                             </UnorderedList>
@@ -122,24 +148,24 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                     </Flex>
 
                     <Flex w = {['100%', '100%', '100%%', '66.6%', '66.6%']} direction={'column'} gap = '30px'>
-                        <Flex direction={'column'} maxW={['100%', '100%', '100%', '500px', '500px']} px = '1px' gap = '10px'>
+                        <Flex direction={'column'} maxW={['100%', '100%', '100%', '400px', '400px']} px = '1px' gap = '10px'>
                             {
-                                Object.entries(coverage.CoverageFields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
-                                    const fieldKey = field == 'field_1' ? 'field_1' : 'field_2';
-                                    const value = values?.[fieldKey] ?? 0;
-                                    const error = errors?.[fieldKey];
-                                    return <FormControl key = {field + fieldValues.label} isInvalid = {error?.isInvalid}>
-                                        <FormLabel>{fieldValues.label}</FormLabel>
-                                        <PriceInput 
-                                            fieldName = {field}
-                                            currentPrice = {value}
-                                            onChange = {onChangeFieldValue}
-                                            groupProps = {{ w: ['100%', '100%', '100%', '300px', '300px'] }}
-                                            forceUpdateOnPriceChange
-                                        />
-                                        <FormErrorMessage ml = '10px'>{error?.message}</FormErrorMessage>
-                                        {fieldValues.note != null && fieldValues.note != '' && <Text mt = '10px' fontSize={'14px'}>Note: {fieldValues.note}</Text>}
-                                    </FormControl>
+                                inputFields.map((field, index) => {
+                                    return <ResponsiveTooltip key = {field.name} isDisabled = {field.isDisabled == false} placement="bottom-start" label = {'Sum Insured required!'}>
+                                        <FormControl isInvalid = {field.error != null && field.isDisabled == false}>
+                                            <FormLabel>{field.label}</FormLabel>
+                                            <PriceInput 
+                                                fieldName = {field.name}
+                                                currentPrice = {field.isDisabled ? 0 : field.value}
+                                                onChange = {onChangeFieldValue}
+                                                isDisabled = {field.isDisabled}
+                                                groupProps = {{ w: ['100%', '100%', '100%', '300px', '300px'] }}
+                                                forceUpdateOnPriceChange
+                                            />
+                                            <FormErrorMessage ml = '10px'>{field.error}</FormErrorMessage>
+                                            {field.note != null && field.note != '' && <Text mt = '10px' fontSize={'14px'}>Note: {field.note}</Text>}
+                                        </FormControl>
+                                    </ResponsiveTooltip>
                                 })
                             }
                         </Flex>

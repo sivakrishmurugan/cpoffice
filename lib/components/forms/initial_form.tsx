@@ -555,7 +555,7 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
             <ModalOverlay />
             <ModalContent borderRadius={'12px'} maxW = {['90%', '90%', '38rem', '38rem', '38rem']}>
                 <ModalBody py ={['40px', '40px', '0px', '0px', '0px']} >
-                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} px = {['0px', '0px', '50px', '80px', '80px']} direction={'column'} gap = {['20px', '20px', '30px', '30px', '30px']} alignItems={'center'}>
+                    <Flex p = {['0px', '0px', '30px', '30px', '30px']} px = {['0px', '0px', '50px', '80px', '80px']} direction={'column'} gap = {'20px'} alignItems={'center'}>
                         <Flex ml = '30px' mt = '-10px' position={'relative'} w = '120px' h = '120px'>
                             <Image src='/icons/quote-exist.svg' fill style = {{ objectFit: 'contain' }} alt={"quote_exist_image"} />
                         </Flex>
@@ -563,9 +563,9 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
                            Quote ID already exist. Are you sure you want to continue with existing quote?
                         </Text>
-                        <Flex gap = '20px'>
-                            <Button onClick = {onClose} w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
-                            <Button onClick = {onClickOk} w = {['100px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
+                        <Flex mt = '10px' gap = '20px'>
+                            <Button onClick = {onClose} w = {['130px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
+                            <Button onClick = {onClickOk} w = {['130px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>

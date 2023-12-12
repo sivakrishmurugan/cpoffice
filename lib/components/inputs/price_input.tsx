@@ -6,6 +6,7 @@ import { useEffect } from "react";
 interface PriceInputProps {
     fieldName?: string,
     currentPrice: number,
+    isDisabled?: boolean,
     onChange: (event: ChangeEvent<HTMLInputElement>) => void,
     forceUpdateOnPriceChange?: boolean,
     rightElement?: JSX.Element | string | null,
@@ -13,7 +14,7 @@ interface PriceInputProps {
     'data-testid'?: string
 }
 
-const PriceInput = ({ fieldName = 'price_input', currentPrice, onChange, rightElement, groupProps = {}, forceUpdateOnPriceChange = false, 'data-testid': testid = 'price_input' }: PriceInputProps) => {
+const PriceInput = ({ fieldName = 'price_input', isDisabled = false, currentPrice, onChange, rightElement, groupProps = {}, forceUpdateOnPriceChange = false, 'data-testid': testid = 'price_input' }: PriceInputProps) => {
     let ref = useRef<HTMLInputElement>(null!);
 
     useEffect(() => {
@@ -36,6 +37,7 @@ const PriceInput = ({ fieldName = 'price_input', currentPrice, onChange, rightEl
                 defaultValue = {convertToPriceFormat(currentPrice, false, true)} 
                 onBlur = {onBlurPrice}
                 onChange = {onChange} 
+                isDisabled = {isDisabled}
                 placeholder = "0"
                 inputMode = 'numeric'
                 data-testid = {testid}
