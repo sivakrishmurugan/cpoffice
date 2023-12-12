@@ -90,7 +90,7 @@ const MobileNavDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
 
     return (
         <Flex ref = {navRef} w = '100vw' mt = {!isOpen ? '-400px' : '60px'} boxShadow={'var(--chakra-shadows-lg)'} zIndex={1400} position={'fixed'} transition={'margin 500ms ease-in-out'} right = '0' top = '0' bg = 'white'>
-            <Flex w = '100%' py = '20px' px = '40px' direction={'column'} gap = '10px'>
+            <Flex w = '100%' py = '20px' px = {['20px', '20px', '40px', '40px', '40px']} direction={'column'} gap = '10px'>
                 <NavLinks withHoverBg onNavClicked = {onNavClicked} />
                 <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
                     <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
@@ -128,19 +128,19 @@ const NavLinks = ({ withHoverBg, onNavClicked }: { withHoverBg?: boolean, onNavC
             >Home</Link>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#coverages'} 
+                as = {NextLink} href = {'/#coverages'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Coverages</Link>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#advantages'} 
+                as = {NextLink} href = {'/#advantages'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Advantages</Link>
             <Link 
                 onClick={onNavClicked}
-                as = {NextLink} href = {'#faq'} 
+                as = {NextLink} href = {'/#faq'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >FAQ</Link>
