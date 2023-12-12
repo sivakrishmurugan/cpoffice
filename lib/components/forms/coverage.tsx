@@ -46,11 +46,11 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
         const value = values?.[fieldKey] ?? 0;
         const field2MaxValue = Math.round(Number(percentageResult(MAX_CONSULTANT_FEE_PERCENTAGE, values?.field_1 ?? 0)));
         if(isBuildingCoverage && fieldKey == 'field_2' && (values?.field_1 ?? 0) > 0) {   
-            label = <Text>{label} <Text as = 'b' color = 'brand.primary'>(Max. RM {convertToPriceFormat(field2MaxValue, false,  true)})</Text></Text>;
+            label = <Text>{label} <Text as = 'b' color = 'brand.primary'>(Max. RM {convertToPriceFormat(field2MaxValue, true,  true)})</Text></Text>;
         }
         if(errors?.[fieldKey] == true) {
             if(fieldKey == 'field_1') error = 'Required!';
-            if(fieldKey == 'field_2') error = `Fee cannot be more than RM ${convertToPriceFormat(field2MaxValue, false, true)}`;
+            if(fieldKey == 'field_2') error = `Coverage cannot be more than RM ${convertToPriceFormat(field2MaxValue, true, true)}`;
         }
         
         return {
@@ -148,7 +148,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                     </Flex>
 
                     <Flex w = {['100%', '100%', '100%%', '66.6%', '66.6%']} direction={'column'} gap = '30px'>
-                        <Flex direction={'column'} maxW={['100%', '100%', '100%', '400px', '400px']} px = '1px' gap = '10px'>
+                        <Flex direction={'column'} maxW={['100%', '100%', '100%', '600px', '600px']} px = '1px' gap = '10px'>
                             {
                                 inputFields.map((field, index) => {
                                     return <ResponsiveTooltip key = {field.name} isDisabled = {field.isDisabled == false} placement="bottom-start" label = {'Sum Insured required!'}>

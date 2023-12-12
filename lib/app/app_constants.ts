@@ -27,32 +27,32 @@ export const CONSTRUCTION_TYPES = [
 
 export const FORM_FIELD_ERROR_MESSAGES = {
     name: {
-        required: 'Clinic name is required!',
-        format: 'Clinic name should contain only alphabets and less than 200 characters'
+        required: 'Clinic Name is Required!',
+        format: 'Clinic Name should contain only alphabets and less than 200 characters!'
     },
     number: {
-        required: 'Clinic number is requried!',
-        format: 'Clinic number should contain only alphabets, numbers and should be less than 200 characters!'
+        required: 'Clinic Number is Requried!',
+        format: 'Clinic Number should contain only alphabets, numbers and should be less than 200 characters!'
     },
     address: {
-        required: 'Address is required!',
+        required: 'Address is Required!',
         format: 'Address cannot have more than 200 characters!'
     },
     PICName: {
-        required: 'Person in charge name is required!',
-        format: 'Person in charge name should contain only alphabets and less than 200 characters'
+        required: 'Person In Charge Name is Required!',
+        format: 'Person In Charge Name should contain only alphabets and less than 200 characters!'
     },
     PICID: {
-        required: 'Person in charge IC is requried!',
-        format: 'Person in charge IC should contain only alphabets, numbers and should be less than 200 characters!'
+        required: 'Person In Charge IC is Requried!',
+        format: 'Person In Charge IC should contain only alphabets, numbers and should be less than 200 characters!'
     },
     email: {
-        required: 'Email is required!',
-        format: 'Invalid email format!'
+        required: 'Email is Required!',
+        format: 'Invalid Email Format!'
     },
     mobile: {
-        required: 'Mobile number is required!',
-        format: 'Mobile number must contain only numbers and be no longer than 20 digits'
+        required: 'Mobile Number is Required!',
+        format: 'Mobile Number must contain only numbers and be no longer than 20 Digits!'
     }
 }
 
@@ -111,19 +111,19 @@ export const AUDITOR_FEE_REPLACE_TEXT = 'AUDITOR_FEE_REPLACE_TEXT';
 export const EXCESS = [
     {
         title: 'Storm, Tempest',
-        value: '1% of Total Sum Insured Or RM 200 Whichever is less'
+        value: '1% of Total Sum Insured or RM 200 Whichever Is Less'
     },
     {
         title: 'Flood',
-        value: '1% of Total Sum Insured Or RM 2,500 Whichever is less'
+        value: '1% of Total Sum Insured or RM 2,500 Whichever Is Less'
     },
     {
         title: "Impact Damage (Including Insured's Own Vehicles)",
-        value: 'RM 250.00 Each And Every Claim'
+        value: 'RM 250.00 Each and Every Claim'
     },
     {
-        title: 'Bursting or Overflowing Of Water Tanks, Apparatus Or Pipes',
-        value: 'First RM 1,000 for each and every loss for each separate premises. For sums insured less than RM 50,000 1 % of sum insured sub ject to a minimum of RM100.'
+        title: 'Bursting or Overflowing of Water Tanks, Apparatus, or Pipes',
+        value: 'First RM 1,000 for Each and Every Loss for Each Separate Premises. For Sums Insured Less Than RM 50,000, 1% of Sum Insured Subject to a Minimum of RM 100'
     }
 ]
 
@@ -142,7 +142,7 @@ export const PROTECTION_AND_LIABILITY_COVERAGE = {
     name: 'Protection and Liability Coverage',
     premuimAmount: 405,
     coverageValue: 1000000,
-    premiumLabel: 'Protection from a broad range of risks, theft, vandalism, accidental damage, and more',
+    premiumLabel: 'Protection against a wide range of risks, including theft, vandalism, accidental damage, and more.',
     contents: [
         {
             title: 'Burglary RM 20,000',
@@ -151,26 +151,25 @@ export const PROTECTION_AND_LIABILITY_COVERAGE = {
         {
             title: 'Money',
             contents: [
-                'On Money Inside premises RM 5,000',
-                'During and after business hours kept in locked Safe or Strong Room, Locked Drawers/Cabinets, Cash Registers.',
-                'On Money In transit RM 5,000\nOutside premises (from premises to bank or contract sites or vice versa) '
+                'Money Inside Premises RM 5,000\nDuring and after business hours kept in locked safe or strong room, locked drawers/cabinets, cash registers.',
+                'Money in Transit RM 5,000\nOutside premises (from premises to bank or contract sites or vice versa)'
             ]
         },
         {
-            title: 'Fidelity guarantee RM 10,000 ',
-            contents: ['Amount of Guarantee (in aggregate for all employee)']
+            title: 'Fidelity Guarantee RM 10,000',
+            contents: ['Amount of Guarantee (in aggregate for all employees)']
         },
         {
-            title: 'Plate glass RM 10,000 ',
-            contents: ['On Glass and signage']
+            title: 'Plate Glass RM 10,000',
+            contents: ['Glass and Signage']
         },
         {
-            title: 'Public liability RM 1,000,000 ',
+            title: 'Public Liability RM 1,000,000',
             contents: ['Limit of Liability during the Period of Insurance']
         },
         {
-            title: 'Employer liability RM 250,000 ',
-            contents: ['Limit of Liability any one claim or series of claims arising out of one event irrespective of the number of claims that may arise therefrom and during any one Period of Insurance']
+            title: 'Employer Liability RM 250,000',
+            contents: ['Limit of Liability for any one claim or series of claims arising out of one event, irrespective of the number of claims that may arise therefrom and during any one Period of Insurance.']
         }
     ]
 }
@@ -179,16 +178,16 @@ export const TOOLTIP_INFO = {
     fireAndPerilsIns: {
         title: 'Protection from fire and listed perils',
         contents: [
-            'Storm,',
-            'Tempest,',
-            'Flood,',
-            'Bursting or Overflowing of water tanks,',
-            'Explosion - Non-industrial without Boilers,',
-            'Earthquake & Volcanic Eruption',
-            "Impact Damage (including insured's own vehicles),",
-            "Riot Strike and Malicious Damage (Non-Residential),",
-            "Sprinkler Leakage Building and contents",
-            "Electrical installations clause (Applicable for Plant & Machinery only)"
+            'Storm',
+            'Tempest',
+            'Flood',
+            'Bursting or overflowing of water tanks',
+            'Explosion - non-industrial without boilers',
+            'Earthquake & volcanic eruption',
+            "Impact damage (including insured's own vehicles)",
+            "Riot, strike, and malicious damage (non-residential)",
+            "Sprinkler leakage - building and contents",
+            "Electrical installations clause (applicable for plant & machinery only)"
         ]
     },
     excess: {

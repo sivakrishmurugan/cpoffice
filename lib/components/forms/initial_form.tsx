@@ -462,7 +462,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                                 </Select>
                             </FormControl>
                         </Flex>
-                        <FormErrorMessage ml = '10px'>Both floor level and construction type is requried!</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>Both Floor Level and Construction Type are Requried!</FormErrorMessage>
                     </FormControl>
 
                     <FormControl isInvalid = {errors.email != null}>
@@ -510,7 +510,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                             <span>
                                 <Link as = {NextLink} href = {'/privacy_policy'} color='#040431' textDecoration={'underline'} fontWeight={'bold'} isExternal> Privacy Policy</Link>
                             </span>
-                            <span> and I meet all local regulation.</span>
+                            <span> and confirm that I meet all local regulations.</span>
                         </Text>
                     </Flex>
 

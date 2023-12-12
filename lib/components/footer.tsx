@@ -12,7 +12,7 @@ const Footer = () => {
                     <Flex position={'relative'} w = '160px' h = '60px'>
                         <Image src = '/icons/My-logo.svg' alt = 'logo' fill style={{ objectFit: 'contain' }} />
                     </Flex>
-                    <Text fontSize={'16px'} color={'brand.text'}>Doctor Shield is a collaborative effort of CHUBB and JA. With Doctor Shield buying indemnity insurance is as easy as clicking a few buttons. Doctor Shield is easy, fast and instant.</Text>
+                    <Text fontSize={'16px'} color={'brand.text'}>DoctorShield is a collaborative effort of CHUBB and JA. With DoctorShield buying indemnity insurance is as easy as clicking a few buttons. DoctorShield is easy, fast and instant.</Text>
                 </Flex>
 
                 <Flex w = {['100%', '100%', '100%', '25%', '25%']} direction={'column'}>

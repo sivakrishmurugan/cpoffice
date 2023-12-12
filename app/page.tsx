@@ -118,7 +118,7 @@ export default async function Home({ searchParams }: PageProps) {
                             <Image src = '/images/fire_1fire.png' alt = 'fire_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
                         </Flex>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Fire Insurance</Heading>
-                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Comprehensive coverage against loss or damage to your clinic property caused by fire or lightning. With DoctorShield, you can rebuild your clinic with confidence, knowing your assets are protected.</Text>
+                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Ensure comprehensive coverage against loss or damage to your clinic property due to fire or lightning. With DoctorShield, confidently rebuild your clinic, secure in the knowledge that your assets are fully protected.</Text>
                     </Flex>
 
                     <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
@@ -126,7 +126,7 @@ export default async function Home({ searchParams }: PageProps) {
                             <Image src = '/images/perils.png' alt = 'perils_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
                         </Flex>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Fire & Perils Insurance</Heading>
-                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Go beyond basic coverage and safeguard your clinic against a broader range of risks. Our Fire & Perils Insurance provides enhanced protection, giving you peace of mind in the face of unforeseen events.</Text>
+                        <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Expand your coverage beyond the basics and protect your clinic against a wider array of risks. Our Fire & Perils Insurance offers superior protection, ensuring your peace of mind amidst unforeseen events.</Text>
                     </Flex>
 
                 </Flex>
@@ -135,7 +135,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                     <Heading fontFamily={'kanit'} fontWeight={'500'} mt = '10px' fontSize={'35px'} textAlign={textAlign}>Also Buy Additional Coverages</Heading>
 
-                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text>
+                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection.`}</Text>
 
                     <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
                         <BadgeText textAlign = {textAlign} text = {'Removal of Debris'} />
@@ -146,16 +146,16 @@ export default async function Home({ searchParams }: PageProps) {
                     <Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}>Protection and Liability Coverage</Text>
 
                     <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
-                        <BadgeText textAlign = {textAlign} text = {'Auditor fees'} />
+                        <BadgeText textAlign = {textAlign} text = {'Auditor Fees'} />
                         <BadgeText textAlign = {textAlign} text = {'Burglary'} />
-                        <BadgeText textAlign = {textAlign} text = {'Money Inside premises'} />
-                        <BadgeText textAlign = {textAlign} text = {'Plate glass'} />
+                        <BadgeText textAlign = {textAlign} text = {'Money Inside Premises'} />
+                        <BadgeText textAlign = {textAlign} text = {'Plate Glass'} />
                     </Flex>
 
                     <Flex mt = '20px' w = '100%' gap = {['10px', '15px', '15px', '40px', '40px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
-                        <BadgeText textAlign = {textAlign} text = {'Fidelity guarantee'} />
-                        <BadgeText textAlign = {textAlign} text = {'Public liability'} />
-                        <BadgeText textAlign = {textAlign} text = {'Employer liability'} />
+                        <BadgeText textAlign = {textAlign} text = {'Fidelity Guarantee'} />
+                        <BadgeText textAlign = {textAlign} text = {'Public Liability'} />
+                        <BadgeText textAlign = {textAlign} text = {'Employer Liability'} />
                     </Flex>
 
                 </Flex>
@@ -263,9 +263,9 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
 
-                    <Heading mt = '20px' fontFamily={'kanit'} fontWeight={'500'} fontSize={'35px'} textAlign={textAlign}>DoctorShield Partner Association</Heading>
+                    <Heading mt = '20px' mb = '50px' fontFamily={'kanit'} fontWeight={'500'} fontSize={'35px'} textAlign={textAlign}>DoctorShield Partner Association</Heading>
 
-                    <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text>
+                    {/* <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text> */}
 
                     <Flex position={'relative'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']}>
                         <Image src = '/images/asso-logo.png' alt = 'asso-logo' fill style = {{ objectFit: 'contain' }} />

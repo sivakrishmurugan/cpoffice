@@ -47,11 +47,11 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
         const value = values?.[fieldKey] ?? 0;
         const field2MaxValue = Math.round(Number(percentageResult(MAX_AUDITOR_FEE_PERCENTAGE, values?.field_1 ?? 0)));
         if(isProtectAgainstLossOfRevenueCoverage && fieldKey == 'field_2' && (values?.field_1 ?? 0) > 0) {   
-            label = <Text>{label} <Text as = 'b' color = 'brand.primary'>(Max. RM {convertToPriceFormat(field2MaxValue, false,  true)})</Text></Text>;
+            label = <Text>{label} <Text as = 'b' color = 'brand.primary'>(Max. RM {convertToPriceFormat(field2MaxValue, true,  true)})</Text></Text>;
         }
         if(errors?.[fieldKey] == true) {
             if(fieldKey == 'field_1') error = 'Required!';
-            if(fieldKey == 'field_2') error = `Fee cannot be more than RM ${convertToPriceFormat(field2MaxValue, false, true)}`;
+            if(fieldKey == 'field_2') error = `Coverage cannot be more than RM ${convertToPriceFormat(field2MaxValue, true, true)}`;
         }
         
         return {

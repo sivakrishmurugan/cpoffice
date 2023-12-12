@@ -619,7 +619,7 @@ const Summary: NextPage<{}> = ({}) => {
                             <Table variant={'unstyled'}>
                                 <Tbody>
                                     <Tr>
-                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Min Total Premium</Td>
+                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Total Premium</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(totalPremium)}</Td>
                                     </Tr>
                                     {/* <Tr>
@@ -672,7 +672,7 @@ const Summary: NextPage<{}> = ({}) => {
                         </Flex> */}
 
                         <FormControl isInvalid = {data.PICName.error != null}>
-                            <FormLabel>Person in charge Name (PCN)</FormLabel>
+                            <FormLabel>Person In Charge Name (PCN)</FormLabel>
                             <InputGroup>
                                 <Input
                                     name = 'person_in_charge_name'
@@ -688,7 +688,7 @@ const Summary: NextPage<{}> = ({}) => {
                         </FormControl>
 
                         <FormControl isInvalid = {data.PICID.error != null}>
-                            <FormLabel>Person in charge IC (PIC)</FormLabel>
+                            <FormLabel>Person In Charge IC (PIC)</FormLabel>
                             <InputGroup>
                                 <Input
                                     name = 'person_in_charge_ic'
@@ -715,7 +715,7 @@ const Summary: NextPage<{}> = ({}) => {
                         </FormControl>
 
                         <Flex direction={'column'} gap = '15px'>
-                            <Text fontSize={'16px'} color = 'brand.text' fontWeight={'bold'}>Have you suffered any loss or any insurance claim at the insured premises in the past 3 years?</Text>
+                            <Text fontSize={'16px'} color = 'brand.text' fontWeight={'bold'}>Have You Suffered Any Loss or Any Insurance Claim at the Insured Premises in the Past 3 Years?</Text>
                             <Flex gap = '15px' {...previouslyClaimedRadioGroup}>
                                 <RadioCard {...getPreviouslyClaimedRadioProps({ value: 'yes' })} isChecked = {data.previouslyClaimed.isClaimed == true} width = {'100px'}>
                                     Yes
@@ -735,7 +735,7 @@ const Summary: NextPage<{}> = ({}) => {
                                 data.previouslyClaimed.error &&
                                 <Alert mt = '20px' status='error' borderRadius={'8px'}>
                                     <AlertIcon />
-                                    Please select yes or no!
+                                    {`Please select "Yes" or "No."`}
                                 </Alert>
                             }
                         </Flex>

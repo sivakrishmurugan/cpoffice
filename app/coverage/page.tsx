@@ -180,7 +180,7 @@ const Coverages: NextPage<{}> = ({}) => {
                 errors.noCoverage &&
                 <Alert mt = '20px' status='error' borderRadius={'8px'}>
                     <AlertIcon />
-                    You should add atleast one coverage!
+                    You Should Add at Least One Coverage!
                 </Alert>
             }
             {

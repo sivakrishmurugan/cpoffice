@@ -388,7 +388,7 @@ const Summary: NextPage<{}> = ({}) => {
                             <Table variant={'unstyled'}>
                                 <Tbody>
                                     <Tr>
-                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Min Total Premium</Td>
+                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Total Premium</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(totalPremium)}</Td>
                                     </Tr>
                                     {/* <Tr>
