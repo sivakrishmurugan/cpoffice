@@ -115,7 +115,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                     <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
                         <Flex position={'relative'} w = '80px' h = '120px'>
-                            <Image src = '/images/fire_1fire.png' alt = 'fire_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
+                            <Image src = '/images/fire_1fire.png' alt = 'fire_insurance' sizes="(max-width: 768px) 100vw, 33vw" quality={100} fill style={{ objectFit: 'contain' }} />
                         </Flex>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Fire Insurance</Heading>
                         <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Ensure comprehensive coverage against loss or damage to your clinic property due to fire or lightning. With DoctorShield, confidently rebuild your clinic, secure in the knowledge that your assets are fully protected.</Text>
@@ -123,7 +123,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                     <Flex w = '100%' h = '100%' direction={'column'} gap = '10px' alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
                         <Flex position={'relative'} w = '150px' h = '120px'>
-                            <Image src = '/images/perils.png' alt = 'perils_insurance' sizes="(max-width: 768px) 100vw, 33vw" fill style={{ objectFit: 'contain' }} />
+                            <Image src = '/images/perils.png' alt = 'perils_insurance' sizes="(max-width: 768px) 100vw, 33vw" quality={100} fill style={{ objectFit: 'contain' }} />
                         </Flex>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} textAlign={textAlign} fontSize={'35px'}>Fire & Perils Insurance</Heading>
                         <Text fontSize = '16px' color={'brand.text'} textAlign={textAlign}>Expand your coverage beyond the basics and protect your clinic against a wider array of risks. Our Fire & Perils Insurance offers superior protection, ensuring your peace of mind amidst unforeseen events.</Text>

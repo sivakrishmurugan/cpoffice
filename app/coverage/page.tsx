@@ -93,7 +93,7 @@ const Coverages: NextPage<{}> = ({}) => {
                 ...prev, maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
                 fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: isField1ContainsError, field_2: isField2ContainsError }]
             }))
-        } else if((errors.maxLimit.isExceeded && isMaxCoverageValueExceeded == false) || (errors.maxLimit.isExceeded == false && isMaxCoverageValueExceeded)) {
+        } else if((errors.maxLimit.isExceeded && errors.maxLimit.currentTotalValue != totalCoverageValue) || (errors.maxLimit.isExceeded && isMaxCoverageValueExceeded == false) || (errors.maxLimit.isExceeded == false && isMaxCoverageValueExceeded)) {
             setErrors(prev => ({ 
                 ...prev, 
                 maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue } 
