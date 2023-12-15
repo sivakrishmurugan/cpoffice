@@ -77,19 +77,16 @@ export const getRecentYears = (count: number = 3, ignoreCurrentYear: boolean = f
 }
 
 export const convertDateToString = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is zero-based
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${day}-${month}-${year}`;
+    return formatDateToYyyyMmDd(date);
 }
 
 export const convertStringToDate = (dateString: string) => {
     if(dateString == null || dateString == '') return ;
     // Parse the input date string into a Date object
     const parts = dateString.split("-");
-    const day = parseInt(parts[0], 10);
+    const day = parseInt(parts[2], 10);
     const month = parseInt(parts[1], 10) - 1; // Month is zero-based
-    const year = parseInt(parts[2], 10);
+    const year = parseInt(parts[0], 10);
   
     const givenDate = new Date(year, month, day);
     return givenDate;
@@ -107,9 +104,9 @@ export const getDateAfter365Days = (fromDate: string) => {
     if(fromDate == null || fromDate == '') return '';
     // Parse the input date string into a Date object
     const parts = fromDate.split("-");
-    const day = parseInt(parts[0], 10);
+    const day = parseInt(parts[2], 10);
     const month = parseInt(parts[1], 10) - 1; // Month is zero-based
-    const year = parseInt(parts[2], 10);
+    const year = parseInt(parts[0], 10);
   
     const givenDate = new Date(year, month, day);
   
