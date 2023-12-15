@@ -107,9 +107,9 @@ export const getDateAfter365Days = (fromDate: string) => {
     if(fromDate == null || fromDate == '') return '';
     // Parse the input date string into a Date object
     const parts = fromDate.split("-");
-    const day = parseInt(parts[2], 10);
+    const day = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1; // Month is zero-based
-    const year = parseInt(parts[0], 10);
+    const year = parseInt(parts[2], 10);
   
     const givenDate = new Date(year, month, day);
   

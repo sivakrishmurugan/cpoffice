@@ -14,7 +14,6 @@ interface DateInputProps {
 const DateInput = ({ fieldName = 'date_input', placeholder = 'Choose',currentDate, onChange }: DateInputProps) => {
     const minDate = new Date(new Date().setDate(new Date().getDate() - 1))
     const onDateChange = (date: Date) => {
-        console.log(convertDateToString(date));
         onChange(date);
     }
     return (

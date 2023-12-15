@@ -111,7 +111,7 @@ const Coverages: NextPage<{}> = ({}) => {
         const field = event.target.name == 'field_2' ? 'field_2' : 'field_1';
         let value: null | number = 0;
         if(event.target.value != '') { value = getNumberFromString(event.target.value) ?? 0 }
-        value = Math.trunc(value);
+        value = Math.trunc(Math.abs(value));
         coverage[field] = value;
         setData(prev => prev.map(e => e.id == coverageId ? coverage : e))
         
@@ -135,7 +135,7 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const validate = () => {
         const tempErrors: ErrorType = JSON.parse(JSON.stringify(errors));
-        const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data));
+        const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data.filter(e => selectedCoverages.includes(e.id))));
         tempErrors.maxLimit.isExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
         tempErrors.maxLimit.currentTotalValue = totalCoverageValue;
         //tempErrors.noCoverage = data.length < 1;
@@ -147,7 +147,7 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const onClickSkipOrNext = () => {
         if(localData == null || validate()) return ;
-        if(selectedCoverages.length < 1 && data.some(e => ((e.field_1 ?? 0) + (e.field_2 ?? 0)) > 0)) {
+        if(data.some(e => ((e.field_1 ?? 0) + (e.field_2 ?? 0)) > 0 && selectedCoverages.includes(e.id) == false)) {
             setSkipConfirmPopup(true);
         } else {
             onClickNext()
