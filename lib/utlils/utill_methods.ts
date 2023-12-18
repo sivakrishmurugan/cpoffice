@@ -158,7 +158,7 @@ export const validateField = (value: string, field: 'name' | 'number' | 'mobile'
         case 'mobile': {
             return {
                 isEmpty: Number(value) < 1,
-                isContainsFormatError: value.length > 20 || isContainsSpecialCharacters(value).isContain || isContainsAlphabets(value).isContain
+                isContainsFormatError: value.length > 11 || isContainsSpecialCharacters(value).isContain || isContainsAlphabets(value).isContain
             }
         }
     }

@@ -327,6 +327,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
                     if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
                         setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Quote has been already paid!', quoteId: '' })
+                    } else if(redirctTo == '/pay') {
+                        router.push(redirctTo)
                     } else {
                         router.push('/coverage');
                     }
@@ -356,6 +358,9 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
         if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
             setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Quote has been already paid!', quoteId: '' })
+        } else if(redirctTo == '/pay') {
+            router.push(redirctTo)
+            setPopupDetails({ popupFor: null, content: '', quoteId: '' })
         } else {
             router.push('/coverage');
             setPopupDetails({ popupFor: null, content: '', quoteId: '' })

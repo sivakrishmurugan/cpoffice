@@ -52,7 +52,7 @@ export const FORM_FIELD_ERROR_MESSAGES = {
     },
     mobile: {
         required: 'Mobile Number is Required!',
-        format: 'Mobile Number must contain only numbers and be no longer than 20 Digits!'
+        format: 'Mobile Number must contain only numbers and be no longer than 11 Digits!'
     }
 }
 
