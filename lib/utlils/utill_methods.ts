@@ -55,6 +55,7 @@ const isContainsSpecialCharactersUsingASCIIValue = (value: string) => {
     const charCodeForSpace = ' '.charCodeAt(0);
     const charCodeForaToz = [65, 90];
     const charCodeForAToZ = [97, 122];
+    const charCodeFor0To9 = [48, 57];
     const result = { isContain: false, modified: value }
     let newModified = result.modified;
     const tobeRepalcedText = 'TO_BE_REMOVED';
@@ -62,8 +63,9 @@ const isContainsSpecialCharactersUsingASCIIValue = (value: string) => {
         const char = result.modified[i];
         const charCode = char.charCodeAt(0);
         const isAlphabet = (charCode >= charCodeForaToz[0] && charCode <= charCodeForaToz[1]) || (charCode >= charCodeForAToZ[0] && charCode <= charCodeForAToZ[1])
+        const isNumber = (charCode >= charCodeFor0To9[0] && charCode <= charCodeFor0To9[1])
         const isExcludedSpecialCharacters = [charCodeForAtSymbol, charCodeForAndSymbol, charCodeForComma, charCodeForSpace].includes(charCode)
-        if(isAlphabet == false && isExcludedSpecialCharacters == false) {
+        if(isAlphabet == false && isNumber == false && isExcludedSpecialCharacters == false) {
             result.isContain = true;
             const countOccurrences = (inputString: string, targetWord: string) => (inputString.match(new RegExp(targetWord, 'gi')) || []).length;
             const occuranceCount = countOccurrences(newModified, tobeRepalcedText);
