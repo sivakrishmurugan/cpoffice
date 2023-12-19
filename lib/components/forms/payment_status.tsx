@@ -79,8 +79,8 @@ const PaymentStatus = ({ message, status, invoice, transationRef }: PaymentStatu
     return (
         <Flex direction={'column'} w = '100%' gap ='15px' alignItems={'center'}>
             <Image 
-                w = '150px'
-                h = '150px'
+                w = {status != 'success' ? '100px' : '150px'}
+                h = {status != 'success' ? '100px' : '150px'}
                 style = {{ objectFit: 'contain' }}
                 alt={`payment-${status}-icon`}
                 src = {iconSrc}
