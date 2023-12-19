@@ -46,13 +46,45 @@ export const getNumberStringFromString = (text: string) => {
 export const removeTrailingZeros = (number: number | string) =>  {
     return number.toString().replace(/\.00$/,'');;
 }
-  
+
 // checks if the string contians special characters other than space, & and ,(comma)
-export const isContainsSpecialCharacters = (value: string) => {
-    const regEx = /[`!@#$%^*()_+\-=\[\]{};':"\\|.<>\/?~]/;
-    return { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') }
+const isContainsSpecialCharactersUsingASCIIValue = (value: string) => {
+    const charCodeForAtSymbol = '@'.charCodeAt(0);
+    const charCodeForAndSymbol = '&'.charCodeAt(0);
+    const charCodeForComma = ','.charCodeAt(0);
+    const charCodeForSpace = ' '.charCodeAt(0);
+    const charCodeForaToz = [65, 90];
+    const charCodeForAToZ = [97, 122];
+    const result = { isContain: false, modified: value }
+    let newModified = result.modified;
+    const tobeRepalcedText = 'TO_BE_REMOVED';
+    for(let i = 0; i < result.modified.length; i++) { 
+        const char = result.modified[i];
+        const charCode = char.charCodeAt(0);
+        const isAlphabet = (charCode >= charCodeForaToz[0] && charCode <= charCodeForaToz[1]) || (charCode >= charCodeForAToZ[0] && charCode <= charCodeForAToZ[1])
+        const isExcludedSpecialCharacters = [charCodeForAtSymbol, charCodeForAndSymbol, charCodeForComma, charCodeForSpace].includes(charCode)
+        if(isAlphabet == false && isExcludedSpecialCharacters == false) {
+            result.isContain = true;
+            const countOccurrences = (inputString: string, targetWord: string) => (inputString.match(new RegExp(targetWord, 'gi')) || []).length;
+            const occuranceCount = countOccurrences(newModified, tobeRepalcedText);
+            newModified = newModified.includes(tobeRepalcedText) ? 
+                newModified.substring(0, i + (occuranceCount * tobeRepalcedText.length) - occuranceCount) + tobeRepalcedText + newModified.substring(i + (occuranceCount * tobeRepalcedText.length) - occuranceCount + 1 ) : 
+                newModified.substring(0, i) + tobeRepalcedText + newModified.substring(i + 1);
+        }
+    }
+    result.modified =  newModified.replaceAll(tobeRepalcedText, '');
+    return result;
 }
 
+// checks if the string contians special characters other than space, & and ,(comma)
+export const isContainsSpecialCharacters = (value: string) => {
+    const regEx = /[^\w\s\d`!#$%^*()_+\-=\[\]{};':"\\|.<>\/?~]|[\u20AC\u20A6\u20B9\u20A8\$\£\¥\₹]/;
+    const result = { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') };
+    result.modified = isContainsSpecialCharactersUsingASCIIValue(result.modified).modified;
+    result.isContain = result.isContain || isContainsSpecialCharactersUsingASCIIValue(result.modified).isContain;
+    return result;
+}
+  
 export const isContainsAlphabets = (value: string) => {
     const regEx = /[a-zA-Z]/;
     return { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') }
@@ -158,7 +190,7 @@ export const validateField = (value: string, field: 'name' | 'number' | 'mobile'
         case 'mobile': {
             return {
                 isEmpty: Number(value) < 1,
-                isContainsFormatError: value.length > 11 || isContainsSpecialCharacters(value).isContain || isContainsAlphabets(value).isContain
+                isContainsFormatError: value.length < 7 || value.length > 11 || isContainsSpecialCharacters(value).isContain || isContainsAlphabets(value).isContain
             }
         }
     }

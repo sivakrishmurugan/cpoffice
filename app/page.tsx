@@ -98,7 +98,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = {['100%', '100%', '100%', '41.6%', '41.6%']} direction={'column'} borderRadius={'10px'} minH = '700px' boxShadow={'0 -2px 8px rgba(99, 101, 102, .06)'}>
                     <Flex w = '100%' minH = '60px' borderTopRadius={'10px'} bg = 'brand.primary' py = '10px'>
-                        <Heading as = {'h1'} color = 'white' fontSize={'23px'} m = 'auto' textAlign={'center'}>Calculate your Premium Instantly</Heading>
+                        <Heading as = {'h1'} color = 'white' fontSize={'23px'} m = 'auto' textAlign={'center'} px = '10px'>Calculate your Premium Instantly</Heading>
                     </Flex>
                     <Flex px = {['10px', '40px', '40px', '40px', '40px']} py = '20px' borderBottomRadius={'10px'} bg = 'white'>
                         <InitialForm quoteFromQuery={quoteFromQuery} />

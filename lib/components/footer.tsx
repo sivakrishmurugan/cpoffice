@@ -38,7 +38,7 @@ const Footer = () => {
 
             </Flex>
 
-            <Flex flexWrap={'wrap'} mt = '20px' w = '100%' gap = '20px' px = '20px' justifyContent={['center', 'center', 'flex-start', 'flex-start', 'flex-start']}>
+            <Flex flexWrap={'wrap'} mt = '20px' w = '100%' gap = '20px' px = {['10px', '10px', '20px', '20px', '20px']} justifyContent={['center', 'center', 'flex-start', 'flex-start', 'flex-start']}>
                 <Link flexGrow={1} as = {NextLink} href = {'/#'} textAlign={['center', 'center', 'start', 'start', 'start']} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>© DoctorShield™ All Rights Reserved 2023</Link>
                 <Link as = {NextLink} href = {'/privacy_policy'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Privacy Policy</Link>
                 <Link as = {NextLink} href = {'/terms_of_use'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Terms of Use</Link>

@@ -91,7 +91,7 @@ const MobileNavDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
     return (
         <Flex ref = {navRef} w = '100vw' mt = {!isOpen ? '-400px' : '60px'} boxShadow={'var(--chakra-shadows-lg)'} zIndex={1400} position={'fixed'} transition={'margin 500ms ease-in-out'} right = '0' top = '0' bg = 'white'>
             <Flex w = '100%' py = '20px' px = {['20px', '20px', '40px', '40px', '40px']} direction={'column'} gap = '10px'>
-                <NavLinks withHoverBg onNavClicked = {onNavClicked} />
+                <NavLinks withHoverBg disableFocus = {isOpen == false} onNavClicked = {onNavClicked} />
                 <Flex ml = '20px' position={'relative'} w = '150px' h = '60px'>
                     <Image src = '/icons/Chubb-logo.svg' alt="logo" fill style = {{ objectFit: 'contain' }} />
                 </Flex>
@@ -116,12 +116,13 @@ const MobileNavDrawer = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => 
     // );
 }
 
-const NavLinks = ({ withHoverBg, onNavClicked }: { withHoverBg?: boolean, onNavClicked: () => void }) => {
+const NavLinks = ({ withHoverBg, disableFocus = false, onNavClicked }: { withHoverBg?: boolean, disableFocus?: boolean, onNavClicked: () => void }) => {
     return (
         <>
             <Link 
                 onClick={onNavClicked}
                 //as = {NextLink} 
+                tabIndex={disableFocus ? -1 : undefined}
                 href = {'/#home'} 
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
@@ -129,24 +130,28 @@ const NavLinks = ({ withHoverBg, onNavClicked }: { withHoverBg?: boolean, onNavC
             <Link 
                 onClick={onNavClicked}
                 as = {NextLink} href = {'/#coverages'} 
+                tabIndex={disableFocus ? -1 : undefined}
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Coverages</Link>
             <Link 
                 onClick={onNavClicked}
                 as = {NextLink} href = {'/#advantages'} 
+                tabIndex={disableFocus ? -1 : undefined}
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Advantages</Link>
             <Link 
                 onClick={onNavClicked}
                 as = {NextLink} href = {'/#faq'} 
+                tabIndex={disableFocus ? -1 : undefined}
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >FAQ</Link>
             <Link 
                 onClick={onNavClicked}
                 as = {NextLink} href = {'https://www.thedoctorshield.com/contact-us'} 
+                tabIndex={disableFocus ? -1 : undefined}
                 py = {withHoverBg ? '10px' : '0px'} borderRadius={'10px'} _hover={{textDecoration: 'none', bg: withHoverBg ? 'gray.200' : 'white' }} pl = {withHoverBg ? '20px' : '0px'}
                 fontSize={'14px'} color='#040431' textDecoration={'none'} fontWeight={'bold'}
             >Contact us</Link>
