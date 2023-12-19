@@ -78,7 +78,7 @@ const isContainsSpecialCharactersUsingASCIIValue = (value: string) => {
 
 // checks if the string contians special characters other than space, & and ,(comma)
 export const isContainsSpecialCharacters = (value: string) => {
-    const regEx = /[^\w\s\d`!#$%^*()_+\-=\[\]{};':"\\|.<>\/?~]|[\u20AC\u20A6\u20B9\u20A8\$\£\¥\₹]/;
+    const regEx = /[`!#$%^*()_+\-=\[\]{};':"\\|.<>\/?~]|[\u20AC\u20A6\u20B9\u20A8\$\£\¥\₹]/;
     const result = { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') };
     result.modified = isContainsSpecialCharactersUsingASCIIValue(result.modified).modified;
     result.isContain = result.isContain || isContainsSpecialCharactersUsingASCIIValue(result.modified).isContain;
