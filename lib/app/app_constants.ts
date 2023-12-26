@@ -1,4 +1,5 @@
-export const API_BASE_URL = 'https://d8xgrpgzteoa309bkryz.doctor.insure';
+//export const API_BASE_URL = 'https://d8xgrpgzteoa309bkryz.doctor.insure';
+export const API_BASE_URL = "http://localhost:8081";
 
 export const APP_BG_COLOR = '#f6f5f5';
 export const APP_PRIMARY_COLOR = '#132766';
