@@ -131,10 +131,16 @@ export const TAX_PERCENTAGE = 6;
 export const STAMP_DUTY = 10.00;
 
 export const TYPE_OF_CLAIM = [
-    { id: 'Property', value: 'Property' },
-    { id: 'Consequential Loss', value: 'Consequential Loss' },
-    { id: 'Other', value: 'Other' }
-]
+  { id: "Fire", value: "Fire" },
+  { id: "Flood", value: "Flood" },
+  { id: "Windstorm", value: "Windstorm" },
+  { id: "Burglary", value: "Burglary" },
+  { id: "Money", value: "Money" },
+  { id: "Plate Glass", value: "Plate Glass" },
+  { id: "Fidelity Guarantee", value: "Fidelity Guarantee" },
+  { id: "Public Liability", value: "Public Liability" },
+  { id: "Others", value: "Others" },
+];
 
 export const PROTECTION_AND_LIABILITY_COVERAGE = {
     id: 3001,

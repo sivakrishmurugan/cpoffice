@@ -17,7 +17,7 @@ interface ClaimFormPopupProps {
 const getModifiedClaimInfoForLocalState = (info?: ClaimDeclarationAdditionalData) => {
     return {
         id: Math.random().toString(),
-        type: { value: info?.type ?? 'Property', error: false },
+        type: { value: info?.type ?? 'Fire', error: false },
         year: { value: info?.year ?? getRecentYears(1)[0], error: false },
         amount: { value: info?.amount ?? 0, error: false },
         description: { value: info?.description ?? '', error: false }
