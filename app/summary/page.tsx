@@ -1,19 +1,18 @@
 "use client"
-import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr, FormLabel, useRadioGroup, useRadio, UseRadioProps, IconButton, Alert, AlertIcon } from "@chakra-ui/react";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, FORM_FIELD_ERROR_MESSAGES, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/lib/app/app_constants";
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { CheckIcon, CheckIconGreen, EditIcon, IcLocationPin, InfoIcon, PICIDIcon, PICNameIcon, PromoCodeIcon } from "@/lib/icons";
+import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Tr, FormLabel, useRadioGroup, useRadio, UseRadioProps, IconButton, Alert, AlertIcon } from "@chakra-ui/react";
+import { FORM_FIELD_ERROR_MESSAGES, STAMP_DUTY } from "@/lib/app/app_constants";
+import { useClient, useSessionStorage } from "@/lib/hooks";
+import { EditIcon, PICIDIcon, PICNameIcon } from "@/lib/icons";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import ResponsiveTooltip from "@/lib/components/tooltip";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import React from "react";
 import useCoverage from "@/lib/hooks/use_coverage";
-import { ClaimDeclarationAdditionalData, ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/types";
-import { convertDateToString, convertStringToDate, convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days, getNumberFromString, getRecentYears, validateField } from "@/lib/utlils/utill_methods";
+import { ClaimDeclarationAdditionalData, ClinicData } from "@/lib/types";
+import { convertDateToString, convertStringToDate, convertToPriceFormat, getDateAfter365Days, validateField } from "@/lib/utlils/utill_methods";
 import axiosClient from "@/lib/utlils/axios";
 import Image from 'next/image';
-import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary, getTotalPremiumsForFireAndPerilsInsurance } from "@/lib/utlils/calculation";
+import { calculateSummary } from "@/lib/utlils/calculation";
 import ClaimFormPopup from "@/lib/components/forms/claim_form_popup";
 import { DateInput } from "@/lib/components/inputs";
 import SummaryTables from "@/lib/components/summary_tables";

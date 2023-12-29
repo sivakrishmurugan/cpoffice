@@ -1,16 +1,13 @@
 "use client"
 import { Checkbox, Flex, FormControl,Text,  FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputRightElement, Select, Link, Button, Alert, AlertIcon, UnorderedList, ListItem, Modal, ModalOverlay, ModalContent, ModalBody, Heading, InputLeftElement, Spinner } from "@chakra-ui/react";
-import { IcEmail, IcMobile, IcLocationPin, IcClinic, PICNameIcon, PICIDIcon } from "../../icons";
+import { IcEmail, IcMobile, IcClinic } from "../../icons";
 import useSessionStorage from "../../hooks/use_sessionstorage";
 import { CONSTRUCTION_TYPES, FLOOR_LEVEL, FORM_FIELD_ERROR_MESSAGES } from "../../app/app_constants";
-import useLocalStorage from "../../hooks/use_localstorage";
-import { convertClinicQuoteResDataToLocalStateData, getNumberFromString, getRedirectRouteBasedOnQuote, isContainsAlphabets, isContainsNumericCharacters, isContainsSpecialCharacters, setAuthToken, validateField } from "../../utlils/utill_methods";
+import { getNumberFromString, getRedirectRouteBasedOnQuote, setAuthToken, validateField } from "../../utlils/utill_methods";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { coveragesData } from "../../utlils/mocks";
 import { DigitInput } from "../inputs";
 import NextLink from 'next/link';
-import axios from "axios";
 import { ClinicData, NecessaryBasicInfo } from "../../types";
 import axiosClient from "../../utlils/axios";
 import useCoverage from "../../hooks/use_coverage";

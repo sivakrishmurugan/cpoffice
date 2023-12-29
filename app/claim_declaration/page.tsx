@@ -1,6 +1,6 @@
 "use client"
 import { Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay, Text, UseRadioProps, useRadio, useRadioGroup } from "@chakra-ui/react";
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
+import { useClient, useSessionStorage } from "@/lib/hooks";
 import { getNumberFromString, getRecentYears } from "@/lib/utlils/utill_methods";
 import { ClaimDeclarationAdditionalData, ClinicData } from "@/lib/types";
 import { ChangeEvent, ReactNode, useEffect, useState } from "react";

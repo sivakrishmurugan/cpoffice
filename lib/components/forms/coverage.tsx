@@ -1,6 +1,6 @@
-import { Button, Collapse, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, ListItem, OrderedList, Text, UnorderedList } from "@chakra-ui/react";
+import { Button, Collapse, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import { Coverage, SelectedCoverage } from "../../types";
-import { CONSULTANT_FEE_REPLACE_TEXT, DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MAX_CONSULTANT_FEE_PERCENTAGE, TOOLTIP_INFO } from "../../app/app_constants";
+import { CONSULTANT_FEE_REPLACE_TEXT, DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MAX_CONSULTANT_FEE_PERCENTAGE } from "../../app/app_constants";
 import ExpanableList from "../expandable_list";
 import ResponsiveTooltip from "../tooltip";
 import { PriceInput } from "../inputs";

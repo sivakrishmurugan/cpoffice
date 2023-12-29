@@ -45,6 +45,7 @@ const PaymentStatus = ({ message, status, invoice, transationRef }: PaymentStatu
         if(['success', 'pending'].includes(status)) {
             setLocalData(null);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [status])
 
     const onClickHome = () => {

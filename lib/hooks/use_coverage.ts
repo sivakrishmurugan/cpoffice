@@ -3,9 +3,7 @@ import { useEffect, useState } from 'react';
 import useSessionStorage, { CoverageResData } from './use_sessionstorage';
 import axiosClient from '../utlils/axios';
 import { convertClinicQuoteResDataToLocalStateData, convertCoveragesResDataToLocalStateData, setAuthToken } from '../utlils/utill_methods';
-import { coveragesData } from '../utlils/mocks';
 import { ClinicData, Coverage } from '../types';
-import useLocalStorage from './use_localstorage';
 
 const useCoverage = (quoteId?: string | null) => {
   const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);

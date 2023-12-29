@@ -1,6 +1,6 @@
 "use client"
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay, Text  } from "@chakra-ui/react";
+import { useClient, useSessionStorage } from "@/lib/hooks";
+import { Alert, AlertIcon, Button, Flex } from "@chakra-ui/react";
 import { convertToPriceFormat, getNumberFromString } from "@/lib/utlils/utill_methods";
 import { ClinicData, SelectedCoverage } from "@/lib/types";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -8,10 +8,8 @@ import BottomActions from "@/lib/components/bottom_actions";
 import { CoverageForm } from "@/lib/components/forms";
 import { useRouter } from "next/navigation";
 import useCoverage from "@/lib/hooks/use_coverage";
-import axiosClient from "@/lib/utlils/axios";
 import { NextPage } from "next";
 import { MAX_CONSULTANT_FEE_PERCENTAGE, MAX_COVERAGE_VALUE } from "@/lib/app/app_constants";
-import Image from "next/image";
 import MaxLimitExceededPopup from "@/lib/components/max_cover_limit_popup";
 import { percentageResult } from "@/lib/utlils/calculation";
 

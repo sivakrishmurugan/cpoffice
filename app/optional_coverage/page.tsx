@@ -1,5 +1,5 @@
 "use client"
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
+import { useClient, useSessionStorage } from "@/lib/hooks";
 import { convertToPriceFormat, getNumberFromString } from "@/lib/utlils/utill_methods";
 import { OptionalCoverageForm } from "@/lib/components/forms";
 import { Text, Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
@@ -11,7 +11,6 @@ import { NextPage } from "next";
 import useCoverage from "@/lib/hooks/use_coverage";
 import { MAX_AUDITOR_FEE_PERCENTAGE, MAX_COVERAGE_VALUE, PROTECTION_AND_LIABILITY_COVERAGE } from "@/lib/app/app_constants";
 import MaxLimitExceededPopup from "@/lib/components/max_cover_limit_popup";
-import Image from "next/image";
 import { percentageResult } from "@/lib/utlils/calculation";
 
 const OptionalCoverages: NextPage<{}> = ({}) => {

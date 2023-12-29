@@ -1,15 +1,7 @@
-import { Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay, Text, UseRadioProps, useRadio, useRadioGroup } from "@chakra-ui/react";
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { getNumberFromString, getRecentYears } from "@/lib/utlils/utill_methods";
-import { ClaimDeclarationAdditionalData } from "@/lib/types";
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import ClaimInfoRowForm from "@/lib/components/forms/claim_info_row_form";
-import BottomActions from "@/lib/components/bottom_actions";
-import { redirect, useRouter } from "next/navigation";
+import { Flex } from "@chakra-ui/react";
+import { redirect } from "next/navigation";
 import { Metadata, NextPage } from "next";
-import Image from 'next/image';
 import axiosClient from "@/lib/utlils/axios";
-import useCoverage from "@/lib/hooks/use_coverage";
 import PaymentStatus, { PaymentStatusType } from "@/lib/components/forms/payment_status";
 import { JWTService } from "@/lib/utlils/jwt";
 

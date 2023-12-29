@@ -1,5 +1,5 @@
 "use client"
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
+import { useClient, useSessionStorage } from "@/lib/hooks";
 import { Alert, AlertIcon, Text, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay  } from "@chakra-ui/react";
 import { convertToPriceFormat, getNumberFromString } from "@/lib/utlils/utill_methods";
 import { ClinicData, SelectedCoverage } from "@/lib/types";
@@ -9,10 +9,8 @@ import { CoverageForm } from "@/lib/components/forms";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import useCoverage from "@/lib/hooks/use_coverage";
-import axiosClient from "@/lib/utlils/axios";
 import { MAX_COVERAGE_VALUE } from "@/lib/app/app_constants";
 import MaxLimitExceededPopup from "@/lib/components/max_cover_limit_popup";
-import { percentageResult } from "@/lib/utlils/calculation";
 
 const Coverages: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);

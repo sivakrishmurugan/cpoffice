@@ -1,11 +1,9 @@
 "use client"
 import { Alert, AlertIcon, Button, Flex, Heading, Icon, ListItem, OrderedList, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/types";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MIN_COVERAGE_PREMIUM, TOOLTIP_INFO } from "@/lib/app/app_constants";
+import { useClient, useSessionStorage } from "@/lib/hooks";
+import { ClinicData, InsuranceType } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { CheckIcon, InfoIcon } from "@/lib/icons";
-import ResponsiveTooltip from "@/lib/components/tooltip";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import useCoverage from "@/lib/hooks/use_coverage";

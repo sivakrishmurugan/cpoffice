@@ -1,19 +1,16 @@
 "use client"
-import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
-import { DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, STAMP_DUTY, TAX_PERCENTAGE, TOOLTIP_INFO } from "@/lib/app/app_constants";
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { InfoIcon, PromoCodeIcon } from "@/lib/icons";
-import { ChangeEvent, useEffect, useState } from "react";
-import ResponsiveTooltip from "@/lib/components/tooltip";
+import { Button, Flex, Text, Heading, Table, TableContainer, Tbody, Td, Tr } from "@chakra-ui/react";
+import { STAMP_DUTY } from "@/lib/app/app_constants";
+import { useClient, useSessionStorage } from "@/lib/hooks";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import React from "react";
 import useCoverage from "@/lib/hooks/use_coverage";
-import { ClinicData, Coverage, InsuranceType, SelectedCoverage } from "@/lib/types";
-import { convertToPriceFormat, formatDateToYyyyMmDd, getDateAfter365Days } from "@/lib/utlils/utill_methods";
+import { ClinicData } from "@/lib/types";
+import { convertToPriceFormat, getDateAfter365Days } from "@/lib/utlils/utill_methods";
 import axiosClient from "@/lib/utlils/axios";
-import Image from 'next/image';
-import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, calculateSummary, getTotalPremiumsForFireAndPerilsInsurance } from "@/lib/utlils/calculation";
+import { calculateSummary } from "@/lib/utlils/calculation";
 import SummaryTables from "@/lib/components/summary_tables";
 
 const Summary: NextPage<{}> = ({}) => {

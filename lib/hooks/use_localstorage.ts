@@ -1,5 +1,4 @@
 "use client"
-import { ClinicData } from '../types';
 import { useState } from 'react';
 
 const useLocalStorage = <T>(keyName: string, defaultValue: T): [T, (newValue: T) => void] => {

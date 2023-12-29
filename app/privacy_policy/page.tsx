@@ -1,18 +1,5 @@
-import { Alert, AlertIcon, Button, Flex, Heading, ListItem, Modal, ModalBody, ModalContent, ModalOverlay, Text, UnorderedList, UseRadioProps, useRadio, useRadioGroup } from "@chakra-ui/react";
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
-import { getNumberFromString, getRecentYears } from "@/lib/utlils/utill_methods";
-import { ClaimDeclarationAdditionalData } from "@/lib/types";
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import ClaimInfoRowForm from "@/lib/components/forms/claim_info_row_form";
-import BottomActions from "@/lib/components/bottom_actions";
-import { redirect, useRouter } from "next/navigation";
+import { Flex, Heading, ListItem, Text, UnorderedList } from "@chakra-ui/react";
 import { Metadata, NextPage } from "next";
-import Image from 'next/image';
-import axiosClient from "@/lib/utlils/axios";
-import useCoverage from "@/lib/hooks/use_coverage";
-import PaymentStatus, { PaymentStatusType } from "@/lib/components/forms/payment_status";
-import { JWTService } from "@/lib/utlils/jwt";
-import { APP_MAX_WIDTH, APP_WIDTH } from "@/lib/app/app_constants";
 import Footer from "@/lib/components/footer";
 
 interface PageProps {}
@@ -39,8 +26,6 @@ const PrivacyPolicy: NextPage<PageProps> = async ({}) => {
             </Flex>
             <Flex 
                 mt = '180px'
-                maxW = {APP_MAX_WIDTH}
-                w = {APP_WIDTH}
                 gap = '30px'
                 direction={'column'} bg= ' white'
                 borderRadius={'30px'} paddingY = '60px' px = {['15px', '20px', '20px', '130px', '130px']}

@@ -1,12 +1,10 @@
 import axiosClient from '@/lib/utlils/axios';
 import InitialForm from '@/lib/components/forms/initial_form'
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Flex, Heading, Link, ResponsiveValue } from '@chakra-ui/react'
+import { Flex, Heading, ResponsiveValue } from '@chakra-ui/react'
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Image as ChakraImage, Text } from '@chakra-ui/react';
-import NextLink from 'next/link';
 import FAQ from '@/lib/components/homepage/faq';
-import { FAQ_LIST } from '@/lib/app/app_constants';
 import BenifitCard from '@/lib/components/homepage/benifit_card';
 import BadgeText from '@/lib/components/homepage/badge_text';
 import Footer from '@/lib/components/footer';

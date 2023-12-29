@@ -1,13 +1,13 @@
 "use client"
 import { PROTECTION_AND_LIABILITY_COVERAGE, PROTECTION_AND_LIABILITY_COVERAGE as coverageContent } from '@/lib/app/app_constants';
-import { useClient, useLocalStorage, useSessionStorage } from "@/lib/hooks";
+import { useClient, useSessionStorage } from "@/lib/hooks";
 import { Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import BottomActions from "@/lib/components/bottom_actions";
 import { useRouter } from "next/navigation";
 import { NextPage } from "next";
 import Image from 'next/image';
-import { ClinicData, SelectedCoverage } from '@/lib/types';
+import { ClinicData } from '@/lib/types';
 import axiosClient from '@/lib/utlils/axios';
 import useCoverage from '@/lib/hooks/use_coverage';
 import { calculatePremiumForOptionalCoverage } from '@/lib/utlils/calculation';

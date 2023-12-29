@@ -6,9 +6,9 @@ import { ChangeEvent } from "react";
 import Image from 'next/image';
 import { useSessionStorage } from "../../hooks";
 import useCoverage from "../../hooks/use_coverage";
-import { AUDITOR_FEE_REPLACE_TEXT, DEFAULT_FIRE_INS_PERCENTAGE, DEFAULT_FIRE_PERILS_INS_PERCENTAGE, MAX_AUDITOR_FEE_PERCENTAGE } from "../../app/app_constants";
+import { AUDITOR_FEE_REPLACE_TEXT, MAX_AUDITOR_FEE_PERCENTAGE } from "../../app/app_constants";
 import { convertToPriceFormat } from "../../utlils/utill_methods";
-import { calculatePremiumForOptionalCoverage, getTotalPremiumsForFireAndPerilsInsurance, percentageResult } from "../../utlils/calculation";
+import { calculatePremiumForOptionalCoverage, percentageResult } from "../../utlils/calculation";
 import ResponsiveTooltip from "../tooltip";
 
 interface OptionalCoverageFromProps {

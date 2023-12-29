@@ -1,13 +1,7 @@
-import { InputGroup, Input, InputLeftElement, useOutsideClick, InputRightElement, InputGroupProps, Icon, Menu, MenuButton, MenuList, MenuItem, Flex } from "@chakra-ui/react";
-import { convertToPriceFormat } from "../../utlils/utill_methods";
+import { InputGroup, Input, useOutsideClick, InputRightElement, InputGroupProps, Icon, Menu, MenuButton, MenuList, MenuItem, Flex } from "@chakra-ui/react";
 import React, { ChangeEvent, useRef, useState } from "react";
-import { useEffect } from "react";
 import { IcLocationPin } from "@/lib/icons";
-import usePlacesAutocomplete, {
-    RequestOptions,
-    getGeocode,
-    getLatLng,
-} from "use-places-autocomplete";
+import usePlacesAutocomplete from "use-places-autocomplete";
 
 interface AddressInputProps {
     fieldName?: string,
