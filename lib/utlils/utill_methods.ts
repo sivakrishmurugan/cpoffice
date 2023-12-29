@@ -53,6 +53,7 @@ const isContainsSpecialCharactersUsingASCIIValue = (value: string) => {
     const charCodeForAndSymbol = '&'.charCodeAt(0);
     const charCodeForComma = ','.charCodeAt(0);
     const charCodeForSpace = ' '.charCodeAt(0);
+    const charCodeForSlash = '/'.charCodeAt(0);
     const charCodeForaToz = [65, 90];
     const charCodeForAToZ = [97, 122];
     const charCodeFor0To9 = [48, 57];
@@ -64,7 +65,7 @@ const isContainsSpecialCharactersUsingASCIIValue = (value: string) => {
         const charCode = char.charCodeAt(0);
         const isAlphabet = (charCode >= charCodeForaToz[0] && charCode <= charCodeForaToz[1]) || (charCode >= charCodeForAToZ[0] && charCode <= charCodeForAToZ[1])
         const isNumber = (charCode >= charCodeFor0To9[0] && charCode <= charCodeFor0To9[1])
-        const isExcludedSpecialCharacters = [charCodeForAtSymbol, charCodeForAndSymbol, charCodeForComma, charCodeForSpace].includes(charCode)
+        const isExcludedSpecialCharacters = [charCodeForAtSymbol, charCodeForAndSymbol, charCodeForComma, charCodeForSpace, charCodeForSlash].includes(charCode)
         if(isAlphabet == false && isNumber == false && isExcludedSpecialCharacters == false) {
             result.isContain = true;
             const countOccurrences = (inputString: string, targetWord: string) => (inputString.match(new RegExp(targetWord, 'gi')) || []).length;
@@ -80,7 +81,7 @@ const isContainsSpecialCharactersUsingASCIIValue = (value: string) => {
 
 // checks if the string contians special characters other than space, & and ,(comma)
 export const isContainsSpecialCharacters = (value: string) => {
-    const regEx = /[`!#$%^*()_+\-=\[\]{};':"“”\\|.<>\/?~]|[\u20AC\u20A6\u20B9\u20A8\$\£\¥\₹]/;
+    const regEx = /[`!#$%^*()_+\-=\[\]{};':"“”\\|.<>?~]|[\u20AC\u20A6\u20B9\u20A8\$\£\¥\₹]/;
     const result = { isContain: regEx.test(value), modified: value.replaceAll(new RegExp(regEx, 'g'), '') };
     const resultUsingASCII = isContainsSpecialCharactersUsingASCIIValue(result.modified);
     result.modified = resultUsingASCII.modified;

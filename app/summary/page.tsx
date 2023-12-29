@@ -230,6 +230,8 @@ const Summary: NextPage<{}> = ({}) => {
                         previouslyClaimed: data.previouslyClaimed.isClaimed,
                         addtionalInfo: data.claimInfoList
                     },
+                    PICName: data.PICName.value,
+                    PICID: data.PICID.value,
                     promoCode: data.promoCode.isApplied ? data.promoCode.value : '',
                     promoCodePercentage: data.promoCode.isApplied ? data.promoCode.appliedPercentage : 0,
                     insStartDate: data.insStartDate.value

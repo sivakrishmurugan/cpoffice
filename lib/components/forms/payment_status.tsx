@@ -42,6 +42,9 @@ const PaymentStatus = ({ message, status, invoice, transationRef }: PaymentStatu
     const router = useRouter();
     
     const onClickHome = () => {
+        if(['success', 'pending'].includes(status)) {
+            setLocalData(null);
+        }
         router.replace('/');
     }
 
@@ -90,7 +93,7 @@ const PaymentStatus = ({ message, status, invoice, transationRef }: PaymentStatu
             {invoice != null && invoice != '' && <Text as = 'h3' mt = '10px' fontSize={'16px'} textAlign={'center'}>Invoice: {invoice}</Text>}
             {transationRef != null && transationRef != '' && <Text as = 'h3' mb = '20px' fontSize={'16px'} textAlign={'center'}>Transaction ref: {transationRef}</Text>}
             {
-                isClient && ['failed', 'cancelled'].includes(status) && remainingRetryCount > 0 &&
+                isClient && ['failed', 'cancelled', 'rejected'].includes(status) && remainingRetryCount > 0 &&
                 <Button onClick={onClickRetryPayment} isLoading = {retryLoading} mt = '10px' h = '40px' w = '250px' bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Retry payment</Button>
             }
             <Button onClick={onClickHome} h = '40px' w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Home</Button>

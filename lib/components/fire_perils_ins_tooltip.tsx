@@ -3,10 +3,11 @@ import ResponsiveTooltip from "./tooltip"
 import { TOOLTIP_INFO } from "../app/app_constants"
 
 interface FirePerilsInsTooltipProps {
-    children: React.ReactNode
+    children: React.ReactNode,
+    disabledPointsIndicies?: number[]
 }
 
-const FirePerilsInsTooltip = ({ children }: FirePerilsInsTooltipProps) => {
+const FirePerilsInsTooltip = ({ children, disabledPointsIndicies = [] }: FirePerilsInsTooltipProps) => {
     return <ResponsiveTooltip 
         wrapperDivProps = {{ verticalAlign: 'middle', ml: '10px',  mt: '2px' }}
         label = {
@@ -14,7 +15,7 @@ const FirePerilsInsTooltip = ({ children }: FirePerilsInsTooltipProps) => {
                 <Heading as = 'h3' fontSize={'18px'}>{TOOLTIP_INFO.fireAndPerilsIns.title}</Heading>
                 <OrderedList ml = '30px'>
                     {
-                        TOOLTIP_INFO.fireAndPerilsIns.contents.map(e => {
+                        TOOLTIP_INFO.fireAndPerilsIns.contents.filter((_, i) => disabledPointsIndicies.includes(i) == false).map(e => {
                             return <ListItem key = {e}>{e}</ListItem>
                         })
                     }

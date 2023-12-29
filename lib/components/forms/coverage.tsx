@@ -28,6 +28,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
     const icon = '/icons/' + coverage.ImageName.replace('.jpg', '.svg');
 
     const isBuildingCoverage = coverage.CoverageName == 'Building';
+    const isPlantAndMachineryCoverage = coverage.CoverageName == 'Plant & Machinery';
 
     const coverageIncludes = coverage.Includes['Coverage includes'].map(item => {
         if(isBuildingCoverage && item.includes(CONSULTANT_FEE_REPLACE_TEXT)) {
@@ -182,7 +183,7 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
                                     <Flex>
                                         <Heading as = 'h1' fontSize={'16px'}>
                                             FIRE & PERILS INSURANCE
-                                            <FirePerilsInsTooltip>
+                                            <FirePerilsInsTooltip disabledPointsIndicies={isPlantAndMachineryCoverage ? [] : [9]}>
                                                 <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
                                             </FirePerilsInsTooltip>
                                         </Heading>
