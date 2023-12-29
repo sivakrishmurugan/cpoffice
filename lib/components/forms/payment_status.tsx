@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ClinicData } from "../../types";
 import useCoverage from "../../hooks/use_coverage";
 import { calculateSummary } from "../../utlils/calculation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type PaymentStatusType = 'success' | 'failed' | 'pending' | 'rejected' | 'cancelled';
 
@@ -41,10 +41,13 @@ const PaymentStatus = ({ message, status, invoice, transationRef }: PaymentStatu
     const [retryLoading, setRetryLoading] = useState(false);
     const router = useRouter();
     
-    const onClickHome = () => {
+    useEffect(() => {
         if(['success', 'pending'].includes(status)) {
             setLocalData(null);
         }
+    }, [status])
+
+    const onClickHome = () => {
         router.replace('/');
     }
 
