@@ -13,6 +13,7 @@ interface AddressInputProps {
 
 const AddressInput = ({ fieldName = 'price_input', currentValue, onChange, groupProps = {}, 'data-testid': testid = 'price_input' }: AddressInputProps) => {
     let listFirstItemRef = useRef<HTMLButtonElement>(null!);
+    let addressInputRef = useRef<HTMLInputElement>(null!);
     let outSideRef = useRef<HTMLDivElement>(null!);
     const { ready, value, suggestions, setValue, clearSuggestions } = usePlacesAutocomplete({ debounce: 300, requestOptions: { componentRestrictions: { country: "my" } } });
     useOutsideClick({
@@ -28,6 +29,7 @@ const AddressInput = ({ fieldName = 'price_input', currentValue, onChange, group
     const onSelectAddress = (address: string) => {
        onChange(address)
        clearSuggestions()
+       addressInputRef?.current?.focus()
     }
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -44,6 +46,7 @@ const AddressInput = ({ fieldName = 'price_input', currentValue, onChange, group
                     <MenuButton tabIndex={1} pointerEvents={'none'} position={'absolute'} w = '100%' h = '100%' zIndex={0} />
                     <InputGroup zIndex={999} {...groupProps}>
                         <Input 
+                            ref = {addressInputRef}
                             name = {fieldName}
                             value={currentValue}
                             onChange = {onChangeInput} 
