@@ -177,7 +177,7 @@ export const coveragesData: Coverage[] = [
         },
         {
             CoverageID: 'PROTECT_YOUR_MOBILE_DEVICES',
-            CoverageName: 'Protect your Mobile devices',
+            CoverageName: 'Protect your Mobile Phones/Laptop',
             ImageName: 'mobiledevices.svg',
             Includes: {
                 "Coverage includes": [

@@ -92,11 +92,11 @@ export const FAQ_LIST = [
     {
         question: "What does the Fidelity Guarantee in this policy cover?",
         answer: "The Fidelity Guarantee insures against loss of money and/or property due to fraud or acts of dishonesty by your employees."
-    },
+    }/*,
     {
         question: "What are the benefits of the Group Personal Accident coverage in this policy?",
         answer: "This coverage insures against accidental bodily injury which results in death or disablement, providing essential protection for you and your employees."
-    }
+    }*/
 ]
 
 export const MIN_COVERAGE_PREMIUM = 75.00;
