@@ -139,14 +139,15 @@ export default async function Home({ searchParams }: PageProps) {
                         <BadgeText textAlign = {textAlign} text = {'Removal of Debris'} />
                         <BadgeText textAlign = {textAlign} text = {'Loss of Revenue Protection'} />
                         <BadgeText textAlign = {textAlign} text = {'Mobile Device Protection'} />
+                        <BadgeText textAlign = {textAlign} text = {'Auditor Fees'} />
                     </Flex>
 
                     <Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}>Protection and Liability Coverage</Text>
 
                     <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
-                        <BadgeText textAlign = {textAlign} text = {'Auditor Fees'} />
+                        
                         <BadgeText textAlign = {textAlign} text = {'Burglary'} />
-                        <BadgeText textAlign = {textAlign} text = {'Money Inside Premises'} />
+                        <BadgeText textAlign = {textAlign} text = {'Money'} />
                         <BadgeText textAlign = {textAlign} text = {'Plate Glass'} />
                     </Flex>
 

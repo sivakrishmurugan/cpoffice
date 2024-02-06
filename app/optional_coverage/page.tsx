@@ -1,6 +1,6 @@
 "use client"
 import { useClient, useSessionStorage } from "@/lib/hooks";
-import { convertToPriceFormat, getNumberFromString } from "@/lib/utlils/utill_methods";
+import { convertToPriceFormat, getNumberFromString, validateOptionalCoverageFields } from "@/lib/utlils/utill_methods";
 import { OptionalCoverageForm } from "@/lib/components/forms";
 import { Text, Alert, AlertIcon, Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalOverlay } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -24,7 +24,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
     type ErrorType = { 
         noCoverage: boolean, 
         maxLimit: { isExceeded: boolean, currentTotalValue: number },
-        fieldErrors: { id: number | string, field_1: boolean, field_2: boolean }[] 
+        fieldErrors: { id: number | string, field_1: string | null, field_2: string | null }[] 
     }
     const [maxLimitPopupOpen, setMaxLimitPopupOpen] = useState(false);
     const [skipConfirmPopup, setSkipConfirmPopup] = useState(false);
@@ -71,27 +71,27 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
     }
     
     const validateField = (coverage: SelectedCoverage) => {
-        const field_1_value = coverage.field_1 ?? 0;
-        const field_2_value = coverage.field_2 ?? 0;
+        const validatedResult = validateOptionalCoverageFields(coverage);
         let fieldError = errors.fieldErrors.find(e => e.id == coverage.id);
-        if(fieldError == null) fieldError = { id: coverage.id, field_1: false, field_2: false };
+        if(fieldError == null) fieldError = { id: coverage.id, field_1: null, field_2: null };
+
         const totalCoverageValue = calculateTotalCoverageValue(getCurrentCoveragesList(data.map(e => e.id == coverage.id ? coverage : e)));
         const isMaxCoverageValueExceeded = totalCoverageValue > MAX_COVERAGE_VALUE;
         
-        const isField1ContainsError = field_1_value < 1;
-        const isField2ContainsError = field_2_value > Math.round(Number(percentageResult(MAX_AUDITOR_FEE_PERCENTAGE, field_1_value)));
+        const isField1ContainsError = validatedResult.field_1 != null;
+        const isField2ContainsError = validatedResult.field_2 != null;
 
-        if((isField1ContainsError && fieldError.field_1 == false) || (isField2ContainsError && fieldError.field_2 == false)) {
+        if((isField1ContainsError && fieldError.field_1 == null) || (isField2ContainsError && fieldError.field_2 == null)) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
             setErrors(prev => ({
                 ...prev, maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
-                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: isField1ContainsError, field_2: isField2ContainsError }]
+                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: validatedResult.field_1, field_2: validatedResult.field_2 }]
             }))
-        } else if((isField1ContainsError == false && fieldError.field_1 == true) || (isField2ContainsError == false && fieldError.field_2 == true)) {
+        } else if((isField1ContainsError == false && fieldError.field_1 != null) || (isField2ContainsError == false && fieldError.field_2 != null)) {
             let fieldErrors: ErrorType['fieldErrors'] = JSON.parse(JSON.stringify(errors.fieldErrors));
             setErrors(prev => ({
                 ...prev, maxLimit: { isExceeded: isMaxCoverageValueExceeded, currentTotalValue: totalCoverageValue },
-                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: isField1ContainsError, field_2: isField2ContainsError }]
+                fieldErrors: [...fieldErrors.filter(e => e.id != coverage.id), { id: coverage.id, field_1: validatedResult.field_1, field_2: validatedResult.field_2 }]
             }))
         } else if((errors.maxLimit.isExceeded && errors.maxLimit.currentTotalValue != totalCoverageValue) || (errors.maxLimit.isExceeded && isMaxCoverageValueExceeded == false) || (errors.maxLimit.isExceeded == false && isMaxCoverageValueExceeded)) {
             setErrors(prev => ({ 
@@ -137,13 +137,12 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
         tempErrors.maxLimit.currentTotalValue = totalCoverageValue;
         tempErrors.noCoverage = false;
         tempErrors.fieldErrors = data.filter(e => selectedCoverages.includes(e.id)).map(e => {
-            const isField1ContainsError = (e.field_1 ?? 0) < 1;
-            const isField2ContainsError = (e.field_2 ?? 0) > Number(percentageResult(MAX_AUDITOR_FEE_PERCENTAGE, (e.field_1 ?? 0)));
-            return { id: e.id, field_1: isField1ContainsError, field_2: isField2ContainsError }
-        }).filter(e => e.field_1 == true || e.field_2 == true)
+            const validatedResult = validateOptionalCoverageFields(e);
+            return { id: e.id, field_1: validatedResult.field_1, field_2: validatedResult.field_2 }
+        }).filter(e => e.field_1 != null || e.field_2 != null)
         setErrors(tempErrors)
         if(tempErrors.maxLimit.isExceeded) setMaxLimitPopupOpen(true)
-        return tempErrors.maxLimit.isExceeded == true || tempErrors.fieldErrors.some(e => e.field_1 == true || e.field_2 == true);
+        return tempErrors.maxLimit.isExceeded == true || tempErrors.fieldErrors.some(e => e.field_1 != null || e.field_2 != null);
     }
 
     const onClickSkipOrNext = () => {
@@ -208,7 +207,7 @@ const OptionalCoverages: NextPage<{}> = ({}) => {
                     <Button onClick = {onClickBack} width = {['100%', '100%', '250px', '250px', '250px']} minW = '150px' bg = 'brand.mediumViolet' color = 'white' _hover = {{}} _focus={{}}>BACK</Button>
                     <Button 
                         onClick = {onClickSkipOrNext} 
-                        isDisabled = {errors.fieldErrors.filter(e => selectedCoverages.includes(e.id)).some(e => e.field_1 == true || e.field_2 == true)} 
+                        isDisabled = {errors.fieldErrors.filter(e => selectedCoverages.includes(e.id)).some(e => e.field_1 != null || e.field_2 != null)} 
                         width = {['100%', '100%', '250px', '250px', '250px']} 
                         minW = '150px' 
                         bg = {selectedCoverages.length > 0 ? 'brand.secondary' : 'brand.green'}

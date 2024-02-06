@@ -43,11 +43,9 @@ export const calculatePremiumForOptionalCoverage = (
 
     const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = getTotalPremiumsForFireAndPerilsInsurance(selectedCoverages, coveragesData)
 
-    // const abrPercentage = (selectedInsType == 'FIRE' ?
-    //     fireInsPremiumTotal.rounded / sumInsuredTotal :
-    //     fireAndPerilsInsPremiumTotal.rounded / sumInsuredTotal) * 100;
+    const abrPercentage = (selectedInsType == 'FIRE' ? fireInsPremiumTotal.rounded / sumInsuredTotal : fireAndPerilsInsPremiumTotal.rounded / sumInsuredTotal) * 100;
 
-    const abrPercentage = (fireInsPremiumTotal.rounded / sumInsuredTotal) * 100;
+    //const abrPercentage = (fireInsPremiumTotal.rounded / sumInsuredTotal) * 100;
 
     return optionalCoverageData.IsABR != 1 ? percentageResult(optionalCoverageData.InsPercent, total) : percentageResult(abrPercentage, total);
 }

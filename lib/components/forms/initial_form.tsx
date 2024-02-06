@@ -436,7 +436,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     <FormControl isInvalid = {errors.floorLevel || errors.constructionType}>
                         <Flex gap = '10px' alignItems={'flex-end'}>
                             <FormControl maxW = '200px' w = '40%' isInvalid = {errors.floorLevel}>
-                                <FormLabel>Floor Level</FormLabel>
+                                <FormLabel>Number of Floors</FormLabel>
                                 <Select 
                                     value = {data.floorLevel}
                                     onChange = {onChangeFloor}
@@ -464,7 +464,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                                 </Select>
                             </FormControl>
                         </Flex>
-                        <FormErrorMessage ml = '10px'>Both Floor Level and Construction Type are Requried!</FormErrorMessage>
+                        <FormErrorMessage ml = '10px'>Both Number of Floors and Construction Type are Requried!</FormErrorMessage>
                     </FormControl>
 
                     <FormControl isInvalid = {errors.email != null}>

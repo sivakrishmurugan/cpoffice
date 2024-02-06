@@ -63,11 +63,11 @@ export const FAQ_LIST = [
     },
     {
         question: "How does the Consequential Loss coverage benefit my clinic in the event of a disaster?",
-        answer: "This coverage compensates for loss of profits due to reduced turnover and increased cost of working caused by fire, lightning, and explosion, helping your clinic to maintain financial stability during recovery."
+        answer: "This coverage compensates for loss of profits due to reduced of gross revenue and increased cost of working caused by fire, lightning, and explosion, helping your clinic to maintain financial stability during recovery."
     },
     {
         question: "What is covered under the All Risks insurance in this policy?",
-        answer: "The All Risks coverage includes protection for equipment, plant, and machinery in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
+        answer: "The All Risks coverage includes protection for mobile devices in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
     },
     {
         question: "What does the Burglary insurance cover in the FlexiGuard Plus policy?",
@@ -101,6 +101,8 @@ export const FAQ_LIST = [
 
 export const MIN_COVERAGE_PREMIUM = 75.00;
 export const MAX_COVERAGE_VALUE = 10000000;
+export const MOBILE_MAX_COVERAGE_VALUE = 10000;
+export const LAPTOP_MAX_COVERAGE_VALUE = 30000;
 export const DEFAULT_FIRE_INS_PERCENTAGE = 0;
 export const DEFAULT_FIRE_PERILS_INS_PERCENTAGE = 0;
 export const MAX_CONSULTANT_FEE_PERCENTAGE = Number(process.env.NEXT_PUBLIC_MAX_CONSULTANT_FEE_PERCENTAGE ?? 0);

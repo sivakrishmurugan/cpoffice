@@ -1,7 +1,8 @@
 import * as cookie from 'cookie';
-import { ClinicData, Coverage } from '../types';
-import { PROTECTION_AND_LIABILITY_COVERAGE } from '../app/app_constants';
+import { ClinicData, Coverage, SelectedCoverage } from '../types';
+import { LAPTOP_MAX_COVERAGE_VALUE, MAX_AUDITOR_FEE_PERCENTAGE, MOBILE_MAX_COVERAGE_VALUE, PROTECTION_AND_LIABILITY_COVERAGE } from '../app/app_constants';
 import { CoverageResData } from '../hooks/use_sessionstorage';
+import { percentageResult } from './calculation';
 
 export const getAuthTokenFromCookie = (cookies: string | undefined) => {
     const authToken = cookie.parse(cookies ?? "")['authToken'];
@@ -198,6 +199,43 @@ export const validateField = (value: string, field: 'name' | 'number' | 'mobile'
             }
         }
     }
+}
+
+export const validateOptionalCoverageFields = (selectedCoverage: SelectedCoverage) => {
+    if(selectedCoverage.field_1 == null) return { field_1: null, field_2: null };
+    const field_1_value = selectedCoverage.field_1 ?? 0;
+    const field_2_value = selectedCoverage?.field_2 ?? 0;
+    switch (selectedCoverage.id) {
+        case 2001:
+        case '2001': {
+            let field_1_error: string | null = null;
+            let field_2_error: string | null = null;
+            if (field_1_value < 1) field_1_error = "Required!";
+
+            const field2MaxValue = Math.round(Number(percentageResult(MAX_AUDITOR_FEE_PERCENTAGE, field_1_value)));
+            if(field_2_value > field2MaxValue) field_2_error = `Coverage cannot be more than RM ${convertToPriceFormat(field2MaxValue, true, true)}`;
+            
+            return {
+                field_1: field_1_error,
+                field_2: field_2_error
+            }
+        }
+        case 2002:
+        case '2002': {
+            let field_1_error: string | null = null;
+            let field_2_error: string | null = null;
+            if (field_1_value < 1) field_1_error = "Required!";
+            if (field_1_value > MOBILE_MAX_COVERAGE_VALUE) field_1_error = `Mobile phones coverage cannot more than RM ${convertToPriceFormat(MOBILE_MAX_COVERAGE_VALUE, true, true)}`;
+            if (field_2_value > LAPTOP_MAX_COVERAGE_VALUE) field_2_error = `Laptop coverage cannot more than RM ${convertToPriceFormat(LAPTOP_MAX_COVERAGE_VALUE, true, true)}`;
+            
+            return {
+                field_1: field_1_error,
+                field_2: field_2_error
+            }
+        }
+    }
+    
+    return { field_1: null, field_2: null };
 }
 
 export const convertCoveragesResDataToLocalStateData = (apiRes: any): CoverageResData => {

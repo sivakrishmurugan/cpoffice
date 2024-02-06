@@ -17,7 +17,7 @@ interface OptionalCoverageFromProps {
     onClickAddOrRemove: () => void,
     onChangeFieldValue: (event: ChangeEvent<HTMLInputElement>) => void,
     values?: SelectedCoverage,
-    errors?: { field_1: boolean, field_2: boolean }
+    errors?: { field_1: string | null, field_2: string | null }
 }
 
 const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrRemove, onChangeFieldValue }: OptionalCoverageFromProps) => {
@@ -37,21 +37,25 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
             return <Text key = {item}>{splittedText.map(e => e.startsWith('<b>') ? <Text key = {e} as = 'b' color = 'brand.primary'>{e.replaceAll('<b>', ' ')}</Text> : e)}</Text>
             //return item.replace(AUDITOR_FEE_REPLACE_TEXT, replaceText);
         }
+        if(isProtectAgainstLossOfRevenueCoverage && item.includes("Loss of Revenue due to Fire &/ selected Perils")) {
+            console.log(selectedInsType)
+            if(selectedInsType === 'FIRE'){
+                item = "Loss of Revenue due to Fire";
+            }else{
+                item = item;
+            }
+        }
         return item;
     })
 
     const inputFields = Object.entries(coverage.CoverageFields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
         let label: null |string | JSX.Element = fieldValues.label;
-        let error = null as string | null;
         const fieldKey = field == 'field_1' ? 'field_1' : 'field_2';
+        let error: string | null = errors?.[fieldKey] ?? null;
         const value = values?.[fieldKey] ?? 0;
         const field2MaxValue = Math.round(Number(percentageResult(MAX_AUDITOR_FEE_PERCENTAGE, values?.field_1 ?? 0)));
         if(isProtectAgainstLossOfRevenueCoverage && fieldKey == 'field_2' && (values?.field_1 ?? 0) > 0) {   
             label = <Text>{label} <Text as = 'b' color = 'brand.primary'>(Max. RM {convertToPriceFormat(field2MaxValue, true,  true)})</Text></Text>;
-        }
-        if(errors?.[fieldKey] == true) {
-            if(fieldKey == 'field_1') error = 'Required!';
-            if(fieldKey == 'field_2') error = `Coverage cannot be more than RM ${convertToPriceFormat(field2MaxValue, true, true)}`;
         }
         
         return {
@@ -63,6 +67,8 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
             isDisabled: fieldKey == 'field_2' && (values?.field_1 ?? 0) < 1
         }
     })
+
+    const field1RequiredTooltip = isProtectAgainstLossOfRevenueCoverage ? 'Gross revenue required!' : 'Mobile Phones / Sum Insured required!'
 
     return (
         <Flex 
@@ -118,7 +124,7 @@ const OptionalCoverageForm = ({ values, isAdded, errors, coverage, onClickAddOrR
                         <Flex direction={'column'} maxW={['100%', '100%', '100%', '500px', '500px']} gap = '10px'>
                             {
                                 inputFields.map((field, index) => {
-                                    return <ResponsiveTooltip key = {field.name} isDisabled = {field.isDisabled == false} placement="bottom-start" label = {'Gross revenue required!'}>
+                                    return <ResponsiveTooltip key = {field.name} isDisabled = {field.isDisabled == false} placement="bottom-start" label = {field1RequiredTooltip}>
                                         <FormControl isInvalid = {field.error != null && field.isDisabled == false}>
                                             <FormLabel>{field.label}</FormLabel>
                                             <PriceInput 
