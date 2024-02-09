@@ -25,8 +25,8 @@ export const getTotalPremiumsForFireAndPerilsInsurance = (selectedCoverages: Sel
     }, { fireInsPremiumTotal: { actual: 0, rounded: 0 }, fireAndPerilsInsPremiumTotal: { actual: 0, rounded: 0 }, sumInsuredTotal: 0 }) ?? { fireInsPremiumTotal: { actual: 0, rounded: 0 }, fireAndPerilsInsPremiumTotal: { actual: 0, rounded: 0 }, sumInsuredTotal: 0 };
 }
 
-export const calculatePremiumForCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage) => {
-    const total = (selectedCoverage.field_1 ?? 0) + (selectedCoverage?.field_2 ?? 0);
+export const calculatePremiumForCoverage = (selectedCoverage: SelectedCoverage, type: 'FIRE' | 'FIRE_PERILS', coverage?: Coverage, forField?: 'field_1' | 'field_2') => {
+    const total =  forField == null ? (selectedCoverage.field_1 ?? 0) + (selectedCoverage?.field_2 ?? 0) :  selectedCoverage?.[forField] ?? 0;;
     return type == 'FIRE' ? percentageResult(coverage?.Fireinsurance ?? DEFAULT_FIRE_INS_PERCENTAGE, total) : percentageResult(coverage?.FirePerlis ?? DEFAULT_FIRE_PERILS_INS_PERCENTAGE, total);
 }
 
@@ -35,10 +35,11 @@ export const calculatePremiumForOptionalCoverage = (
     optionalCoverageData: Coverage,
     type: InsuranceType, 
     selectedCoverages: SelectedCoverage[],
-    coveragesData: Coverage[]
+    coveragesData: Coverage[],
+    forField?: 'field_1' | 'field_2'
 ) => {
     if(optionalCoverageData == null) return '0';
-    const total = (selectedOptionalCoverage?.field_1 ?? 0) + (selectedOptionalCoverage?.field_2 ?? 0);
+    const total = forField == null ? (selectedOptionalCoverage?.field_1 ?? 0) + (selectedOptionalCoverage?.field_2 ?? 0) : selectedOptionalCoverage?.[forField] ?? 0;
     const selectedInsType = type ?? 'FIRE';
 
     const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal, sumInsuredTotal } = getTotalPremiumsForFireAndPerilsInsurance(selectedCoverages, coveragesData)

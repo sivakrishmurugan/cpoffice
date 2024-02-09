@@ -21,6 +21,24 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
     const selectedInsTotalPremium = localData?.selectedInsType == 'FIRE' ? fireInsPremiumTotal : fireAndPerilsInsPremiumTotal;
     const min75NoteText = selectedInsTotalPremium.actual != selectedInsTotalPremium.rounded ? 'Minimum coverage premium is RM 75.00' : null
     
+    type FieldSeperatedType = { id: string | number; name: string };
+    type Field_1Type = FieldSeperatedType & { field_1?: number };
+    type Field_2Type = FieldSeperatedType & { field_2?: number };
+
+    const coveragesTableRows = localData?.selectedCoverages.map(e => {
+        let coverageData = coveragesData?.coverages?.find(c => c.CoverageID == e.id);
+        const temp: (Field_1Type | Field_2Type)[] = [{ field_1: e.field_1, id: e.id, name: coverageData?.CoverageName ?? '' }];
+        if(e.field_2 && e.field_2 > 0) temp.push({ field_2: e.field_2, id: e.id, name: coverageData?.CoverageFields.field_2?.label?.replace('(optional)', '') ?? '' })
+        return temp;
+    }).flat() ?? [];
+
+    const optionalCoverageTableRows = localData?.selectedOptionalCoverages.map(e => {
+        let coverageData = coveragesData?.optionalCoverages?.find(c => c.CoverageID == e.id);
+        const temp: (Field_1Type | Field_2Type)[] = [{ field_1: e.field_1, id: e.id, name: coverageData?.CoverageName ?? '' }];
+        if(e.field_2 && e.field_2 > 0) temp.push({ field_2: e.field_2, id: e.id, name: coverageData?.CoverageFields.field_2?.label?.replace('(optional)', '') ?? '' })
+        return temp;
+    }).flat() ?? [];
+
     return (
         <Flex gap = {'20px'} direction={'column'} >
 
@@ -65,13 +83,14 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                     </Thead>
                     <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
                         {
-                            localData?.selectedCoverages.map((coverage, index) => {
+                            coveragesTableRows.map((coverage, index) => {
                                 const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+                                const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                 return <Tr key = {coverage.id}>
-                                    <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'} lineHeight={1.5} >{coverageData?.CoverageName}</Td>
+                                    <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'} lineHeight={1.5} >{coverage.name}</Td>
                                     <Td px = '5px'></Td>
                                     <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(coverageValue(coverage), true, false)}</Td>
-                                    <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData), true, false)}</Td>
+                                    <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData, forField), true, false)}</Td>
                                 </Tr>
                             })
                         }
@@ -91,12 +110,13 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                     </Thead>
                     <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
                         {
-                            localData?.selectedCoverages.map((coverage, index) => {
+                            coveragesTableRows.map((coverage, index) => {
                                 const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
                                 const bgColor = index % 2 != 0 ? 'white' : 'tableStripedColor.100';
+                                const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                 return <React.Fragment key={coverage.id}>
                                     <Tr>
-                                        <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.5} textTransform={'none'}>{coverageData?.CoverageName}</Th>
+                                        <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.5} textTransform={'none'}>{coverage?.name}</Th>
                                     </Tr>
                                     <Tr>
                                         <Th px = '10px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
@@ -104,7 +124,7 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                     </Tr>
                                     <Tr>
                                         <Th px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData), true, false)}</Td>
+                                        <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', coverageData, forField), true, false)}</Td>
                                     </Tr>
                                 </React.Fragment>
                             })
@@ -131,11 +151,12 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                             </Thead>
                             <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
                                 {
-                                    localData?.selectedOptionalCoverages.map((coverage, index) => {
+                                    optionalCoverageTableRows.map((coverage, index) => {
                                         let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
+                                        const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                         const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
                                         if(isProtectionAndLiabilityCoverage) {
-                                            coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
+                                            coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue, name: PROTECTION_AND_LIABILITY_COVERAGE.name }
                                             coverageData = {
                                                 CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
                                                 isABR: 0,
@@ -143,10 +164,10 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                             } as any
                                         }
                                         return <Tr key = {coverage.id}>
-                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'} lineHeight={1.5} >{coverageData?.CoverageName}</Td>
+                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'} lineHeight={1.5} >{coverage?.name}</Td>
                                             <Td px = '5px'></Td>
                                             <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(coverageValue(coverage), true, false)}</Td>
-                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []), true, false)}</Td>
+                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [], forField), true, false)}</Td>
                                         </Tr>
                                     })
                                 }
@@ -164,12 +185,13 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                             </Thead>
                             <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
                                 {
-                                    localData?.selectedOptionalCoverages.map((coverage, index) => {
+                                    optionalCoverageTableRows.map((coverage, index) => {
                                         const bgColor = index % 2 != 0 ? 'white' : 'tableStripedColor.100';
                                         let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
+                                        const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                         const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
                                         if(isProtectionAndLiabilityCoverage) {
-                                            coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue }
+                                            coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue, name: PROTECTION_AND_LIABILITY_COVERAGE.name }
                                             coverageData = {
                                                 CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
                                                 isABR: 0,
@@ -178,7 +200,7 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                         }
                                         return <React.Fragment key = {coverage.id}>
                                             <Tr>
-                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.5} textTransform={'none'}>{coverageData?.CoverageName}</Th>
+                                                <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.5} textTransform={'none'}>{coverage?.name}</Th>
                                             </Tr>
                                             <Tr>
                                                 <Th px = '10px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>COVERAGE VALUE</Th>
@@ -186,7 +208,7 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                             </Tr>
                                             <Tr>
                                                 <Th px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>PREMIUM</Th>
-                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? []), true, false)}</Td>
+                                                <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bgColor}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [], forField), true, false)}</Td>
                                             </Tr>
                                         </React.Fragment>
                                     })

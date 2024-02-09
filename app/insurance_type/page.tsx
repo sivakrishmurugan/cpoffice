@@ -81,6 +81,17 @@ const Coverages: NextPage<{}> = ({}) => {
 
     const { fireInsPremiumTotal, fireAndPerilsInsPremiumTotal } = getTotalPremiumsForFireAndPerilsInsurance(localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [])
 
+    type FieldSeperatedType = { id: string | number; name: string };
+    type Field_1Type = FieldSeperatedType & { field_1?: number };
+    type Field_2Type = FieldSeperatedType & { field_2?: number };
+
+    const tableRows = localData?.selectedCoverages.map(e => {
+        let coverageData = coveragesData?.coverages?.find(c => c.CoverageID == e.id);
+        const temp: (Field_1Type | Field_2Type)[] = [{ field_1: e.field_1, id: e.id, name: coverageData?.CoverageName ?? '' }];
+        if(e.field_2 && e.field_2 > 0) temp.push({ field_2: e.field_2, id: e.id, name: coverageData?.CoverageFields.field_2?.label?.replace('(optional)', '') ?? '' })
+        return temp;
+    }).flat() ?? [];
+
     return (
         <Flex w = '100%' direction={'column'} gap = '10px'  py = '20px'>
             
@@ -126,12 +137,13 @@ const Coverages: NextPage<{}> = ({}) => {
                             </Thead>
                             <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
                                 {
-                                    isClient && localData?.selectedCoverages?.map((coverage, index) => {
+                                    isClient && tableRows?.map((coverage, index) => {
                                         const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+                                        const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                         return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                            <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                            <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
-                                            <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                            <Td w = '30%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>{coverage?.name}</Td>
+                                            <Td w = '35%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData, forField), true)}</Td>
+                                            <Td w = '50%' p = '20px' fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData, forField), true)}</Td>
                                         </Tr>
                                     })
                                 }
@@ -198,11 +210,12 @@ const Coverages: NextPage<{}> = ({}) => {
                             </Thead>
                             <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
                                 {
-                                    isClient && localData?.selectedCoverages?.map((coverage, index) => {
+                                    isClient && tableRows?.map((coverage, index) => {
                                         const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+                                        const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                         return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData), true)}</Td>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverage?.name}</Td>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE', coverageData, forField), true)}</Td>
                                         </Tr>
                                     })
                                 }
@@ -259,11 +272,12 @@ const Coverages: NextPage<{}> = ({}) => {
                             </Thead>
                             <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '20px', textIndent: '-99999px' }}>
                                 {
-                                    isClient && localData?.selectedCoverages?.map((coverage, index) => {
+                                    isClient && tableRows?.map((coverage, index) => {
                                         const coverageData = coveragesData?.coverages?.find(e => e.CoverageID == coverage.id);
+                                        const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                         return <Tr key = {coverage.id} color = '#424551' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
-                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverageData?.CoverageName}</Td>
-                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData), true)}</Td>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>{coverage?.name}</Td>
+                                            <Td p = '20px' fontWeight={'bold'} fontSize={['16px','18px', '18px', '18px', '18px']} whiteSpace={'pre-wrap'}>RM {convertToPriceFormat(calculatePremiumForCoverage(coverage, 'FIRE_PERILS', coverageData, forField), true)}</Td>
                                         </Tr>
                                     })
                                 }
