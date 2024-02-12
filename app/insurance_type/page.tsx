@@ -49,14 +49,19 @@ const Coverages: NextPage<{}> = ({}) => {
                 const premium = calculatePremiumForCoverage(e, insType!, coverage)
                 const field_1_premium = calculatePremiumForCoverage(e, insType!, coverage, 'field_1')
                 const field_2_premium = calculatePremiumForCoverage(e, insType!, coverage, 'field_2')
-                return {
+                const coveragePayload = {
                     ...e,
                     name: coverageName,
                     total: (e?.field_1 ?? 0) + (e?.field_2 ?? 0),
                     premium: isNaN(Number(premium)) ? 0 : Number(premium),
                     field_1_premium: isNaN(Number(field_1_premium)) ? 0 : Number(field_1_premium),
-                    field_2_premium: isNaN(Number(field_2_premium)) ? 0 : Number(field_2_premium),
+                    field_2_premium: isNaN(Number(field_2_premium)) ? 0 : Number(field_2_premium) as number | undefined,
                 }
+                if (!("field_2" in coverage!.CoverageFields)) {
+                  delete coveragePayload.field_2;
+                  delete coveragePayload.field_2_premium;
+                }
+                return coveragePayload;
             });
             const res = await axiosClient.post('/api/clinicshield/setcoverage', {
                 QuoteID: localData.quoteId,
