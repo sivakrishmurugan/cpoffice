@@ -34,8 +34,8 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
 
     const optionalCoverageTableRows = localData?.selectedOptionalCoverages.map(e => {
         let coverageData = coveragesData?.optionalCoverages?.find(c => c.CoverageID == e.id);
-        const temp: (Field_1Type | Field_2Type)[] = [{ field_1: e.field_1, id: e.id, name: coverageData?.CoverageName ?? '' }];
-        if(e.field_2 && e.field_2 > 0) temp.push({ field_2: e.field_2, id: e.id, name: coverageData?.CoverageFields.field_2?.label?.replace('(optional)', '') ?? '' })
+        const temp: (Field_1Type | Field_2Type)[] = [{ field_1: e.field_1, id: e.id, name: coverageData?.CoverageName?.replace('Protect against ','').replace('Protect your Mobile Phones','Mobile/PDA') ?? '' }];
+        if(e.field_2 && e.field_2 > 0) temp.push({ field_2: e.field_2, id: e.id, name: coverageData?.CoverageFields.field_2?.label?.replace('(optional)', '').replace('Laptop/Sum Insured', 'Laptop/Notebooks') ?? '' })
         return temp;
     }).flat() ?? [];
 
