@@ -202,11 +202,13 @@ const Summary: NextPage<{}> = ({}) => {
             data.promoCode.appliedPercentage ?? 0, 
             coveragesData ?? { coverages: [], optionalCoverages: [] }
         );
+        
         setData(prev => ({ ...prev, loading: submitFor }));
         try {
             const res = await axiosClient.post('/api/clinicshield/setquote', {
                 QuoteType: submitFor == 'EMAIL_QUOTE' ? 'email' : 'proceed',
                 QuoteID: localData?.quoteId,
+                ClinicName: localData?.basic.name,
                 PICName: data.PICName.value,
                 PICID: data.PICID.value,
                 ClaimDeclaration: data.previouslyClaimed.isClaimed ? 'YES' : 'NO',
@@ -222,7 +224,7 @@ const Summary: NextPage<{}> = ({}) => {
                 FinalPremium: finalPremium
             });
             
-            if(res.data && res.data[0] && res.data[0].Success == 1) {
+            if(res.data && res.data[0] && res.data?.[0]?.Success == 1) {
                 setLocalData({ 
                     ...localData, 
                     claimDeclaration: {
@@ -236,22 +238,26 @@ const Summary: NextPage<{}> = ({}) => {
                     insStartDate: data.insStartDate.value
                 })
 
-                if(submitFor == 'PROCEED') {
-                    //router.push('/claim_declaration');
-                    if(data.previouslyClaimed.isClaimed) {
-                        setShowProcessingPopup(true)
-                    } else {
-                        const { finalPremium } = calculateSummary(
-                            localData?.selectedCoverages ?? [],
-                            localData?.selectedOptionalCoverages ?? [], 
-                            localData?.selectedInsType ?? 'FIRE', 
-                            localData?.promoCodePercentage ?? 0, 
-                            coveragesData ?? { coverages: [], optionalCoverages: [] }
-                        )
-                        await redirectToPayment(localData.quoteId, finalPremium)
-                    }
+                if (submitFor == "PROCEED") {
+                  //router.push('/claim_declaration');
+                  if (data.previouslyClaimed.isClaimed || res.data?.[0]?.blocklistNameStatus == 1) {
+                    setShowProcessingPopup(true);
+                  } else {
+                    const { finalPremium } = calculateSummary(
+                      localData?.selectedCoverages ?? [],
+                      localData?.selectedOptionalCoverages ?? [],
+                      localData?.selectedInsType ?? "FIRE",
+                      localData?.promoCodePercentage ?? 0,
+                      coveragesData ?? { coverages: [], optionalCoverages: [] }
+                    );
+                    await redirectToPayment(localData.quoteId, finalPremium);
+                  }
                 } else {
-                    setData(prev => ({ ...prev, loading: null, emailQuoteSuccessPopupOpen: true }));
+                  setData((prev) => ({
+                    ...prev,
+                    loading: null,
+                    emailQuoteSuccessPopupOpen: true,
+                  }));
                 }
             }
         } catch(e: any) {
