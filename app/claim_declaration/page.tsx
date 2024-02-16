@@ -377,7 +377,7 @@ const PaynowPopup = ({ isOpen, onClose }: PaynowPopupProps) => {
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>We have received your request and we need more information and time to process your Insurance Application.</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
                             Our friendly relationship manager will contact you shortly to work with you on your case. Should you have any queries, do call us at our hotline or whatsapp our friendly consultants at
-                            <Text as = 'span' fontWeight={'bold'} fontSize={'16px'}> +60 1253 60700</Text>
+                            <Text as = 'span' fontWeight={'bold'} fontSize={'16px'}> +60 1229 30700</Text>
                         </Text>
                         <Button onClick = {onClose} h = '40px' w = '250px' bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
                     </Flex>
