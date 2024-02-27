@@ -1,6 +1,6 @@
 import axiosClient from '@/lib/utlils/axios';
 import InitialForm from '@/lib/components/forms/initial_form'
-import { Flex, Heading, ResponsiveValue } from '@chakra-ui/react'
+import { Flex, Heading, ResponsiveValue, Link } from '@chakra-ui/react'
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Image as ChakraImage, Text } from '@chakra-ui/react';
@@ -8,6 +8,7 @@ import FAQ from '@/lib/components/homepage/faq';
 import BenifitCard from '@/lib/components/homepage/benifit_card';
 import BadgeText from '@/lib/components/homepage/badge_text';
 import Footer from '@/lib/components/footer';
+import NextLink from 'next/link';
 
 interface PageProps {
     searchParams: {
@@ -142,7 +143,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <BadgeText textAlign = {textAlign} text = {'Auditor Fees'} />
                     </Flex>
 
-                    {/*<Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}>Protection and Liability Coverage</Text>*/}
+                    <Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}></Text>
 
                     <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
                         
@@ -249,7 +250,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'}>{`Have a Question? We're Here to Help!`}</Heading>
                         <Text my = '20px' fontSize={'16px'} color = 'brand.text'>Your concerns and queries matter to us. If you have any questions or need assistance, our dedicated support team is ready to provide the information you seek.</Text>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}>Feel free to reach out</Heading>
-                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}>+60 12-293 0700</Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}><Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}}>+60 12-293 0700</Link></Heading>
                     </Flex>
 
                     <Flex w = {['100%', '100%', '100%', '33.3%', '33.3%']}>

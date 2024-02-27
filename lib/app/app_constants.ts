@@ -15,9 +15,9 @@ export const APP_MAX_WIDTH = ['100%', '100%', '1378px', '1378px', '1378px'];
 export const APP_WIDTH = ['100%', '90%', '90%', '100%', '100%'];
 
 export const FLOOR_LEVEL = [
-    { id: 'LG', value: 'LG' },
-    { id: 'G', value: 'G' },
-    ...([...Array(100).keys()]).map(e => ({ id: (e + 1).toString(), value: (e + 1).toString() }))
+    { id: 'B5', value: 'Upto 5 floors' },
+    { id: 'A5', value: 'More than 5 floors' }
+  //  ...([...Array(100).keys()]).map(e => ({ id: (e + 1).toString(), value: (e + 1).toString() }))
 ]
 
 export const CONSTRUCTION_TYPES = [
@@ -66,7 +66,7 @@ export const FAQ_LIST = [
         answer: "This coverage compensates for loss of profits due to reduced of gross revenue and increased cost of working caused by fire, lightning, and explosion, helping your clinic to maintain financial stability during recovery."
     },
     {
-        question: "What is covered under the All Risks insurance in this policy?",
+        question: "What is covered under the Allf Risks insurance in this policy?",
         answer: "The All Risks coverage includes protection for mobile devices in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
     },
     {
