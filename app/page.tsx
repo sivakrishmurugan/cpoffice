@@ -281,7 +281,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '20px' px = {['10px', '50px', '50px', '100px', '250px']}>
                     <Text textAlign={'center'} fontSize={'16px'} color={'brand.text'}>{`For any other questions or inquiries, feel free to contact us. We're here to assist you in every way possible.`}</Text>
-                    <BadgeText textAlign={'center'} text = '+60 12-293 0700' />
+                    <Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}}><BadgeText textAlign={'center'} text = '+60 12-293 0700' /></Link>
                 </Flex>
 
             </Flex>
