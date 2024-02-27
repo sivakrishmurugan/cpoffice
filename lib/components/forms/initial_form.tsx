@@ -425,7 +425,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     </FormControl>
 
                     <FormControl isInvalid = {errors.address != null}>
-                        <FormLabel>Clinic Address</FormLabel>
+                        <FormLabel>Clinic Address to be insured</FormLabel>
                         <AddressInput 
                             currentValue = {data.address}
                             onChange={onChangeAddress}

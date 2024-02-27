@@ -437,7 +437,7 @@ const Summary: NextPage<{}> = ({}) => {
                         </Flex> */}
 
                         <FormControl isInvalid = {data.PICName.error != null}>
-                            <FormLabel>Person In Charge Name (PCN)</FormLabel>
+                            <FormLabel>Person-In-Charge full name</FormLabel>
                             <InputGroup>
                                 <Input
                                     name = 'person_in_charge_name'
@@ -453,7 +453,7 @@ const Summary: NextPage<{}> = ({}) => {
                         </FormControl>
 
                         <FormControl isInvalid = {data.PICID.error != null}>
-                            <FormLabel>Person In Charge IC (PIC)</FormLabel>
+                            <FormLabel>PIC Mykad ID</FormLabel>
                             <InputGroup>
                                 <Input
                                     name = 'person_in_charge_ic'

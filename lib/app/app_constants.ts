@@ -58,7 +58,7 @@ export const FORM_FIELD_ERROR_MESSAGES = {
 
 export const FAQ_LIST = [
     {
-        question: "What types of damages does the Fire coverage under the FlexiGuard Plus policy protect against?",
+        question: "What types of damages does the Fire coverage under the DoctorShield Clinic Property Insurance policy protect against?",
         answer: "The Fire coverage protects against loss of or damage to insured buildings, renovations, furniture, fixtures, fittings, machinery, equipment, and stocks-in-trade due to fire or lightning."
     },
     {
@@ -70,7 +70,7 @@ export const FAQ_LIST = [
         answer: "The All Risks coverage includes protection for mobile devices in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
     },
     {
-        question: "What does the Burglary insurance cover in the FlexiGuard Plus policy?",
+        question: "What does the Burglary insurance cover in the DoctorShield Clinic Property Insurance policy?",
         answer: "The Burglary insurance protects your goods and all properties that are properly locked and secured in your insured premises against burglary or robbery with forcible entry."
     },
     {

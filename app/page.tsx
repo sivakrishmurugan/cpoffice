@@ -131,7 +131,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
 
-                    <Heading fontFamily={'kanit'} fontWeight={'500'} mt = '10px' fontSize={'35px'} textAlign={textAlign}>Also Buy Additional Coverages</Heading>
+                    <Heading fontFamily={'kanit'} fontWeight={'500'} mt = '10px' fontSize={'35px'} textAlign={textAlign}>Recommanded Additional Coverages</Heading>
 
                     <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection.`}</Text>
 
@@ -142,7 +142,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <BadgeText textAlign = {textAlign} text = {'Auditor Fees'} />
                     </Flex>
 
-                    <Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}>Protection and Liability Coverage</Text>
+                    {/*<Text mt = {['20px', '20px', '40px', '40px', '40px']} mb = '20px' textAlign={textAlign} fontSize={'18px'} fontWeight={'bold'}>Protection and Liability Coverage</Text>*/}
 
                     <Flex w = '100%' gap = {['10px', '15px', '15px', '30px', '30px']} flexWrap={['wrap', 'wrap', 'wrap', 'initial', 'initial']} direction={['column', 'column', 'column', 'row', 'row']} justifyContent={'center'}>
                         
@@ -232,7 +232,7 @@ export default async function Home({ searchParams }: PageProps) {
                     />
                     <BenifitCard 
                         textAlign = {textAlign}
-                        title = 'Group Personal Accident Coverage'
+                        title = 'Mobile Device Protection'
                         icon = '/icons/Group.svg'
                     />
                     <BenifitCard 
