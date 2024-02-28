@@ -129,7 +129,7 @@ export const EXCESS = [
     }
 ]
 
-export const TAX_PERCENTAGE = 6;
+export const TAX_PERCENTAGE = 8;
 export const STAMP_DUTY = 10.00;
 
 export const TYPE_OF_CLAIM = [

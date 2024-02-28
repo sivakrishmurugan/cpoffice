@@ -396,7 +396,7 @@ const Summary: NextPage<{}> = ({}) => {
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(netPremium, true, false)}</Td>
                                     </Tr> */}
                                     <Tr>
-                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Tax 6%</Td>
+                                        <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Tax 8%</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(tax, true, false)}</Td>
                                     </Tr>
                                     <Tr>
