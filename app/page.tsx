@@ -250,7 +250,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'}>{`Have a Question? We're Here to Help!`}</Heading>
                         <Text my = '20px' fontSize={'16px'} color = 'brand.text'>Your concerns and queries matter to us. If you have any questions or need assistance, our dedicated support team is ready to provide the information you seek.</Text>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}>Feel free to reach out</Heading>
-                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}><Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}}>+60 12-293 0700</Link></Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}><Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>+60 12-293 0700</Link></Heading>
                     </Flex>
 
                     <Flex w = {['100%', '100%', '100%', '33.3%', '33.3%']}>
@@ -281,7 +281,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} alignItems={'center'} gap = '20px' px = {['10px', '50px', '50px', '100px', '250px']}>
                     <Text textAlign={'center'} fontSize={'16px'} color={'brand.text'}>{`For any other questions or inquiries, feel free to contact us. We're here to assist you in every way possible.`}</Text>
-                    <Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}}><BadgeText textAlign={'center'} text = '+60 12-293 0700' /></Link>
+                    <Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal><BadgeText textAlign={'center'} text = '+60 12-293 0700' /></Link>
                 </Flex>
 
             </Flex>

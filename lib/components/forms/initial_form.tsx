@@ -435,8 +435,8 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
 
                     <FormControl isInvalid = {errors.floorLevel || errors.constructionType}>
                         <Flex gap = '10px' alignItems={'flex-end'}>
-                            <FormControl maxW = '200px' w = '40%' isInvalid = {errors.floorLevel}>
-                                <FormLabel>Number of Floors</FormLabel>
+                            <FormControl maxW = '250px' w = '50%' isInvalid = {errors.floorLevel}>
+                                <FormLabel>Total Floors</FormLabel>
                                 <Select 
                                     value = {data.floorLevel}
                                     onChange = {onChangeFloor}
