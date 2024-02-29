@@ -160,7 +160,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 </Flex>
 
-                <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
+                {/*<Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
                     <Flex w = '100%' h = '150px' bg = '#dfebf2' justifyContent={textAlign} alignItems={textAlign} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
                         Ad space
@@ -168,6 +168,18 @@ export default async function Home({ searchParams }: PageProps) {
 
                     <Flex w = '100%' h = '150px' bg = '#dfebf2' justifyContent={textAlign}  alignItems={textAlign} px = {['20px', '20px', '30px', '30px', '30px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
                         Ad space
+                    </Flex>
+
+                </Flex>*/}
+                <Flex w = '100%' direction={'column'} alignItems={textAlign}  px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
+
+                 
+                    {/* <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text> */}
+
+                    <Flex position={'relative'} border = '1px' borderColor={'brand.borderColor'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']}>
+                        <Link as = {NextLink} href = {'https://g.page/r/CTHR7jDFGqVsEB0/review'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>
+                            <Image src = '/images/google-review-desktop-banner.png' alt = 'asso-logo' fill style = {{ objectFit: 'contain' }} />
+                        </Link>
                     </Flex>
 
                 </Flex>
