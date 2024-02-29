@@ -172,7 +172,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 </Flex>
 
-                <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>{`What Makes Us Malaysia's Favorite Place to Buy Insurance?`}</Heading>
+                <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>{`World’s First Clinic Property Insurance at Your Finger Tips?`}</Heading>
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
