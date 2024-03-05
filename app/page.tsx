@@ -171,17 +171,20 @@ export default async function Home({ searchParams }: PageProps) {
                     </Flex>
 
                 </Flex>*/}
-                <Flex w = '100%' direction={'column'} alignItems={textAlign}  px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
-
-                 
-                    {/* <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection. Beyond our core offerings, consider enhancing your coverage with these additional safeguards:`}</Text> */}
-
-                    <Flex position={'relative'} border = '1px' borderColor={'brand.borderColor'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']}>
+                
+                <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'}  px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'20px'}> 
+                    {/* Desktop view google review */}
+                    <Flex position={'relative'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']} display={['none', 'none', 'none', 'block', 'block']}>
                         <Link as = {NextLink} href = {'https://g.page/r/CTHR7jDFGqVsEB0/review'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>
                             <Image src = '/images/google-review-desktop-banner.png' alt = 'asso-logo' fill style = {{ objectFit: 'contain' }} />
                         </Link>
                     </Flex>
-
+                    {/* Mobile view google review */}
+                    <Flex position={'relative'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']} display={['block', 'block', 'block', 'none', 'none']}>
+                        <Link as = {NextLink} href = {'https://g.page/r/CTHR7jDFGqVsEB0/review'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>
+                            <Image src = '/images/google-review-mobile-banner.png' alt = 'asso-logo' fill style = {{ objectFit: 'contain' }} />
+                        </Link>
+                    </Flex>
                 </Flex>
 
                 <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>{`World’s First Clinic Property Insurance at Your Finger Tips?`}</Heading>

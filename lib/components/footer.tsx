@@ -39,6 +39,8 @@ const Footer = () => {
             </Flex>
 
             <Flex flexWrap={'wrap'} mt = '20px' w = '100%' gap = '20px' px = {['10px', '10px', '20px', '20px', '20px']} justifyContent={['center', 'center', 'flex-start', 'flex-start', 'flex-start']}>
+               
+                <Text flexGrow={1} textAlign={['center', 'center', 'start', 'start', 'start']} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Ja Assure Sdn Bhd (1159303-A)</Text>
                 <Link flexGrow={1} as = {NextLink} href = {'/#'} textAlign={['center', 'center', 'start', 'start', 'start']} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>© DoctorShield™ All Rights Reserved 2024</Link>
                 <Link as = {NextLink} href = {'/privacy_policy'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Privacy Policy</Link>
                 <Link as = {NextLink} href = {'/terms_of_use'} fontSize={'18px'} color='black' textDecoration={'none'} _hover={{textDecoration: 'none', color: 'blackAlpha.700'}}>Terms of Use</Link>
