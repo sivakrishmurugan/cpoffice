@@ -1,12 +1,13 @@
-import { Flex, TableContainer, Table, Thead, Tbody, Tr, Th, Td, Heading, Icon } from "@chakra-ui/react";
+import { Flex, TableContainer, Table, Thead, Tbody, Tr, Th, Td, Heading, Icon, IconButton, Accordion, Collapse } from "@chakra-ui/react";
 import { ClinicData, SelectedCoverage } from "../types";
 import { CoverageResData } from "../hooks/use_sessionstorage";
-import React from "react";
+import React, { useState } from "react";
 import { convertToPriceFormat } from "../utlils/utill_methods";
 import { calculatePremiumForCoverage, calculatePremiumForOptionalCoverage, getTotalPremiumsForFireAndPerilsInsurance } from "../utlils/calculation";
 import { EXCESS, PROTECTION_AND_LIABILITY_COVERAGE, TOOLTIP_INFO } from "../app/app_constants";
 import ResponsiveTooltip from "./tooltip";
-import { InfoIcon } from "../icons";
+import { CheckIcon, InfoIcon } from "../icons";
+import { MdArrowForwardIos } from 'react-icons/md';
 
 interface SummaryTablesProps {
     coveragesData: CoverageResData | null,
@@ -155,19 +156,31 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                         let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
                                         const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                         const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
+
                                         if(isProtectionAndLiabilityCoverage) {
                                             coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue, name: PROTECTION_AND_LIABILITY_COVERAGE.name }
                                             coverageData = {
                                                 CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
                                                 isABR: 0,
                                                 InsPercent: 0.0405,
-                                            } as any
+                                            } as any;
+
+                                            return <ProtectionAndLiabilityCoverageTableRow
+                                                isMobile = {false}
+                                                name={coverage?.name}
+                                                cValue={coverageValue(coverage)}
+                                                cPremium = {calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [], forField)}
+                                                bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}
+                                            />;
                                         }
-                                        return <Tr key = {coverage.id}>
+
+                                        return <Tr>
                                             <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'} lineHeight={1.5} >{coverage?.name}</Td>
                                             <Td px = '5px'></Td>
                                             <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(coverageValue(coverage), true, false)}</Td>
-                                            <Td fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [], forField), true, false)}</Td>
+                                            <Td fontWeight={'bold'} fontSize={'16px'} color = 'brand.primary' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>
+                                                RM {convertToPriceFormat(calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [], forField), true, false)}
+                                            </Td>
                                         </Tr>
                                     })
                                 }
@@ -190,14 +203,24 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                         let coverageData = coveragesData?.optionalCoverages?.find(e => e.CoverageID == coverage.id);
                                         const forField = 'field_2' in coverage ? 'field_2' : 'field_1';
                                         const isProtectionAndLiabilityCoverage = coverage.id == PROTECTION_AND_LIABILITY_COVERAGE.id;
+                                        
                                         if(isProtectionAndLiabilityCoverage) {
                                             coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue, name: PROTECTION_AND_LIABILITY_COVERAGE.name }
                                             coverageData = {
                                                 CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
                                                 isABR: 0,
                                                 InsPercent: 0.0405,
-                                            } as any
+                                            } as any;
+
+                                            return <ProtectionAndLiabilityCoverageTableRow 
+                                                isMobile
+                                                name={coverage?.name}
+                                                cValue={coverageValue(coverage)}
+                                                cPremium = {calculatePremiumForOptionalCoverage(coverage, coverageData!, localData?.selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', localData?.selectedCoverages ?? [], coveragesData?.coverages ?? [], forField)}
+                                                bg = {bgColor}
+                                            />
                                         }
+
                                         return <React.Fragment key = {coverage.id}>
                                             <Tr>
                                                 <Th px = '10px' pb = '5px' pt = {index % 2 != 0 ? '20px' : undefined} colSpan={2} fontWeight={'bold'} fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bgColor} lineHeight={1.5} textTransform={'none'}>{coverage?.name}</Th>
@@ -299,3 +322,117 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
 }
 
 export default SummaryTables;
+
+const ProtectionAndLiabilityCoverageTableRow = ({ name, cValue, cPremium, bg, isMobile }: { name: string, cValue: number | string, cPremium: number | string, bg: string, isMobile: boolean }) => {
+    const [isExpanded, setExpanded] = useState(false);
+
+    if(isMobile) {
+        return (
+            <React.Fragment>
+                <Tr>
+                    <Th 
+                        px = '10px' pb = '5px' pt = {'10px'} colSpan={2} fontWeight={'bold'} 
+                        fontSize={'18px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bg} lineHeight={1.5} textTransform={'none'}
+                    >
+                        <Flex w = '100%' alignItems={'center'} justifyContent={'space-between'}>
+                            {name}
+                            <IconButton
+                                mr = '50px' 
+                                onClick={() => setExpanded(prev => !prev)} 
+                                transform={isExpanded ? 'rotate(270deg)' : 'rotate(90deg)'}
+                                size = 'sm' variant={'ghost'} isRound 
+                                icon={<Icon w = '18px' h = '18px' as = {MdArrowForwardIos} color = 'black' />} 
+                                aria-label={"expand button"} 
+                            />
+                        </Flex>
+                    </Th>
+                </Tr>
+                <Tr>
+                    <Th px = '10px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bg}>COVERAGE VALUE</Th>
+                    <Td px = '10px' fontSize={'16px'} fontWeight={'bold'} bg = {bg}>RM {convertToPriceFormat(cValue, true, false)}</Td>
+                </Tr>
+                <Tr>
+                    <Th px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bg}>PREMIUM</Th>
+                    <Td px = '10px' pt = '5px' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bg}>RM {convertToPriceFormat(cPremium, true, false)}</Td>
+                </Tr>
+                <Tr>
+                    <Td p = {0} colSpan={2}>
+                        <Collapse animateOpacity unmountOnExit in = {isExpanded}>
+                            <Table variant={'unstyled'}>
+                                <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
+                                    {
+                                        [
+                                            { name: 'Burglary', coverageValue: 20000 },
+                                            { name: 'Money inside premises', coverageValue: 5000 },
+                                            { name: 'Money In transit', coverageValue: 5000 },
+                                            { name: 'Fidelity guarantee', coverageValue: 10000 },
+                                            { name: 'Plate glass', coverageValue: 10000 },
+                                            { name: 'Public liability', coverageValue: 1000000 },
+                                            { name: 'Employer liability', coverageValue: 250000 }
+                                        ].map((item, i) => {
+                                            return <Tr key = {item.name}>
+                                                <Th px = '10px' pt = {i == 0 ? '15px' : undefined} w = '53%' color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bg} textTransform={'none'}>{item.name}</Th>
+                                                <Td px = '10px' pt = {i == 0 ? '15px' : '5px'} color = 'brand.primary' fontSize={'16px'} fontWeight={'bold'} bg = {bg}>RM {convertToPriceFormat(item.coverageValue, true, false)}</Td>
+                                            </Tr>
+                                        })
+                                    }
+                                </Tbody>
+                            </Table>
+                        </Collapse>
+                    </Td>
+                </Tr>
+            </React.Fragment>
+        );
+    }
+
+    return (
+        <React.Fragment>
+            <Tr>
+                <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bg} lineHeight={1.5} >{name}</Td>
+                <Td px = '5px'></Td>
+                <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bg}>RM {convertToPriceFormat(cValue, true, false)}</Td>
+                <Td 
+                    fontWeight={'bold'} fontSize={'16px'} pr = {0}
+                    color = 'brand.primary' bg = {bg}
+                >
+                    RM {convertToPriceFormat(cPremium, true, false)}
+                    <IconButton 
+                        ml = '5px' mt = '-5px'
+                        onClick={() => setExpanded(prev => !prev)} 
+                        transform={isExpanded ? 'rotate(270deg)' : 'rotate(90deg)'}
+                        size = 'sm' variant={'ghost'} isRound 
+                        icon={<Icon w = '18px' h = '18px' as = {MdArrowForwardIos} color = 'black' />} 
+                        aria-label={"expand button"} 
+                    />
+                </Td>
+            </Tr>
+            <Tr>
+                <Td p = {0} colSpan={4}>
+                    <Collapse animateOpacity unmountOnExit in = {isExpanded}>
+                        <Table variant={'unstyled'}>
+                            <Tbody _before={{ content: '"@"', display: 'block', lineHeight: '10px', textIndent: '-99999px' }}>
+                                {
+                                    [
+                                        { name: 'Burglary', coverageValue: 20000 },
+                                        { name: 'Money inside premises', coverageValue: 5000 },
+                                        { name: 'Money In transit', coverageValue: 5000 },
+                                        { name: 'Fidelity guarantee', coverageValue: 10000 },
+                                        { name: 'Plate glass', coverageValue: 10000 },
+                                        { name: 'Public liability', coverageValue: 1000000 },
+                                        { name: 'Employer liability', coverageValue: 250000 }
+                                    ].map((item, i) => {
+                                        return <Tr>
+                                            <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bg} lineHeight={1.5} >{item.name}</Td>
+                                            <Td px = '2px' bg = 'white'></Td>
+                                            <Td w = 'calc(100% - 1px)' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bg}>RM {convertToPriceFormat(item.coverageValue, true, false)}</Td>
+                                        </Tr>
+                                    })
+                                }
+                            </Tbody>
+                        </Table>
+                    </Collapse>
+                </Td>
+            </Tr>
+        </React.Fragment>
+    );
+}
