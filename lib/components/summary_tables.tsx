@@ -167,6 +167,7 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                             } as any;
 
                                             return <ProtectionAndLiabilityCoverageTableRow
+                                                key={coverage.id}
                                                 isMobile = {false}
                                                 name={coverage?.name}
                                                 cValue={coverageValue(coverage)}
@@ -175,7 +176,7 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                             />;
                                         }
 
-                                        return <Tr>
+                                        return <Tr key={coverage.id}>
                                             <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'} lineHeight={1.5} >{coverage?.name}</Td>
                                             <Td px = '5px'></Td>
                                             <Td w = '37%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {index%2 != 0 ? 'white' : 'tableStripedColor.100'}>RM {convertToPriceFormat(coverageValue(coverage), true, false)}</Td>
@@ -213,7 +214,8 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                                 InsPercent: 0.0405,
                                             } as any;
 
-                                            return <ProtectionAndLiabilityCoverageTableRow 
+                                            return <ProtectionAndLiabilityCoverageTableRow
+                                                key={coverage.id}
                                                 isMobile
                                                 name={coverage?.name}
                                                 cValue={coverageValue(coverage)}
@@ -422,7 +424,7 @@ const ProtectionAndLiabilityCoverageTableRow = ({ name, cValue, cPremium, bg, is
                                         { name: 'Public liability', coverageValue: 1000000 },
                                         { name: 'Employer liability', coverageValue: 250000 }
                                     ].map((item, i) => {
-                                        return <Tr>
+                                        return <Tr key={item.name}>
                                             <Td w = '40%' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bg} lineHeight={1.5} >{item.name}</Td>
                                             <Td px = '2px' bg = 'white'></Td>
                                             <Td w = 'calc(100% - 1px)' fontWeight={'bold'} fontSize={'16px'} whiteSpace={'pre-wrap'} color = 'brand.text' bg = {bg}>RM {convertToPriceFormat(item.coverageValue, true, false)}</Td>
