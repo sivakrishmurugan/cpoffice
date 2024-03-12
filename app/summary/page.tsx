@@ -340,14 +340,14 @@ const Summary: NextPage<{}> = ({}) => {
                         '20px 20px',
                         '20px 20px',
                         '20px 20px',
-                        '40px 30px 40px 40px',
+                        '40px 20px 40px 20px',
                         '40px 30px 40px 40px',
                     ]}
                     boxShadow={'0 2px 8px rgba(0, 0, 0, .2)'}
                     color = 'brand.text'
                 >
                     {/* Section 1 - Clinic info and selected coverages */}
-                    <Flex w = {['100%', '100%', '100%', '70%', '70%']} direction={'column'}>
+                    <Flex w = {['100%', '100%', '100%', '68%', '70%']} direction={'column'}>
         
                         {/* Summary heading and edit details button */}
                         <Flex w = '100%' gap = '35px' alignItems={'center'} justifyContent={'space-between'}>
@@ -378,7 +378,7 @@ const Summary: NextPage<{}> = ({}) => {
                     ></Flex>
         
                     {/* Section 2 - Calculations (total, nett, discount, etc), Promocode, Ins start date and action buttons */}
-                    <Flex flexShrink={0} w = {['100%', '100%', '100%', '30%', '30%']} gap = '20px' direction={'column'}>
+                    <Flex flexShrink={0} flex={1} gap = '20px' direction={'column'}>
 
                         <TableContainer>
                             <Table variant={'unstyled'}>

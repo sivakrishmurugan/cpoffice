@@ -145,42 +145,51 @@ export const TYPE_OF_CLAIM = [
 ];
 
 export const PROTECTION_AND_LIABILITY_COVERAGE = {
-    id: 3001,
-    icon: '/icons/icon-protection.svg',
-    name: 'Protection and Liability Coverage',
-    premuimAmount: 405,
-    coverageValue: 1000000,
-    premiumLabel: 'Protection against a wide range of risks, including theft, vandalism, accidental damage, and more.',
-    contents: [
-        {
-            title: 'Burglary RM 20,000',
-            contents: ['Cover Items in Section A - Fire']
-        },
-        {
-            title: 'Money',
-            contents: [
-                'Money Inside Premises RM 5,000\nDuring and after business hours kept in locked safe or strong room, locked drawers/cabinets, cash registers.',
-                'Money in Transit RM 5,000\nOutside premises (from premises to bank or contract sites or vice versa)'
-            ]
-        },
-        {
-            title: 'Fidelity Guarantee RM 10,000',
-            contents: ['Amount of Guarantee (in aggregate for all employees)']
-        },
-        {
-            title: 'Plate Glass RM 10,000',
-            contents: ['Glass and Signage']
-        },
-        {
-            title: 'Public Liability RM 1,000,000',
-            contents: ['Limit of Liability during the Period of Insurance']
-        },
-        {
-            title: 'Employer Liability RM 250,000',
-            contents: ['Limit of Liability for any one claim or series of claims arising out of one event, irrespective of the number of claims that may arise therefrom and during any one Period of Insurance.']
-        }
-    ]
-}
+  id: 3001,
+  icon: "/icons/icon-protection.svg",
+  name: "Protection and Liability Coverage",
+  premuimAmount: 405,
+  coverageValue: 1300000,
+  premiumLabel:
+    "Protection against a wide range of risks, including theft, vandalism, accidental damage, and more.",
+  contents: [
+    {
+      title: "Burglary RM 20,000",
+      //contents: ["Cover Items in Section A - Fire"],
+      contents: [""],
+    },
+    {
+      title: "Money",
+      //contents: [
+      // "Money Inside Premises RM 5,000\nDuring and after business hours kept in locked safe or strong room, locked drawers/cabinets, cash registers.",
+      // "Money in Transit RM 5,000\nOutside premises (from premises to bank or contract sites or vice versa)",
+      //],
+      contents: ["Money Inside Premises RM 5,000", "Money in Transit RM 5,000"],
+    },
+    {
+      title: "Fidelity Guarantee RM 10,000",
+      //contents: ["Amount of Guarantee (in aggregate for all employees)"],
+      contents: [""],
+    },
+    {
+      title: "Plate Glass RM 10,000",
+      //contents: ["Glass and Signage"],
+      contents: [""],
+    },
+    {
+      title: "Public Liability RM 1,000,000",
+      //  contents: ["Limit of Liability during the Period of Insurance"],
+      contents: [""],
+    },
+    {
+      title: "Employer Liability RM 250,000",
+      //contents: [
+       // "Limit of Liability for any one claim or series of claims arising out of one event, irrespective of the number of claims that may arise therefrom and during any one Period of Insurance.",
+      //],
+      contents: [""],
+    },
+  ],
+};
 
 export const TOOLTIP_INFO = {
     fireAndPerilsIns: {

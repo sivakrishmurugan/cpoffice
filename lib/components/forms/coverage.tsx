@@ -32,13 +32,14 @@ const CoverageForm = ({ values, errors, coverage, onClickAddOrRemove, onChangeFi
 
     const coverageIncludes = coverage.Includes['Coverage includes'].map(item => {
         if(isBuildingCoverage && item.includes(CONSULTANT_FEE_REPLACE_TEXT)) {
+            if((values?.field_2 ?? 0) == 0) return null;
             let replaceText = (values?.field_2 ?? 0) > 0 ? 'RM ' + convertToPriceFormat(values?.field_2 ?? 0, false, true) : '';
             const splittedText = item.replace(CONSULTANT_FEE_REPLACE_TEXT, `<replace_text><b>${replaceText}<b><replace_text>`).split('<replace_text>')
             return <Text key = {item}>{splittedText.map(e => e.startsWith('<b>') ? <Text key = {e} as = 'b' color = 'brand.primary'>{e.replaceAll('<b>', ' ')}</Text> : e)}</Text>
             //return item.replace(CONSULTANT_FEE_REPLACE_TEXT, replaceText);
         }
         return item;
-    })
+    }).filter(Boolean)as (string | JSX.Element)[];
 
     const inputFields = Object.entries(coverage.CoverageFields).filter(e => e != null && e[1].label != null && e[1].label != '').map(([field, fieldValues], index) => {
         let label: null |string | JSX.Element = fieldValues.label;

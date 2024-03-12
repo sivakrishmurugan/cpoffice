@@ -172,7 +172,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 </Flex>*/}
                 
-                <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'}  px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'20px'}> 
+                <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'}  px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}> 
                     {/* Desktop view google review */}
                     <Flex position={'relative'} w = '100%' h = {['150px', '200px', '300px', '300px', '300px']} display={['none', 'none', 'none', 'block', 'block']}>
                         <Link as = {NextLink} href = {'https://g.page/r/CTHR7jDFGqVsEB0/review'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>

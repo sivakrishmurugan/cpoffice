@@ -160,9 +160,10 @@ const SummaryTables = ({ coveragesData, localData }: SummaryTablesProps) => {
                                         if(isProtectionAndLiabilityCoverage) {
                                             coverage = { id: coverage.id, field_1: PROTECTION_AND_LIABILITY_COVERAGE.coverageValue, name: PROTECTION_AND_LIABILITY_COVERAGE.name }
                                             coverageData = {
-                                                CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
-                                                isABR: 0,
-                                                InsPercent: 0.0405,
+                                              CoverageName:
+                                                PROTECTION_AND_LIABILITY_COVERAGE.name,
+                                              isABR: 0,
+                                              InsPercent: 0.031154,
                                             } as any;
 
                                             return <ProtectionAndLiabilityCoverageTableRow
