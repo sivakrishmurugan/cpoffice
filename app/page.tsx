@@ -265,7 +265,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'}>{`Have a Question? We're Here to Help!`}</Heading>
                         <Text my = '20px' fontSize={'16px'} color = 'brand.text'>Your concerns and queries matter to us. If you have any questions or need assistance, our dedicated support team is ready to provide the information you seek.</Text>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}>Feel free to reach out</Heading>
-                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}><Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'underline'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>+60 12-293 0700</Link></Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}><Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'underline'} _hover={{textDecoration: 'underline', color: 'brand.primary'}} isExternal>+60 12-293 0700</Link></Heading>
                     </Flex>
 
                     <Flex w = {['100%', '100%', '100%', '33.3%', '33.3%']}>
