@@ -53,7 +53,7 @@ const ProtectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
                         coverage = {
                             CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
                             isABR: 0,
-                            InsPercent: 0.0405,
+                            InsPercent: 0.031154,
                         } as any
                     }
                     const coverageName = coverage?.CoverageName ?? '';

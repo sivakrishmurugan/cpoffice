@@ -69,7 +69,7 @@ export const calculateSummary = (
             coverageData = {
                 CoverageName: PROTECTION_AND_LIABILITY_COVERAGE.name,
                 isABR: 0,
-                InsPercent: 0.0405,
+                InsPercent: 0.031154,
             } as any
         }
         const premium = calculatePremiumForOptionalCoverage(coverage, coverageData!, selectedInsType == 'FIRE' ? 'FIRE' : 'FIRE_PERILS', selectedCoverages ?? [], coveragesData?.coverages)
