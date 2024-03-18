@@ -66,7 +66,7 @@ export const FAQ_LIST = [
         answer: "This coverage compensates for loss of profits due to reduced of gross revenue and increased cost of working caused by fire, lightning, and explosion, helping your clinic to maintain financial stability during recovery."
     },
     {
-        question: "What is covered under the Allf Risks insurance in this policy?",
+        question: "What is covered under the All Risks insurance in this policy?",
         answer: "The All Risks coverage includes protection for mobile devices in the event of loss or damage from accidental external causes, unless specifically excluded under the policy."
     },
     {

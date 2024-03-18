@@ -132,7 +132,7 @@ export default async function Home({ searchParams }: PageProps) {
 
                 <Flex w = '100%' direction={'column'} alignItems={textAlign} border = '1px' borderColor={'brand.borderColor'} px = {['20px', '20px', '30px', '30px', '60px']} py = {['20px', '20px', '40px', '40px', '40px']} borderRadius={'10px'}>
 
-                    <Heading fontFamily={'kanit'} fontWeight={'500'} mt = '10px' fontSize={'35px'} textAlign={textAlign}>Recommanded Additional Coverages</Heading>
+                    <Heading fontFamily={'kanit'} fontWeight={'500'} mt = '10px' fontSize={'35px'} textAlign={textAlign}>Recommended Additional Coverages</Heading>
 
                     <Text mb = {['20px', '20px', '40px', '40px', '40px']} mt = {'20px'} textAlign={textAlign} fontSize={'16px'} color = 'brand.text'>{`We recognize that your clinic's needs are unique, and we offer a range of additional coverages to tailor your insurance package for comprehensive protection.`}</Text>
 
@@ -187,7 +187,7 @@ export default async function Home({ searchParams }: PageProps) {
                     </Flex>
                 </Flex>
 
-                <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>{`World’s First Clinic Property Insurance at Your Finger Tips?`}</Heading>
+                <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'} textAlign={textAlign}>{`World’s First Clinic Property Insurance at Your Finger Tips`}</Heading>
 
                 <Flex w = '100%' direction={['column', 'column', 'column', 'row', 'row']} gap = '20px'>
 
@@ -265,7 +265,7 @@ export default async function Home({ searchParams }: PageProps) {
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'45px'}>{`Have a Question? We're Here to Help!`}</Heading>
                         <Text my = '20px' fontSize={'16px'} color = 'brand.text'>Your concerns and queries matter to us. If you have any questions or need assistance, our dedicated support team is ready to provide the information you seek.</Text>
                         <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}>Feel free to reach out</Heading>
-                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}><Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'none'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>+60 12-293 0700</Link></Heading>
+                        <Heading fontFamily={'kanit'} fontWeight={'500'} fontSize={'32px'}><Link as = {NextLink} href = {'https://api.whatsapp.com/send?phone=60122930700'} textDecoration={'underline'} _hover={{textDecoration: 'none', color: 'brand.primary'}} isExternal>+60 12-293 0700</Link></Heading>
                     </Flex>
 
                     <Flex w = {['100%', '100%', '100%', '33.3%', '33.3%']}>
