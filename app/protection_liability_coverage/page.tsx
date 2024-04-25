@@ -1,7 +1,7 @@
 "use client"
 import { PROTECTION_AND_LIABILITY_COVERAGE, PROTECTION_AND_LIABILITY_COVERAGE as coverageContent } from '@/lib/app/app_constants';
 import { useClient, useSessionStorage } from "@/lib/hooks";
-import { Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button, Flex, Heading, Text,  Icon, IconButton} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import BottomActions from "@/lib/components/bottom_actions";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,9 @@ import { ClinicData } from '@/lib/types';
 import axiosClient from '@/lib/utlils/axios';
 import useCoverage from '@/lib/hooks/use_coverage';
 import { calculatePremiumForOptionalCoverage } from '@/lib/utlils/calculation';
+import ResponsiveTooltip from "../../lib/components/tooltip";
+import { CheckIcon, InfoIcon } from "../../lib/icons";
+
 
 const ProtectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
     const [localData, setLocalData] = useSessionStorage<ClinicData | null>('clinic_form_data', null);
@@ -159,7 +162,14 @@ const ProtectionAndLiabilityCoverage: NextPage<{}> = ({}) => {
                                     {
                                         coverageContent.contents.map(item => {
                                             return <Flex key = {item.title} direction={'column'} gap = '10px'>
-                                                <Heading as = 'h3' fontSize={'16px'} color = 'brand.text'>{item.title}</Heading>
+                                                <Heading as = 'h3' fontSize={'16px'} color = 'brand.text'>{item.title}
+                                                <ResponsiveTooltip 
+                                                wrapperDivProps = {{ verticalAlign: 'middle', ml: '10px' }}
+                                                label = {item.info}
+                                                toolTipWidth={'350px'}>
+                                                <Icon w = 'auto' h = 'auto' as = {InfoIcon} />
+                                            </ResponsiveTooltip>
+                                            </Heading>
                                                 {
                                                     item.contents.map(content => {
                                                         const shouldWrappedContents = content.split('\n');

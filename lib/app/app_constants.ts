@@ -157,6 +157,7 @@ export const PROTECTION_AND_LIABILITY_COVERAGE = {
       title: "Burglary RM 20,000",
       //contents: ["Cover Items in Section A - Fire"],
       contents: [""],
+      info: "Protects your goods and all properties properly locked and secured in your insured Premises against Burglary or robbery (with forcible entry).",
     },
     {
       title: "Money",
@@ -165,21 +166,25 @@ export const PROTECTION_AND_LIABILITY_COVERAGE = {
       // "Money in Transit RM 5,000\nOutside premises (from premises to bank or contract sites or vice versa)",
       //],
       contents: ["Money Inside Premises RM 5,000", "Money in Transit RM 5,000"],
+      info: "Covers your cash, bank and currency notes, cheques and money orders against Burglary or robbery whilst in transit to and from the bank, contract sites and in your insured Premises during and after business hours.",
     },
     {
       title: "Fidelity Guarantee RM 10,000",
       //contents: ["Amount of Guarantee (in aggregate for all employees)"],
       contents: [""],
+      info: "Insures you against loss of money and/or property due to fraud or act of dishonesty of your employee.",
     },
     {
       title: "Plate Glass RM 10,000",
       //contents: ["Glass and Signage"],
       contents: [""],
+      info: "We cover your signage and Glass panels against accidental breakage.",
     },
     {
       title: "Public Liability RM 1,000,000",
       //  contents: ["Limit of Liability during the Period of Insurance"],
       contents: [""],
+      info: "Protection is provided for you against third party claims resulting from Bodily Injury or Property Damage which took place at your Premises.",
     },
     {
       title: "Employer Liability RM 250,000",
@@ -187,6 +192,7 @@ export const PROTECTION_AND_LIABILITY_COVERAGE = {
        // "Limit of Liability for any one claim or series of claims arising out of one event, irrespective of the number of claims that may arise therefrom and during any one Period of Insurance.",
       //],
       contents: [""],
+      info: "Covers you against liabilities in the event of Bodily Injury sustained by employees due to work related accidents or disease.",
     },
   ],
 };
