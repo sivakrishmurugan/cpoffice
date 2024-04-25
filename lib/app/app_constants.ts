@@ -215,6 +215,6 @@ export const TOOLTIP_INFO = {
     },
     excess: {
         title: '',
-        content: 'The first amount of loss that has to be burne by the Policyholder. Insurer will deduct this amount from the total claim and pay the remaining amount.'
+        content: 'The first amount of loss that has to be borne by the Policyholder. Insurer will deduct this amount from the total claim and pay the remaining amount.'
     }
 }
