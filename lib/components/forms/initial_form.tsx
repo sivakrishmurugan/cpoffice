@@ -350,17 +350,35 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     }
 
     const onClickOkQuoteExistPopup = async () => {
-        updateLocalData(data, popupDetails.quoteId)
         const { convertedQuoteData } = await updateDataWithNewQuoteId(popupDetails.quoteId)
         const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
-        if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
-            setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Quote has been already paid!', quoteId: '' })
-        } else if(redirctTo == '/pay') {
-            router.push(redirctTo)
-            setPopupDetails({ popupFor: null, content: '', quoteId: '' })
-        } else {
-            router.push('/coverage');
-            setPopupDetails({ popupFor: null, content: '', quoteId: '' })
+        console.log("redirctTo", redirctTo);
+        
+        if((redirctTo == '/coverage')||(redirctTo == '/debris')||(redirctTo == '/insurance_type')||(redirctTo == '/optional_coverage')||(redirctTo == '/summary')){
+            try {
+                const res = await axiosClient.post('/api/clinicshield/incompletequote', {
+                    QuoteID:  popupDetails.quoteId ? popupDetails.quoteId : null,
+                }, { headers: { secretkey: process.env.NEXT_PUBLIC_API_SECRET_KEY } });
+                if(res && res.data) {
+                    if(res.data.success == 1) {
+                        setPopupDetails({ popupFor: null, content: '', quoteId: '' })
+                    } else {
+                        console.log("else calling");
+                    }
+                    
+                }
+            } catch(e) {}
+        }else{
+            updateLocalData(data, popupDetails.quoteId);
+            if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
+                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Quote has been already paid!', quoteId: '' })
+            } else if(redirctTo == '/pay') {
+                router.push(redirctTo)
+                setPopupDetails({ popupFor: null, content: '', quoteId: '' })
+            } else {
+                router.push('/coverage');
+                setPopupDetails({ popupFor: null, content: '', quoteId: '' })
+            }
         }  
     }
 
