@@ -581,11 +581,11 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
                         </Flex>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
-                           Quote ID already exist. Are you sure you want to continue with existing quote?
+                           Quote ID already exist. If you want to send an email to the exisiting email address and continue where you left?
                         </Text>
                         <Flex mt = '10px' gap = '20px'>
-                            <Button onClick = {onClose} w = {['130px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>Close</Button>
-                            <Button onClick = {onClickOk} w = {['130px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Continue</Button>
+                            <Button onClick = {onClose} w = {['130px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>No</Button>
+                            <Button onClick = {onClickOk} w = {['130px', '150px', '250px', '250px', '250px']} bg = 'brand.secondary' color = 'white' _focus={{}} _hover={{}}>Yes</Button>
                         </Flex>
                     </Flex>
                 </ModalBody>
