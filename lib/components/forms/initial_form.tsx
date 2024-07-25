@@ -76,7 +76,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         if(redirctTo == '/') {
             if(convertedQuoteData?.isPaid == true) {
                 updateLocalDataToState(convertedQuoteData)
-                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a diffeeent email to get a quote.', quoteId: '' })
+                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a different email to get a quote.', quoteId: '' })
             }
             setRedirectLoading(false)
             return ;
@@ -323,7 +323,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     const { convertedQuoteData } = await updateDataWithNewQuoteId(res.data?.[0]?.QuoteID)
                     const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
                     if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
-                        setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a diffeeent email to get a quote.', quoteId: '' })
+                        setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a different email to get a quote.', quoteId: '' })
                     } else if(redirctTo == '/pay') {
                         router.push(redirctTo)
                     } else {
@@ -371,7 +371,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         }else{
             updateLocalData(data, popupDetails.quoteId);
             if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
-                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a diffeeent email to get a quote.', quoteId: '' })
+                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a different email to get a quote.', quoteId: '' })
             } else if(redirctTo == '/pay') {
                 router.push(redirctTo)
                 setPopupDetails({ popupFor: null, content: '', quoteId: '' })
