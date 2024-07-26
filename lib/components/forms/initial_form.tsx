@@ -76,7 +76,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         if(redirctTo == '/') {
             if(convertedQuoteData?.isPaid == true) {
                 updateLocalDataToState(convertedQuoteData)
-                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a different email to get a quote.', quoteId: '' })
+                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates that you are an existing client. Kindly use a different email to get a quote.', quoteId: '' })
             }
             setRedirectLoading(false)
             return ;
@@ -323,7 +323,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     const { convertedQuoteData } = await updateDataWithNewQuoteId(res.data?.[0]?.QuoteID)
                     const redirctTo = getRedirectRouteBasedOnQuote(convertedQuoteData);
                     if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
-                        setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a different email to get a quote.', quoteId: '' })
+                        setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates that you are an existing client. Kindly use a different email to get a quote.', quoteId: '' })
                     } else if(redirctTo == '/pay') {
                         router.push(redirctTo)
                     } else {
@@ -371,7 +371,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
         }else{
             updateLocalData(data, popupDetails.quoteId);
             if(redirctTo == '/' && convertedQuoteData?.isPaid == true) {
-                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates you as an existing client. Kindly use a different email to get a quote.', quoteId: '' })
+                setPopupDetails({ popupFor: 'ALREADY_PAID', content: 'Your email indicates that you are an existing client. Kindly use a different email to get a quote.', quoteId: '' })
             } else if(redirctTo == '/pay') {
                 router.push(redirctTo)
                 setPopupDetails({ popupFor: null, content: '', quoteId: '' })
@@ -581,7 +581,7 @@ const QuoteExistPopup = ({ content, isOpen, onClose, onClickOk }: QuoteExistPopu
                         </Flex>
                         <Heading textAlign={'center'} color = 'brand.primary' fontSize={'16px'}>{content}</Heading>
                         <Text textAlign={'center'} color = 'brand.primary' fontSize={'14px'}>
-                           Quote ID already exist. Do you want us to send an email to carry on from where you left last?
+                           A quote with this ID already exists. Would you like us to send an email to continue from where you left off?
                         </Text>
                         <Flex mt = '10px' gap = '20px'>
                             <Button onClick = {onClose} w = {['130px', '150px', '250px', '250px', '250px']} bg = 'brand.mediumViolet' color = 'white' _focus={{}} _hover={{}}>No</Button>
