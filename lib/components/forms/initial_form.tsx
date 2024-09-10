@@ -427,7 +427,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
                     </FormControl>
 
                     <FormControl isInvalid = {errors.number != null}>
-                        <FormLabel>Registered Clinic Number</FormLabel>
+                        <FormLabel>Registered Clinic No</FormLabel>
                         <InputGroup>
                             <Input 
                                 name = 'clinic_number'
