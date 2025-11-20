@@ -148,7 +148,7 @@ export const getDateAfter365Days = (fromDate: string) => {
     const givenDate = new Date(year, month, day);
   
     // Add 365 days to the given date
-    givenDate.setDate(givenDate.getDate() + 365);
+    givenDate.setDate(givenDate.getDate() + 364);
   
     // Return the date after 365 days
     return formatDateToYyyyMmDd(givenDate);
