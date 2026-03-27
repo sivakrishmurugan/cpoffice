@@ -81,7 +81,7 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
             setRedirectLoading(false)
             return ;
         }
-        router.push(redirctTo);
+        router.push(redirctTo + (redirctTo.includes('?') ? '&' : '?') + 'submitFor=EMAIL_QUOTE');
     }
 
     const updateLocalDataToState = (localData: ClinicData | null) => {
