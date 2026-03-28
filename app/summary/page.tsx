@@ -103,6 +103,13 @@ const Summary: NextPage<{}> = ({ }) => {
 
         if (data.promoCode.isApplied == true && !isCalledFromResumption) {
             setData(prev => ({ ...prev, promoCode: { value: '', isApplied: false, appliedPercentage: 0, error: null } }))
+            if (localData) {
+                setLocalData({
+                    ...localData,
+                    promoCode: '',
+                    promoCodePercentage: 0,
+                })
+            }
             return;
         }
 
@@ -125,14 +132,26 @@ const Summary: NextPage<{}> = ({ }) => {
             }
         }
 
+        const promoCodeValue = data.promoCode.value;
+        const promoCodeApplied = toBeUpdatedData.error == null;
+        const promoCodePercentage = Number(toBeUpdatedData.discount);
+
+        if (localData) {
+            setLocalData({
+                ...localData,
+                promoCode: promoCodeApplied ? promoCodeValue : '',
+                promoCodePercentage: promoCodePercentage,
+            })
+        }
+
         setData(prev => ({
             ...prev,
             loading: null,
             promoCode: {
-                appliedPercentage: Number(toBeUpdatedData.discount),
-                isApplied: toBeUpdatedData.error == null,
+                appliedPercentage: promoCodePercentage,
+                isApplied: promoCodeApplied,
                 error: toBeUpdatedData.error,
-                value: prev.promoCode.value
+                value: promoCodeValue
             }
         }))
     }
