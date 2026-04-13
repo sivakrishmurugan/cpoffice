@@ -416,13 +416,13 @@ const Summary: NextPage<{}> = ({ }) => {
                                         <Td px='0px' color='brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(totalPremium, true, false)}</Td>
                                     </Tr>
                                     <Tr>
-                                        <Td px='0px' fontWeight={'bold'} fontSize={'16px'}>Discount</Td>
+                                        <Td px='0px' fontWeight={'bold'} fontSize={'16px'}>Discount {data.promoCode.isApplied && data.promoCode.appliedPercentage > 0 ? `(${data.promoCode.appliedPercentage}%)` : ''}</Td>
                                         <Td px='0px' color='brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(discount, true)}</Td>
                                     </Tr>
-                                    {/* <Tr>
+                                     <Tr>
                                         <Td px ='0px' fontWeight={'bold'} fontSize={'16px'}>Nett Premium</Td>
                                         <Td px = '0px' color = 'brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(netPremium, true, false)}</Td>
-                                    </Tr> */}
+                                    </Tr> 
                                     <Tr>
                                         <Td px='0px' fontWeight={'bold'} fontSize={'16px'}>Tax 8%</Td>
                                         <Td px='0px' color='brand.secondary' fontWeight={'bold'} fontSize={'20px'} textAlign={'end'}>RM {convertToPriceFormat(tax, true, false)}</Td>
