@@ -511,7 +511,21 @@ const Summary: NextPage<{}> = ({ }) => {
                             <FormLabel>Insurance Start Date</FormLabel>
                             <DateInput
                                 fieldName="ins_start_date_input"
-                                currentDate={convertStringToDate(data.insStartDate.value)}
+                                currentDate={(() => {
+                                    const selectedDate = convertStringToDate(data.insStartDate.value);
+                                    const today = new Date();
+
+                                    // Remove time for accurate date comparison
+                                    today.setHours(0, 0, 0, 0);
+
+                                    // If selected date is before today, use today
+                                    if (selectedDate && selectedDate < today) {
+                                        return today;
+                                    }
+
+                                    // Otherwise keep existing future/current date
+                                    return selectedDate || today;
+                                })()}
                                 onChange={(newDate) => onChangeInsStartDate({ target: { value: convertDateToString(newDate) } } as ChangeEvent<HTMLInputElement>)}
                             />
                             {/* <InputGroup>
