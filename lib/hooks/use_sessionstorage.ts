@@ -7,7 +7,7 @@ export interface CoverageResData {
   optionalCoverages: Coverage[]
 }
 
-const useSessionStorage = <T>(keyName: string, defaultValue: T): [T, (newValue: T) => void] => {
+const useSessionStorage = <T>(keyName: string, defaultValue: T): [T, (newValue: T | ((val: T) => T)) => void] => {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const value = window.sessionStorage.getItem(keyName);
@@ -23,11 +23,12 @@ const useSessionStorage = <T>(keyName: string, defaultValue: T): [T, (newValue: 
     }
   });
 
-  const setValue = (newValue: T) => {
+  const setValue = (newValue: T | ((val: T) => T)) => {
     try {
-      window.sessionStorage.setItem(keyName, JSON.stringify(newValue));
+      const valueToStore = newValue instanceof Function ? newValue(storedValue) : newValue;
+      window.sessionStorage.setItem(keyName, JSON.stringify(valueToStore));
+      setStoredValue(valueToStore);
     } catch (err) {}
-    setStoredValue(newValue);
   };
 
   return [storedValue, setValue];

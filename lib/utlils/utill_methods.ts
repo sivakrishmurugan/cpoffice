@@ -246,34 +246,41 @@ export const convertCoveragesResDataToLocalStateData = (apiRes: any): CoverageRe
     }
 }
 
-export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encryptedQuoteId: string): ClinicData => {
+export const convertClinicQuoteResDataToLocalStateData = (apiRes: any, encryptedQuoteId: string, existingLocalData?: ClinicData | null): ClinicData => {
+    const apiDob = apiRes.dateofbirth ?? apiRes.dob ?? apiRes.DOB ?? '';
+    const apiNationality = apiRes.nationality ?? apiRes.Nationality ?? '';
+    const apiPICName = apiRes.PICName ?? '';
+    const apiPICID = apiRes.PICID ?? '';
+
     return {
         quoteId: encryptedQuoteId,
         basic: {
-            name: apiRes.ClinicName,
-            number: apiRes.ClinicNumber,
-            floorLevel: apiRes.FloorLevel,
-            constructionType: apiRes.CType,
-            address: apiRes.ClinicAddress,
-            mobile: apiRes.Phone,
-            email: apiRes.Email
+            name: apiRes.ClinicName || existingLocalData?.basic?.name || '',
+            number: apiRes.ClinicNumber || existingLocalData?.basic?.number || '',
+            floorLevel: apiRes.FloorLevel || existingLocalData?.basic?.floorLevel || '',
+            constructionType: apiRes.CType || existingLocalData?.basic?.constructionType || '',
+            address: apiRes.ClinicAddress || existingLocalData?.basic?.address || '',
+            mobile: apiRes.Phone || existingLocalData?.basic?.mobile || '',
+            email: apiRes.Email || existingLocalData?.basic?.email || ''
         },
-        selectedCoverages: apiRes?.Coverage ?? [],
-        selectedOptionalCoverages: apiRes?.OptionalCoverage ?? [],
-        selectedInsType: apiRes?.InsuranceType,
-        promoCode: apiRes?.PromoCode,
-        promoCodePercentage: apiRes?.PromoPercentage ?? 0,
-        insStartDate: apiRes?.InsuranceStartDate != null ? apiRes?.InsuranceStartDate.slice(0, 10) : null,
-        PICName: apiRes.PICName ?? '',
-        PICID: apiRes.PICID ?? '',
+        selectedCoverages: (apiRes?.Coverage && apiRes.Coverage.length > 0) ? apiRes.Coverage : (existingLocalData?.selectedCoverages ?? []),
+        selectedOptionalCoverages: (apiRes?.OptionalCoverage && apiRes.OptionalCoverage.length > 0) ? apiRes.OptionalCoverage : (existingLocalData?.selectedOptionalCoverages ?? []),
+        selectedInsType: apiRes?.InsuranceType ?? existingLocalData?.selectedInsType ?? null,
+        promoCode: apiRes?.PromoCode ?? existingLocalData?.promoCode ?? '',
+        promoCodePercentage: apiRes?.PromoPercentage ?? existingLocalData?.promoCodePercentage ?? 0,
+        insStartDate: apiRes?.InsuranceStartDate != null ? apiRes?.InsuranceStartDate.slice(0, 10) : (existingLocalData?.insStartDate ?? null),
+        PICName: (apiPICName && apiPICName !== '') ? apiPICName : (existingLocalData?.PICName ?? ''),
+        PICID: (apiPICID && apiPICID !== '') ? apiPICID : (existingLocalData?.PICID ?? ''),
+        dob: (apiDob && apiDob !== '') ? apiDob : (existingLocalData?.dob ?? ''),
+        nationality: (apiNationality && apiNationality !== '') ? apiNationality : (existingLocalData?.nationality ?? ''),
         claimDeclaration: {
-            previouslyClaimed: apiRes?.ClaimDeclration == null ? null : apiRes?.ClaimDeclration != 0,
-            addtionalInfo: (apiRes?.Declarations ?? []).map((e: any) => ({
+            previouslyClaimed: apiRes?.ClaimDeclration == null ? (existingLocalData?.claimDeclaration?.previouslyClaimed ?? null) : apiRes?.ClaimDeclration != 0,
+            addtionalInfo: (apiRes?.Declarations && apiRes.Declarations.length > 0) ? apiRes.Declarations.map((e: any) => ({
                 type: e?.ClaimType ?? 'Property',
                 year: e.ClaimYear ?? 2022,
                 amount: e.ClaimAmount ?? 0,
                 description: e.Description ?? ''
-            }))
+            })) : (existingLocalData?.claimDeclaration?.addtionalInfo ?? [])
         },
         paymentApproved: apiRes?.PaymentApproved == 1,
         isPaid: apiRes?.isPaid == 1

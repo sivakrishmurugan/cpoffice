@@ -248,24 +248,26 @@ const BasicInfoForm = ({ quoteFromQuery }: BasicInfoFormProps) => {
     }
 
     const updateLocalData = (info: NecessaryBasicInfo, quoteId: string) => {
-        setLocalData({
+        setLocalData(prev => ({
             quoteId,
             basic: info,
-            selectedCoverages: [],
-            selectedOptionalCoverages: [],
-            selectedInsType: null,
-            promoCode: '',
-            promoCodePercentage: null,
-            insStartDate: '',
-            PICName: '',
-            PICID: '',
-            claimDeclaration: {
+            selectedCoverages: prev?.selectedCoverages ?? [],
+            selectedOptionalCoverages: prev?.selectedOptionalCoverages ?? [],
+            selectedInsType: prev?.selectedInsType ?? null,
+            promoCode: prev?.promoCode ?? '',
+            promoCodePercentage: prev?.promoCodePercentage ?? null,
+            insStartDate: prev?.insStartDate ?? '',
+            PICName: prev?.PICName ?? '',
+            PICID: prev?.PICID ?? '',
+            dob: prev?.dob ?? '',
+            nationality: prev?.nationality ?? '',
+            claimDeclaration: prev?.claimDeclaration ?? {
                 previouslyClaimed: false,
                 addtionalInfo: []
             },
             isPaid: false,
             paymentApproved: false
-        })
+        }))
     }
 
     const validate = () => {

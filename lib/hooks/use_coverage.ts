@@ -22,7 +22,7 @@ const useCoverage = (quoteId?: string | null) => {
     let convertedQuoteData: ClinicData | null = null;
     let convertedCoveragesData: CoverageResData | null = null;
     const quote = await getQuote(quoteID);
-    convertedQuoteData = convertClinicQuoteResDataToLocalStateData(quote, quoteID);
+    convertedQuoteData = convertClinicQuoteResDataToLocalStateData(quote, quoteID, localData);
     if(quote) {
       setAuthToken(quote.authToken);
       const coverages = await getCoverage(quoteID);
@@ -57,11 +57,11 @@ const useCoverage = (quoteId?: string | null) => {
   }
 
   const setQuoteDataToLocalStorage = (apiRes: any, encryptedQuoteId: string) => {
-    setLocalData(convertClinicQuoteResDataToLocalStateData(apiRes, encryptedQuoteId))
+    setLocalData(convertClinicQuoteResDataToLocalStateData(apiRes, encryptedQuoteId, localData))
   }
 
   const updateDataWithNewQuoteAndCoverages = (quote: any, coverages: any, encryptedQuoteId: string) => {
-    const convertedQuoteData = convertClinicQuoteResDataToLocalStateData(quote, encryptedQuoteId);
+    const convertedQuoteData = convertClinicQuoteResDataToLocalStateData(quote, encryptedQuoteId, localData);
     const convertedCoveragesData = convertCoveragesResDataToLocalStateData(coverages);
     setAuthToken(quote.authToken);
     setLocalData(convertedQuoteData);

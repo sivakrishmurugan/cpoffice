@@ -1,5 +1,5 @@
 "use client"
-import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Tr, FormLabel, useRadioGroup, useRadio, UseRadioProps, IconButton, Alert, AlertIcon } from "@chakra-ui/react";
+import { Button, Flex, Text, FormControl, FormErrorMessage, Heading, Icon, Input, InputGroup, InputRightElement, Modal, ModalBody, ModalContent, ModalOverlay, Table, TableContainer, Tbody, Td, Tr, FormLabel, useRadioGroup, useRadio, UseRadioProps, IconButton, Alert, AlertIcon, Select } from "@chakra-ui/react";
 import { FORM_FIELD_ERROR_MESSAGES, STAMP_DUTY } from "@/lib/app/app_constants";
 import { useClient, useSessionStorage } from "@/lib/hooks";
 import { EditIcon, PICIDIcon, PICNameIcon, PromoCodeIcon, CheckIconGreen } from "@/lib/icons";
@@ -32,7 +32,10 @@ const Summary: NextPage<{}> = ({ }) => {
             error: null as string | null
         },
         PICName: { value: localData?.PICName ?? '', error: null as string | null },
+        dob: { value: localData?.dob ?? '', error: null as string | null },
         PICID: { value: localData?.PICID ?? '', error: null as string | null },
+        nationality: { value: localData?.nationality ?? '', error: null as string | null, isDisabled: false },
+        otherNationality: { value: '', error: null as string | null },
         insStartDate: { value: localData?.insStartDate ?? '', error: false },
         previouslyClaimed: {
             isClaimed: localData?.claimDeclaration?.previouslyClaimed ?? null as boolean | null,
@@ -73,6 +76,63 @@ const Summary: NextPage<{}> = ({ }) => {
         },
     });
     const previouslyClaimedRadioGroup = getPreviouslyClaimedRootProps();
+
+    const [nationalities, setNationalities] = useState<{ label: string; value: string }[]>([]);
+
+    useEffect(() => {
+        const fetchNationalities = async () => {
+            try {
+                const res = await axiosClient.get('/api/clinicshield/getnationality');
+                const rawData = res.data;
+                const dataList = Array.isArray(rawData) ? (Array.isArray(rawData[0]) ? rawData[0] : rawData) : [];
+                const mapped = dataList.map((item: any) => {
+                    const val = typeof item === 'string' 
+                        ? item 
+                        : (item.country_name || item.Nationality || item.nationality || item.Country || item.country || item.name || item.CountryName || Object.values(item)[0]);
+                    return { label: String(val), value: String(val) };
+                });
+                const hasOther = mapped.some((item: any) => item.value.toLowerCase() === 'others' || item.value.toLowerCase() === 'other');
+                if (!hasOther) {
+                    mapped.push({ label: 'Others', value: 'Others' });
+                }
+                setNationalities(mapped);
+            } catch (e) {
+                console.error('Failed to fetch nationalities', e);
+            }
+        };
+        fetchNationalities();
+    }, []);
+
+    useEffect(() => {
+        if (localData) {
+            const isMalaysian = localData.PICID ? isMalaysianIC(localData.PICID) : false;
+            const nationalityVal = localData.nationality ?? '';
+            
+            let isCustomNationality = false;
+            if (nationalityVal && nationalities.length > 0) {
+                const match = nationalities.find(n => n.value.toLowerCase() === nationalityVal.toLowerCase());
+                if (!match && nationalityVal.toLowerCase() !== 'others' && nationalityVal.toLowerCase() !== 'other') {
+                    isCustomNationality = true;
+                }
+            }
+
+            setData(prev => ({
+                ...prev,
+                PICName: { value: localData.PICName || prev.PICName.value, error: null },
+                PICID: { value: localData.PICID || prev.PICID.value, error: null },
+                dob: { value: localData.dob || prev.dob.value, error: null },
+                nationality: {
+                    value: isCustomNationality ? 'Others' : (nationalityVal || prev.nationality.value),
+                    error: null,
+                    isDisabled: isMalaysian
+                },
+                otherNationality: {
+                    value: isCustomNationality ? nationalityVal : prev.otherNationality.value,
+                    error: null
+                }
+            }));
+        }
+    }, [localData?.quoteId, localData?.dob, localData?.nationality, localData?.PICID, localData?.PICName, nationalities]);
 
     useEffect(() => {
         if (localData == null || localData.quoteId == null || localData.quoteId == '') {
@@ -156,6 +216,26 @@ const Summary: NextPage<{}> = ({ }) => {
         }))
     }
 
+    const isMalaysianIC = (ic: string) => {
+        if (!ic) return false;
+        const cleanIC = ic.replace(/[^0-9]/g, '');
+        if (cleanIC.length !== 12) return false;
+
+        const mm = parseInt(cleanIC.substring(2, 4), 10);
+        const dd = parseInt(cleanIC.substring(4, 6), 10);
+        if (mm < 1 || mm > 12) return false;
+        if (dd < 1 || dd > 31) return false;
+
+        const pb = parseInt(cleanIC.substring(6, 8), 10);
+        const validPBCodes = [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+            21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+            82
+        ];
+        return validPBCodes.includes(pb);
+    }
+
     const onChangePICName = (event: ChangeEvent<HTMLInputElement>) => {
         let inputValue = event.target.value.trimStart();
 
@@ -173,13 +253,51 @@ const Summary: NextPage<{}> = ({ }) => {
         let inputValue = event.target.value.trimStart();
 
         const { isEmpty, isContainsFormatError } = validateField(inputValue, 'PICID');
+        const isMalaysian = isMalaysianIC(inputValue);
+
+        const malaysianOption = nationalities.find(
+            n => n.value.toLowerCase() === 'malaysia' || n.value.toLowerCase() === 'malaysian'
+        );
+        const malaysiaVal = malaysianOption ? malaysianOption.value : 'Malaysia';
+
         setData(prev => ({
             ...prev,
             PICID: {
                 value: inputValue,
                 error: isEmpty ? FORM_FIELD_ERROR_MESSAGES.PICID.required : isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.PICID.format : null
+            },
+            nationality: {
+                ...prev.nationality,
+                value: isMalaysian ? malaysiaVal : prev.nationality.value,
+                isDisabled: isMalaysian
             }
         }));
+    }
+
+    const onChangeDOB = (event: ChangeEvent<HTMLInputElement>) => {
+        const date = event.target.value;
+        setData(prev => ({ ...prev, dob: { value: date, error: null } }));
+        if (localData) setLocalData({ ...localData, dob: date });
+    }
+
+    const onChangeNationality = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        let inputValue = event.target.value.trimStart();
+        const finalNat = (inputValue === 'Others' || inputValue === 'Other') ? data.otherNationality.value : inputValue;
+        setData(prev => ({
+            ...prev,
+            nationality: { ...prev.nationality, value: inputValue, error: null },
+            otherNationality: (inputValue !== 'Other' && inputValue !== 'Others') ? { value: '', error: null } : prev.otherNationality
+        }));
+        if (localData) setLocalData({ ...localData, nationality: finalNat });
+    }
+
+    const onChangeOtherNationality = (event: ChangeEvent<HTMLInputElement>) => {
+        let inputValue = event.target.value.trimStart();
+        setData(prev => ({
+            ...prev,
+            otherNationality: { value: inputValue, error: null }
+        }));
+        if (localData) setLocalData({ ...localData, nationality: inputValue });
     }
 
     const onChangeInsStartDate = (event: ChangeEvent<HTMLInputElement>) => {
@@ -203,10 +321,26 @@ const Summary: NextPage<{}> = ({ }) => {
         coveragesData ?? { coverages: [], optionalCoverages: [] }
     );
 
+    const getMax18YearsAgoDate = () => {
+        const today = new Date();
+        return new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    };
+
     const validate = () => {
         const tempData: typeof data = JSON.parse(JSON.stringify(data));
 
         tempData.insStartDate.error = tempData.insStartDate.value == '';
+
+        if (!data.dob.value) {
+            tempData.dob.error = 'Date of birth is required!';
+        } else {
+            const dobDate = convertStringToDate(data.dob.value);
+            if (dobDate && dobDate > getMax18YearsAgoDate()) {
+                tempData.dob.error = 'Applicant must be at least 18 years old!';
+            } else {
+                tempData.dob.error = null;
+            }
+        }
 
         const validatedPICNameResult = validateField(data.PICName.value.trim(), 'PICName');
         tempData.PICName.error = validatedPICNameResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.PICName.required : validatedPICNameResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.PICName.format : null;
@@ -214,10 +348,14 @@ const Summary: NextPage<{}> = ({ }) => {
         const validatedPICIDResult = validateField(data.PICID.value.trim(), 'PICID');
         tempData.PICID.error = validatedPICIDResult.isEmpty ? FORM_FIELD_ERROR_MESSAGES.PICID.required : validatedPICIDResult.isContainsFormatError ? FORM_FIELD_ERROR_MESSAGES.PICID.format : null;
 
-        tempData.previouslyClaimed.error = tempData.previouslyClaimed.isClaimed == null;
+        if (data.nationality.value === 'Others' || data.nationality.value === 'Other') {
+            tempData.otherNationality.error = data.otherNationality.value.trim() === '' ? 'Please specify your nationality' : null;
+        } else {
+            tempData.otherNationality.error = null;
+        }
 
         setData(tempData);
-        return tempData.PICName.error != null || tempData.PICID.error != null || tempData.insStartDate.error == true || tempData.previouslyClaimed.error == true || (tempData.previouslyClaimed.isClaimed == true && tempData.claimInfoList.length < 1);
+        return tempData.PICName.error != null || tempData.PICID.error != null || tempData.dob.error != null || tempData.insStartDate.error == true || tempData.previouslyClaimed.error == true || tempData.otherNationality.error != null || (tempData.previouslyClaimed.isClaimed == true && tempData.claimInfoList.length < 1);
     }
 
     const onClickSubmit = async (submitFor: 'EMAIL_QUOTE' | 'PROCEED' = 'PROCEED') => {
@@ -231,6 +369,10 @@ const Summary: NextPage<{}> = ({ }) => {
             coveragesData ?? { coverages: [], optionalCoverages: [] }
         );
 
+        const finalNationality = (data.nationality.value === 'Others' || data.nationality.value === 'Other') 
+            ? data.otherNationality.value 
+            : data.nationality.value;
+
         setData(prev => ({ ...prev, loading: submitFor }));
         try {
             const res = await axiosClient.post('/api/clinicshield/setquote', {
@@ -238,6 +380,8 @@ const Summary: NextPage<{}> = ({ }) => {
                 QuoteID: localData?.quoteId,
                 ClinicName: localData?.basic.name,
                 PICName: data.PICName.value,
+                DOB: data.dob.value,
+                Nationality: finalNationality,
                 PICID: data.PICID.value,
                 ClaimDeclaration: data.previouslyClaimed.isClaimed ? 'YES' : 'NO',
                 InsuranceStartDate: data.insStartDate.value,
@@ -260,7 +404,9 @@ const Summary: NextPage<{}> = ({ }) => {
                         addtionalInfo: data.claimInfoList
                     },
                     PICName: data.PICName.value,
+                    dob: data.dob.value,
                     PICID: data.PICID.value,
+                    nationality: finalNationality,
                     promoCode: data.promoCode.isApplied ? data.promoCode.value : '',
                     promoCodePercentage: data.promoCode.isApplied ? data.promoCode.appliedPercentage : 0,
                     insStartDate: data.insStartDate.value
@@ -336,6 +482,18 @@ const Summary: NextPage<{}> = ({ }) => {
     const onClickEditDetails = () => router.push('/coverage');
 
     const onClickBack = () => {
+        const finalNationality = (data.nationality.value === 'Others' || data.nationality.value === 'Other') 
+            ? data.otherNationality.value 
+            : data.nationality.value;
+        if (localData) {
+            setLocalData({
+                ...localData,
+                PICName: data.PICName.value,
+                PICID: data.PICID.value,
+                dob: data.dob.value,
+                nationality: finalNationality
+            });
+        }
         router.push('/protection_liability_coverage');
     }
 
@@ -491,6 +649,19 @@ const Summary: NextPage<{}> = ({ }) => {
                             <FormErrorMessage ml='10px'>{data.PICName.error}</FormErrorMessage>
                         </FormControl>
 
+                        <FormControl isInvalid={data.dob.error != null}>
+                            <FormLabel>Date of Birth</FormLabel>
+                            <DateInput
+                                fieldName="dob_input"
+                                placeholder="DD/MM/YYYY"
+                                currentDate={convertStringToDate(data.dob.value)}
+                                minDate={new Date(1920, 0, 1)}
+                                maxDate={getMax18YearsAgoDate()}
+                                onChange={(newDate) => onChangeDOB({ target: { value: convertDateToString(newDate) } } as ChangeEvent<HTMLInputElement>)}
+                            />
+                            <FormErrorMessage ml='10px'>{data.dob.error}</FormErrorMessage>
+                        </FormControl>
+
                         <FormControl isInvalid={data.PICID.error != null}>
                             <FormLabel>PIC Mykad ID</FormLabel>
                             <InputGroup>
@@ -507,25 +678,45 @@ const Summary: NextPage<{}> = ({ }) => {
                             <FormErrorMessage ml='10px'>{data.PICID.error}</FormErrorMessage>
                         </FormControl>
 
+                        <FormControl isInvalid={data.nationality.error != null}>
+                            <FormLabel>Nationality</FormLabel>
+                            <Select
+                                name='nationality'
+                                value={data.nationality.value}
+                                onChange={(e) => onChangeNationality(e as any)}
+                                placeholder="Select Nationality"
+                                h="40px"
+                                borderRadius="6px"
+                                isDisabled={data.nationality.isDisabled}
+                            >
+                                {nationalities.map((item, idx) => (
+                                    <option key={idx} value={item.value}>
+                                        {item.label}
+                                    </option>
+                                ))}
+                            </Select>
+                            <FormErrorMessage ml='10px'>{data.nationality.error}</FormErrorMessage>
+                        </FormControl>
+
+                        {(data.nationality.value === 'Others' || data.nationality.value === 'Other') && (
+                            <FormControl isInvalid={data.otherNationality.error != null}>
+                                <Input
+                                    name="other_nationality"
+                                    value={data.otherNationality.value}
+                                    onChange={onChangeOtherNationality}
+                                    placeholder="Please specify your nationality"
+                                    h="40px"
+                                    borderRadius="6px"
+                                />
+                                <FormErrorMessage ml="10px">{data.otherNationality.error}</FormErrorMessage>
+                            </FormControl>
+                        )}
+
                         <FormControl isInvalid={data.insStartDate.error}>
                             <FormLabel>Insurance Start Date</FormLabel>
                             <DateInput
                                 fieldName="ins_start_date_input"
-                                currentDate={(() => {
-                                    const selectedDate = convertStringToDate(data.insStartDate.value);
-                                    const today = new Date();
-
-                                    // Remove time for accurate date comparison
-                                    today.setHours(0, 0, 0, 0);
-
-                                    // If selected date is before today, use today
-                                    if (selectedDate && selectedDate < today) {
-                                        return today;
-                                    }
-
-                                    // Otherwise keep existing future/current date
-                                    return selectedDate || today;
-                                })()}
+                                currentDate={convertStringToDate(data.insStartDate.value)}
                                 onChange={(newDate) => onChangeInsStartDate({ target: { value: convertDateToString(newDate) } } as ChangeEvent<HTMLInputElement>)}
                             />
                             {/* <InputGroup>

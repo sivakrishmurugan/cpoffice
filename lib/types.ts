@@ -66,7 +66,9 @@ export interface ClinicData {
     promoCodePercentage: null | number,
     insStartDate: string,
     PICName: string,
+    dob?: string,
     PICID: string,
+    nationality?: string,
     isPaid: boolean,
     paymentApproved: boolean,
     claimDeclaration: {

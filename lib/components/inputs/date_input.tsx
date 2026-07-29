@@ -6,11 +6,13 @@ interface DateInputProps {
     fieldName?: string,
     placeholder?: string,
     currentDate: Date | undefined,
-    onChange: (newDate: Date) => void
+    onChange: (newDate: Date) => void,
+    minDate?: Date,
+    maxDate?: Date
 }
 
-const DateInput = ({ fieldName = 'date_input', placeholder = 'Choose',currentDate, onChange }: DateInputProps) => {
-    const minDate = new Date(new Date().setDate(new Date().getDate() - 1))
+const DateInput = ({ fieldName = 'date_input', placeholder = 'Choose', currentDate, onChange, minDate, maxDate }: DateInputProps) => {
+    const effectiveMinDate = minDate ?? new Date(new Date().setDate(new Date().getDate() - 1));
     const onDateChange = (date: Date) => {
         onChange(date);
     }
@@ -20,7 +22,8 @@ const DateInput = ({ fieldName = 'date_input', placeholder = 'Choose',currentDat
                 name = {fieldName}
                 date={currentDate}
                 onDateChange={onDateChange}
-                minDate={minDate}
+                minDate={effectiveMinDate}
+                maxDate={maxDate}
                 configs={{ dateFormat: 'dd/MM/yyyy' }}
                 usePortal
                 propsConfigs={{
